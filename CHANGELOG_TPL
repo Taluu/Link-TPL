@@ -1,0 +1,216 @@
+/**
+ * CHANGELOG de Talus' TPL.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *      
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *      
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-1301, USA. 
+ *
+ * @package Talus' TPL
+ * @author Baptiste "Talus" Clavié <clavie.b@gmail.com> 
+ * @copyright ©Talus, Talus' Works 2008+
+ * @link http://www.talus-works.net Talus' Works
+ * @license http://www.gnu.org/licenses/lgpl.html Lesser GNU Public License 3+
+ * @version $Id$
+ */
+
+## 1.6.0 ==> 1.7.0 (Sortie : ??/??/??)
+  #ADD : Ajout de la possibilité de modifier les fonctionnalitées à parser
+  #ADD : Ajout de la possibilité de faire un "require" plutôt qu'un include
+  #ADD : Implémentation de __invoke() pour toutes les classes
+  #ADD : Ajout des inclusions avec paramètres
+  #ADD : Ajout des classes d'exceptions
+  #ADD : Ajout d'une constante VERSION
+
+  #CHG : Passage de tous les éléments privés en protected (sauf exceptions)
+  #CHG : Passage en déprécié de toutes les méthodes type get/setAttribut().
+  #CHG : L'attribut Talus_TPL::$vars devient Talus_TPL::$_vars (privatisation)
+  #CHG : Intégration de Talus_TPL::_setFile() dans Talus_TPL::parse()
+  #CHG : Talus_TPL::set() renvoit une référence sur Talus_TPL::$_vars
+  #CHG : Restrictions plus exactes pour le nommage de balisage TPL
+  #CHG : L'attribut Talus_TPL::$_infos devient Talus_TPL::$_last
+  #CHG : Utilisation de variables extraites lors de la compilation
+  #CHG : Changement du nom des accessors + condensation
+  #CHG : Noms des méthodes d'instanciation des Singletons
+  #CHG : Passage de triggers+exit() vers des exceptions
+  #CHG : Gestion des includes d'une façon plus globale
+  #CHG : Changements mineurs un peu partout
+  #CHG : Condensation des attributs privés
+  
+  #FIX : Fichiers de cache identiques pour /dir/file.html & /dir.file.html
+  #FIX : Espace en trop lors de la déclaration de fonctions
+  #FIX : Mauvaise fin de capture pour <set>
+  
+  #DEL : Emulations de file_get|put_contents() de talus_tpl_cache.php
+  #DEL : Attributs Talus_TPL::$_cache et Talus_TPL::$_compiler
+  #DEL : Commentaires PHPDOC pour les attributs
+  #DEL : Talus__TPL_Compiler::$_namespace
+  #DEL : Talus_TPL::_setFile()
+  
+  #OBS : Fonctions TPL (remplacées par les inclusions paramétrées)
+  #OBS : Accessors pour des classes externes
+
+  #TDO : Gérer le passage d'un array+clé dans les inclusions paramétrées
+ 
+## 1.5.1 ==> 1.6.0 (Sortie : 17/07/09)
+  #ADD : Ajout de la récursivité pour les filtres (sauf arrays de dimension > 1)
+  #ADD : Concernant set, possibilité de redéfinir la valeur d'une clé d'array
+  #ADD : Pour les filtres, possibilité de les utiliser avec des arrays
+  #ADD : Ajout d'une méthode (privée) : Talus_TPL_Compiler::_escape()
+  #ADD : Ajout de la syntaxe <block name="enfant" parent="parent">
+  #ADD : Ajout de la gestion de namespaces xml
+
+  #CHG : Changement de la référence utilisée pour les blocs et leurs variables 
+  #CHG : La méthode habituelle <block name="parent.enfant"> est dépréciée
+  #CHG : new Talus_TPL_Compiler et new Talus_TPL_Cache ==> new self
+  #CHG : Syntaxe de la balise de changement / assignement intpl
+  #CHG : Foreach par références pour les blocs et les foreach
+  #CHG : Remplacement de is_null() par === null (plus rapide)
+  #CHG : Talus_TPL::getBlock() renvoi désormais une référence
+  #CHG : Utilisation d'un symbole référence pour les blocs
+  #CHG : Changements mineurs dans Talus_TPL::includeTpl()
+  #CHG : Changement du nom de la balise <var> vers <set>
+  #CHG : Changements mineurs dans Talus_TPL::setBlock()
+  #CHG : Changements de formes des messages d'erreurs
+
+  #FIX : Si il y a un bloc parent, il ne pouvait y avoir un enfant ayant un nom complexe
+  #FIX : Possibilité d'utilisé les variables types {TYPE,VAR} dans les filtres
+  #FIX : Inclusions bizarres si le paramètre once est renseigné...
+  #FIX : Parsage Récursif OK
+
+  #DEL : Possibilité d'affecter / de changer la valeur d'une variable d'un bloc intpl
+  #DEL : Possibilité de supprimer des variables déclarées (ne sert à rien...)
+  #DEL : Suppression des méthodes dépréciées en 1.5.1
+  #DEL : Suppression de Talus_TPL::$_files
+
+##1.5.0 ==> 1.5.1 (Sortie : 22/01/09)
+  #ADD : Méthode Talus_TPL::getBlock() (récupération d'un bloc racine)
+  #ADD : Uniformisation : Ajout de Talus_TPL::setBlock()
+  #ADD : Uniformisation : Ajout de Talus_TPL::setDir()
+  #ADD : Uniformisation : Ajout de Talus_TPL::setRef()
+  #ADD : Uniformisation : Ajout de Talus_TPL::unsetVars()
+
+  #CHG : Gestion des variables filtrées (plusieurs condition récurrentes en moins)
+  #CHG : Controle du cache plus strict (ajout de la vérif de la taille du cache)
+  #CHG : Uniformisation : Mise de la méthode Talus_TPL::set_block() en déprécié
+  #CHG : Uniformisation : Mise de la méthode Talus_TPL::set_dir() en déprécié
+  #CHG : Uniformisation : Mise de la méthode Talus_TPL::set_ref() en déprécié
+  #CHG : Uniformisation : Mise de la méthode Talus_TPL::unset_var() en déprécié
+  #CHG : Uniformisation : Passage de Talus_TPL::$blocks en privé : Talus_TPL::$_blocks
+  #CHG : Condition en moins dans Talus_TPL::_setFile().
+
+  #FIX : Corrections lors de l'appel de fonctions récursives (objet $tpl non déclaré...)
+  #FIX : Bug pour les variables filtrées
+
+  #DEL : Suppression de la clé "file" de l'array Talus_TPL::$_infos[tpl]
+  #DEL : Suppression de l'attribut Talus_TPL::$_last
+  #DEL : Suppression des méthodes dépréciées depuis la 1.4.0
+  #DEL : Suppression de la méthode Talus_TPL::multiparse()
+
+##1.4.0 ==> 1.5.0 (Sortie : 02/10/08)
+  #ADD : Création de la classe abstraite (futur namespace ? :p) Talus_TPL_Filters, qui répertorie les filtres possibles.
+  #ADD : Ajout du singleton Talus_TPL_Compiler (suppression des fonctions de compilations)
+  #ADD : Ajout de l'attribut privé Talus_TPL::$_compiler (référence au compilateur)
+  #ADD : Possibilité d'utiliser des arrays avec <foreach> (avec un as)
+  #ADD : Ajout de la méthode Talus_TPL_Cache::getInstance().
+  #ADD : Ajout de la méthode Talus_TPL_Cache::getDir().
+  #ADD : Ajout de la méthode Talus_TPL::sParse()
+  #ADD : Ajout des filtres, à la Django.
+
+  #CHG : Talus_TPL::_setFile() (ex Talus_TPL::set_file()) est devenue privée (fonctionnement public déprécié depuis la 1.2.0)
+  #CHG : Changement interne pour Talus_TPL::getCacheDir() (appel à la nouvelle méthode Talus_TPL_Cache::getDir()).
+  #CHG : Utilisation d'un array à la place d'une série de preg_replace dans Talus_TPL_Compiler::compile().
+  #CHG : La fonction compile_tpl() parse désormais la chaine de caractère passée en argument.
+  #CHG : Talus_TPL_Cache::valid() est maintenant devenu Talus_TPL_Cache::isValid()
+  #CHG : Transformation du pattern de Talus_TPL_Cache (ex Cache_TPL) en singleton
+  #CHG : Utilisation des fonctions mbstring plutot que des fonctions normales
+  #CHG : Cache_TPL a été renommée en Talus_TPL_Cache.
+  #CHG : Convention de codage des noms privés.
+  #CHG : Les accessors Talus_TPL::get_rootDir() et Talus_TPL::get_cacheDir() changent de nom en Talus_TPL::getRootDir() et Talus_TPL::getCacheDir().
+
+  #DEL : Suppression des méthodes dépréciée (Talus_TPL::assign_var(s)()) depuis la version 1.3.0.
+  #DEL : Suppression de la constante Talus_TPL::VER (sert à rien :p).
+
+  #FIX : Plusieurs bugs sur les fonctions (les appels étaient mal parsés, les déclaration foiraient...)
+  #FIX : Pour les fonctions, les arguments avec des espaces... ca passait pas.
+
+  #TDO : Mieux adopter les bonnes conventions de nommage... même si ca risque de faire bobo au niveau de la compatibilité.
+
+##1.3.0 ==> 1.4.0 (Sortie : 25/08/08)
+  #ADD : Possibilité d'utiliser des arrays comme clés : {MA_VAR[{$MA_VAR['toto']}]['titi']}
+  #ADD : Getters pour Talus_TPL::$root et Cache_TPL::$dir
+  #ADD : Nouvelle class, qui gère le cache : Cache_TPL
+  #ADD : Nouvelle méthode : Talus_TPL::set_block()
+
+  #CHG : Talus_TPL::$cache ne contient plus le chemin vers le cache, mais est désormais l'instance de l'objet Cache_TPL.
+  #CHG : Extension des conventions de nommage pour les variables, blocs, ... etc. (extension de la regex : \x7f-\xff)
+  #CHG : La méthode Talus_TPL::assign_block_vars() est maintenant dépreciée ; il faut utiliser Talus_TPL::set_block()
+  #CHG : Changement des parametres de Talus_TPL::unset_var() (un argument par variable à détruire).
+  #CHG : Utilisation de la syntaxe alternative pour les instructions php (if : .. endif;, etc.)
+  #CHG : Parsage prioritaire des variables simples avant celles des blocs
+  #CHG : Possibilité d'employer " dans les conditions ?
+  #CHG : Passage en objet de require_*.php
+
+  #DEL : Propriété Talus_TPL::$debug (pour une prochaine version, p'tet...)
+  #DEL : Vérifications du dossier du cache dans Talus_TPL::set_dir()
+  #DEL : Commentaires pour les fichiers de cache.
+  #DEL : Cache SQL (à recoder / à laisser tomber)
+  #DEL : Getter et Setter pour Talus_TPL::$debug
+  #DEL : Constantes "NOW" et "PHP_EOL".
+
+  #FIX : Bug des arrays multi dimentionnels
+
+##1.2.0 ==> 1.3.0 (Sortie : 04/07/08)
+  #CHG : Les méthodes Talus_TPL::assign_var(s) sont maintenant dépreciées ; il faut désormais utiliser Talus_TPL::set().
+  #CHG : Le fonctionnement public de Talus_TPL::set_file() est maintenant déprecié ; appel lors de Talus_TPL::parse()
+  #CHG : Pour le cache, réduction de la contrainte de vérification de son existence
+  #CHG : Modification des commentaires type pour les TPLs.
+  #CHG : Intégration de cache_write() dans cache_put().
+  #CHG : Séparation Compilation / Class TPL
+  #CHG : Passage à la license LGPL
+  #CHG : Plus d'eval si cache FTP.
+
+  #ADD : Possibilité, lors des inclusions, de spécifier le nom d'un tpl... Et d'une variable
+  #ADD : Ajout de la méthode Talus_TPL::multiparse() (parse tous les tpls définis)
+  #ADD : Getters & Setters pour les mode débug
+  #ADD : Ajout de variables par références
+
+  #DEL : Changement du temps de modification du cache lors de l'écriture dans celui-ci
+  #DEL : Fonction cache_write() (maintenant intégrée dans cache_put())
+  #DEL : Appels inutiles à certaines fonctions (filesize(), ...).
+  #DEL : Paramètre "débug" de Talus_TPL::__construct()
+  #DEL : Moteur d'erreurs
+
+  #FIX : Bugs des arrays ({MAVAR[{$AUTREVAR}])
+
+##1.1.0 ==> 1.2.0 (Sortie : 20/04/08)
+  #FIX : Réadaption entière du code, remplacement des tabs par des espaces pour des raisons de portabilité.
+  #FIX : Correction bug :unset() marchait pas (ou ne risquait pas de marcher)
+  #FIX : Les noms de variables, etc. sont plus spécifiques (caractère alphabétique seulement en début, etc.).
+  #FIX : Changement du mode d'ouverture des fichiers pour file_get_contents (require_ftp.php, require_sql.php)
+  #FIX : Correction UTF8 pour require_sql.php
+  #FIX : La constante NOW dans require_ftp.php n'était pas déclarée (mauvaise vérification de constantes...)
+  #FIX : Gestion des erreurs OK ?
+
+  #CHG : Seules les balises php "collées" sont remplacées.
+  #CHG : Normalisation XML de la balsie elseif.
+  #CHG : Passage en public de la méthode "include_tpl" et des propriétés $blocks, $vars.
+  #CHG : Le mode débug est désormais désactivé par défaut (un peu buggé...)
+
+  #ADD : Implémentation de fonctions plus avancées (tout est désormais parsé correctement)
+  #ADD : Ajout de Globales (fonctions only)
+
+  #DEL : Plus possible de détruire UNE SEULE var.
+  #DEL : Suppression des balises de fin ?> dans talus_tpl.php, require_*.php, et les fichiers de caches.
+    
+/** EOF /**/
