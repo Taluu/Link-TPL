@@ -312,10 +312,8 @@ class Talus_TPL_Compiler {
    */
   protected function _block__Old(array $match){
     // -- Notice pour deprecated
-    trigger_error('Talus_TPL->compiler->_block() : La syntaxe
-                   <code><block name="parent.enfant"></code> est dépréciée ;
-                   Veuillez mettre à jour votre script TPL pour
-                   <code><block name="enfant" parent="parent"></code>',
+    trigger_error('La syntaxe <block name="parent.enfant"> est dépréciée ;
+                   Veuillez mettre à jour votre script TPL pour <block name="enfant" parent="parent">',
                    E_USER_DEPRECATED);
     
     // -- Appel de la méthode actuelle, et inversion de match[1] et match[2]
@@ -334,8 +332,7 @@ class Talus_TPL_Compiler {
    */
   protected function _defineFunction(array $matches){
     // -- Notice pour deprecated
-    trigger_error('Talus_TPL->compiler->_defineFunctions() : Les fonctions TPL sont maintenant dépréciées ; Veuillez
-                   mettre à jour votre script TPL pour les inclusions paramétrées.', E_USER_DEPRECATED);
+    trigger_error('Les fonctions TPL sont maintenant dépréciées ; Veuillez mettre à jour votre script TPL pour les inclusions paramétrées.', E_USER_DEPRECATED);
 
     $nspace = $this->parameter('namespace');
     $php = sprintf('<?php function __tpl_%s(Talus_TPL $tpl, ', $matches[1]);
@@ -374,7 +371,7 @@ class Talus_TPL_Compiler {
    */
   protected function _callFunction(array $matches){
     // -- Notice pour deprecated
-    trigger_error('Talus_TPL->compiler->_callFunction() : Les fonctions TPL sont maintenant dépréciées ; Veuillez
+    trigger_error('Les fonctions TPL sont maintenant dépréciées ; Veuillez
                    mettre à jour votre script TPL pour les inclusions paramétrées.', E_USER_DEPRECATED);
     
     $nspace = $this->parameter('namespace');
@@ -435,8 +432,7 @@ class Talus_TPL_Compiler {
     foreach ($filters as &$filter) {
       // -- Filtre non déclaré ?
       if (!method_exists('Talus_TPL_Filters', $filter)){
-        trigger_error("Talus_TPL->compiler->_filters() :: Le filtre
-                      \"$filter\" n'existe pas, et sera donc ignoré.\n\n",
+        trigger_error("Le filtre \"$filter\" n'existe pas, et sera donc ignoré.\n\n",
                       E_USER_NOTICE);
         continue;
       }
@@ -471,26 +467,6 @@ class Talus_TPL_Compiler {
                    $this->_escape($match[2]), 
                    isset($match[3]) && $match[3] == 'true' ? 'true' : 'false',
                    mb_strtoupper($match[1]));
-  }
-
-  /**
-   * Echappe les variables dans les Query String des inclusions paramétrées
-   * (C'est moche, mais seule solution "viable"... Pour l'instant ??)
-   *
-   * @param array $match Capture de la Regex
-   * @return string qs échappé
-   */
-  protected function _includesParams($match) {
-    $file = $qs = '';
-
-    // -- Séparation query string / fichier
-    list($file, $qs) = explode('?', $match[1], 2);
-
-    // -- Echappement des ' dans le QS, et rattachement au fichier
-    $qs = addcslashes($qs, '\'');
-    $file .= '?' . $qs;
-
-    return str_replace($match[1], $file, $match[0]);
   }
   
   /**

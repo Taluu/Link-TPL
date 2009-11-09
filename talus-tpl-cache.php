@@ -1,6 +1,6 @@
 <?php
 /**
- * Contient les fonctions de caches FTP, nécessaires à Talus' TPL.
+ * Gestion du cache FTP de Talus' TPL.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,9 +40,7 @@ if (!defined('PHP_EXT')) {
 class Talus_TPL_Cache {
   protected 
     $_dir = null,
-    $_file = null,
-    $_filemtime = 0,
-    $_filesize = 0;
+    $_file = array();
   
   private static $_instance = null;
   private function __construct(){}
@@ -81,11 +79,13 @@ class Talus_TPL_Cache {
       $dir = rtrim($dir, '/');
       
       if (!is_dir($dir)){
-        throw new Talus_TPL_Dir_Exception('Talus_TPL_Cache->dir() :: Le dossier n\'existe pas');
+        throw new Talus_TPL_Dir_Exception(array('Dossier "%s" non existant.', $dir));
         return false;
       }
       
       $this->_dir = $dir;
+    } elseif ($this->_dir === null) {
+      $this->_dir = sys_get_temp_dir();
     }
     
     return $this->_dir;
@@ -103,26 +103,28 @@ class Talus_TPL_Cache {
    * Définit le fichier à stocker
    *
    * @param string $file Nom du fichier à stocker
-   * @return void
+   * @return array Informations sur le fichier en cache
    */
-  public function file($file) {
-    $this->_file = trim($file, '.') . '.' . PHP_EXT;
-    $file = sprintf('%1$s/%2$s', $this->dir(null), $this->_file);
-    
-    if (is_file($file)) {
-      $this->_filemtime = filemtime($file);
-      $this->_filesize = filesize($file);
-    } else {
-      $this->_filemtime = 0;
-      $this->_filesize = 0;
-      
-      // -- Création du dossier si il n'existe pas
-      $dir = dirname($file);
-      
-      if (!is_dir($dir)) {
-        mkdir($dir, 0777, true);
+  public function file($file = null) {
+    if ($file !== null) {
+      $file = sprintf('%1$s/tpl_%2$s.%3$s', $this->dir(null), sha1(trim($file, '.')), PHP_EXT);
+
+      if (is_file($file)) {
+        $filemtime = filemtime($file);
+        $filesize = filesize($file);
+      } else {
+        $filemtime = 0;
+        $filesize = 0;
       }
+
+      $this->_file = array(
+        'file' => $file,
+        'last_modif' => $filemtime,
+         'size' => $filesize
+       );
     }
+
+    return $this->_file;
   }
   
   /**
@@ -137,10 +139,11 @@ class Talus_TPL_Cache {
    * Indique si le cache est toujours valide
    *
    * @param integer $time Timestamp de dernière modif du fichier
-   * @return boolean
+   * @return boolean Vrai si le cache est encore valide, faux sinon.
    */
   public function isValid($time) {
-    return $this->_filemtime >= abs($time) && $this->_filesize > 0;
+    $file = $this->file(null);
+    return $file['last_modif'] >= abs($time) && $file['size'] > 0;
   }
   
   /**
@@ -150,20 +153,23 @@ class Talus_TPL_Cache {
    * @return boolean
    */
   public function put($data) {
+    // -- Récupération des informations du fichier cache
+    $file = $this->file(null);
+
     // -- Imposition d'un LOCK maison
-    $lockFile = "{$this->dir()}/__tpl_flock__." . sha1($this->_file);
+    $lockFile = sprintf('%1$s/__tpl_flock__.%2$s', $this->dir(null), sha1($file['file']));
     $lock = @fclose(fopen($lockFile, 'x'));
-    
+
     if (!$lock){
-      throw new Talus_TPL_Write_Exception('Talus_TPL_Cache->put() :: Ecriture en cache impossible');
+      throw new Talus_TPL_Write_Exception('Ecriture en cache impossible');
       return false;
     }
-    
-    file_put_contents("{$this->dir()}/{$this->_file}", $data);
-    chmod("{$this->dir()}/{$this->_file}", 0664);
-    
+
+    file_put_contents($file['file'], $data);
+    chmod($file['file'], 0664);
+
     // -- Retirement (suppression) du LOCK
-    unlink($lockFile); 
+    unlink($lockFile);
     return true;
   }
   
@@ -171,18 +177,19 @@ class Talus_TPL_Cache {
    * Execute le contenu du fichier de cache (en l'incluant)
    *
    * @param Talus_TPL $tpl Objet TPL à utiliser lors de la lecture du cache
-   * @return bool
+   * @return bool status de l'execution
    */
   public function exec(Talus_TPL $tpl) {
-    if (empty($this->_file)) {
-      throw new Talus_TPL_Exec_Exception('Talus_TPL_Cache->exec() :: Impossible d\'executer un fichier "nul"...');
+    $file = array();
+
+    if ($file === array()) {
+      throw new Talus_TPL_Exec_Exception('Vous venez d\'essayer d\executer aucun fichier...');
       return false;
     }
-    
+
     extract($tpl->set(null), EXTR_PREFIX_ALL | EXTR_REFS, '__tpl_vars_');
-    include sprintf('%1$s/%2$s', $this->dir(), $this->_file);
-    $this->_file = null;
-    
+    include $file['file'];
+
     return true;
   }
   

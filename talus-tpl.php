@@ -78,7 +78,7 @@ class Talus_TPL {
     
     // -- Le dossier existe-t-il ?
     if (!is_dir($root)) {
-      throw new Talus_TPL_Dir_Exception(array('Talus_TPL->dir() :: %s n\'est pas un répertoire.', $root), 1);
+      throw new Talus_TPL_Dir_Exception(array('%s n\'est pas un répertoire.', $root), 1);
       return;
     }
     
@@ -128,7 +128,7 @@ class Talus_TPL {
    */
   public function bind($var, &$value) {
     if (mb_strtolower(gettype($var)) != 'string') {
-      throw new Talus_TPL_Var_Exception('Talus_TPL->bind() :: Tentative de déclarer une variable référence avec un nom invalide.', 3);
+      throw new Talus_TPL_Var_Exception('Nom de variable référencée invalide.', 3);
       return;
     }
   
@@ -178,7 +178,7 @@ class Talus_TPL {
         return $return;
       }
 
-      throw new Talus_TPL_Block_Exception('Talus_TPL->block() :: Une seule variable \'null\' ? Certes... ');
+      throw new Talus_TPL_Block_Exception('Nom de Variable invalide.');
       return null;
     }
 
@@ -202,7 +202,7 @@ class Talus_TPL {
     
     foreach ($blocks as &$cur) {
       if (!isset($current[$cur])) {
-        throw new Talus_TPL_Block_Exception(array('Talus_TPL->block() :: %s n\'est pas défini...', $cur), 4);
+        throw new Talus_TPL_Block_Exception(array('Le bloc %s n\'est pas défini.', $cur), 4);
         return null;
       }
       
@@ -250,7 +250,7 @@ class Talus_TPL {
     ++$vars['SIZE_OF'];
     $current[$curBlock][] = $vars;
 
-    return $vars;
+    return $current[$curBlock];
   }
 
   /** 
@@ -263,7 +263,7 @@ class Talus_TPL {
   public function parse($tpl){
     // -- Erreur critique si vide
     if (empty($tpl)) {
-      throw new Talus_TPL_Parse_Exception('Talus_TPL->parse() :: Aucun modèle à parser...', 5);
+      throw new Talus_TPL_Parse_Exception('Aucun modèle à parser.', 5);
       return false;
     }
     
@@ -272,7 +272,7 @@ class Talus_TPL {
     // -- Déclaration du fichier
     if (!isset($this->_last[$file])) {
       if (!is_file($file)) {
-        throw new Talus_TPL_Parse_Exception(array('Talus_TPL->parse() :: Le modèle %s n\'existe pas.', $tpl), 6);
+        throw new Talus_TPL_Parse_Exception(array('Le modèle %s n\'existe pas.', $tpl), 6);
         return false;
       }
 
@@ -376,7 +376,7 @@ class Talus_TPL {
 
       // -- Traitement des paramètres
       $vars = array_change_key_case($vars, CASE_UPPER);
-      array_walk($vars, array($this, '_checkParams'));
+      array_walk($vars, array($this, '_parseParams'));
       $this->set($vars);
       
       $data = $this->pparse($file);
@@ -390,10 +390,7 @@ class Talus_TPL {
        * sinon, on affiche juste le message de l'exception capturée.
        */
       if ($e->getCode() == 6 && $type == self::REQUIRE_TPL) {
-        throw new Talus_TPL_Runtime_Exception(
-         'Talus_TPL->includeTpl() :: Ceci était une balise "require" : puisque
-          ce fichier n\'existe pas, le script est interrompu.', 7);
-
+        throw new Talus_TPL_Runtime_Exception(array('Ceci était une balise "require" : puisque le template %s n\'existe pas, le script est interrompu.', $file), 7);
         exit;
       } else {
         echo $e->getMessage();
@@ -415,7 +412,7 @@ class Talus_TPL {
    * @param mixed $key Valeur de la clé courante
    * @return void
    */
-  protected function _checkParams(&$input, $key) {
+  protected function _parseParams(&$input, $key) {
     static $prefLen = 0;
 
     if ($prefLen == 0) {
