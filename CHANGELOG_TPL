@@ -25,16 +25,19 @@
  */
 
 ## 1.6.0 ==> 1.7.0 (Sortie : ??/??/??)
+  #ADD : Ajout de la possibilité de parser et d'exécuter une chaine de caractère TPL
   #ADD : Ajout de la possibilité de modifier les fonctionnalitées à parser
   #ADD : Ajout de la possibilité de faire un "require" plutôt qu'un include
+  #ADD : Par défaut, le répertoire de cache est le tmp du système.
   #ADD : Implémentation de __invoke() pour toutes les classes
   #ADD : Ajout des inclusions avec paramètres
   #ADD : Ajout des classes d'exceptions
   #ADD : Ajout d'une constante VERSION
 
+  #CHG : L'attribut Talus_TPL::$vars devient Talus_TPL::$_vars (privatisation)
   #CHG : Passage de tous les éléments privés en protected (sauf exceptions)
   #CHG : Passage en déprécié de toutes les méthodes type get/setAttribut().
-  #CHG : L'attribut Talus_TPL::$vars devient Talus_TPL::$_vars (privatisation)
+  #CHG : Pour FIX #1 : Utilisation d'un hash pour le nom du php cache
   #CHG : Intégration de Talus_TPL::_setFile() dans Talus_TPL::parse()
   #CHG : Talus_TPL::set() renvoit une référence sur Talus_TPL::$_vars
   #CHG : Restrictions plus exactes pour le nommage de balisage TPL
@@ -44,6 +47,7 @@
   #CHG : Noms des méthodes d'instanciation des Singletons
   #CHG : Passage de triggers+exit() vers des exceptions
   #CHG : Gestion des includes d'une façon plus globale
+  #CHG : Talus_TPL_Cache::file() renvoit une valeur.
   #CHG : Changements mineurs un peu partout
   #CHG : Condensation des attributs privés
   
@@ -52,7 +56,8 @@
   #FIX : Mauvaise fin de capture pour <set>
   
   #DEL : Emulations de file_get|put_contents() de talus_tpl_cache.php
-  #DEL : Attributs Talus_TPL::$_cache et Talus_TPL::$_compiler
+  #DEL : Talus_TPL_Cache::$_filemtime & Talus_TPL_Cache::$_filesize
+  #DEL : Talus_TPL::$_cache & Talus_TPL::$_compiler
   #DEL : Commentaires PHPDOC pour les attributs
   #DEL : Talus__TPL_Compiler::$_namespace
   #DEL : Talus_TPL::_setFile()
