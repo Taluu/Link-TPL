@@ -24,12 +24,13 @@
  * @version $Id$
  */
 
-## 1.6.0 ==> 1.7.0 (Sortie : ??/??/??)
+## 1.6.0 ==> 1.7.0 (Sortie : ??/??/??) [[Refonte Cache + PHP 5.1 min]]
   #ADD : Ajout de la possibilité de parser et d'exécuter une chaine de caractère TPL
   #ADD : Ajout de la possibilité de modifier les fonctionnalitées à parser
   #ADD : Ajout de la possibilité de faire un "require" plutôt qu'un include
   #ADD : Par défaut, le répertoire de cache est le tmp du système.
   #ADD : Implémentation de __invoke() pour toutes les classes
+  #ADD : Ajout d'un autoloader pour les classes TPL
   #ADD : Ajout des inclusions avec paramètres
   #ADD : Ajout des classes d'exceptions
   #ADD : Ajout d'une constante VERSION
@@ -40,9 +41,9 @@
   #CHG : Pour FIX #1 : Utilisation d'un hash pour le nom du php cache
   #CHG : Intégration de Talus_TPL::_setFile() dans Talus_TPL::parse()
   #CHG : Talus_TPL::set() renvoit une référence sur Talus_TPL::$_vars
+  #CHG : Utilisation de variables extraites lors de la compilation
   #CHG : Restrictions plus exactes pour le nommage de balisage TPL
   #CHG : L'attribut Talus_TPL::$_infos devient Talus_TPL::$_last
-  #CHG : Utilisation de variables extraites lors de la compilation
   #CHG : Changement du nom des accessors + condensation
   #CHG : Noms des méthodes d'instanciation des Singletons
   #CHG : Passage de triggers+exit() vers des exceptions

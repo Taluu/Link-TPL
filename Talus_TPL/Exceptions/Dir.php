@@ -1,6 +1,6 @@
 <?php
 /**
- * Gestion des exceptions pour Talus' TPL
+ * Gestion des exceptions de dossiers pour Talus' TPL
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,33 +25,7 @@
  * @version $Id$
  */
 
-/**
- * Exception Mère
- */
-class Talus_TPL_Exception extends Exception {
-  public function __construct($message = '', $code = 0, Exception $previous = null) {
-    if (is_array($message)) {
-      $str = array_shift($message);
-      $message = vsprintf($str, $message);
-    }
-
-    parent::__construct($message, $code, $previous);
-  }
-}
-
-
-// -- Exceptions Filles
 class Talus_TPL_Dir_Exception extends Talus_TPL_Exception {}
-class Talus_TPL_Parse_Exception extends Talus_TPL_Exception {}
-class Talus_TPL_Runtime_Exception extends Talus_TPL_Exception {}
-
-class Talus_TPL_Var_Exception extends Talus_TPL_Exception {}
-class Talus_TPL_Block_Exception extends Talus_TPL_Exception {}
-
-
-class Talus_TPL_Exec_Exception extends Talus_TPL_Exception {}
-class Talus_TPL_Write_Exception extends Talus_TPL_Exception {}
-
 
 /*
  * EOF

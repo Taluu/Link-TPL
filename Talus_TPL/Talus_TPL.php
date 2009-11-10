@@ -25,6 +25,10 @@
  * @version $Id$
  */
 
+if (!defined('PHP_EXT')) {
+  define('PHP_EXT', pathinfo(__FILE__, PATHINFO_EXTENSION));
+}
+
 class Talus_TPL {
   protected
     $_root = './',
@@ -35,7 +39,9 @@ class Talus_TPL {
     
     $_blocks = array(),
     $_vars = array();
-  
+
+  protected static $_autoloadSet = false;
+    
   const 
     INCLUDE_TPL = 0,
     REQUIRE_TPL = 1,
@@ -51,6 +57,12 @@ class Talus_TPL {
   public function __construct($root, $cache){
     // -- Destruction du cache des fichiers de PHP
     clearstatcache();
+
+    // -- Mise en place de l'autoload si il n'a pas encore été défini
+    if (self::$_autoloadSet === false) {
+      spl_autoload_register(array('self', 'autoload'));
+      self::$_autoloadSet = true;
+    }
     
     // -- Init des paramètres
     $this->_last = array();
@@ -60,6 +72,31 @@ class Talus_TPL {
     
     // -- Mise en place du dossier de templates
     $this->dir($root, $cache);
+  }
+
+  /**
+   * Gestion de l'autoload pour les classes Talus' TPL
+   *
+   * @param string $className Nom de la classe à charger
+   * @return bool
+   */
+  public static function autoload($className) {
+    if (mb_strpos($className, __CLASS__) !== 0) {
+      return false;
+    }
+
+    $dir = sprintf('%1$s/../%2$s/', dirname(__FILE__), __CLASS__);
+    $className = mb_substr($className, mb_strlen(__CLASS__) + 1);
+    $className = explode($className, '_');
+
+    // -- Classe d'exceptions... Sont une exception à la règle (har har) !
+    if ($className[count($className) - 1] == 'Exception') {
+      $dir .= '/Exceptions';
+    }
+
+    // -- Inclusion du bon fichier
+    require sprintf('%1$s/%2$s.%3$s', $dir, $className[0], PHP_EXT);
+    return true;
   }
   
   /**
