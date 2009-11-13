@@ -24,7 +24,7 @@
  * @version $Id$
  */
 
-## 1.6.0 ==> 1.7.0 (Sortie : ??/??/??) [[Refonte Cache + PHP 5.1 min]]
+## 1.6.0 ==> 1.7.0 (Sortie : ??/??/09) [[Refonte Cache + PHP 5.1 min]]
   #ADD : Ajout de la possibilité de parser et d'exécuter une chaine de caractère TPL
   #ADD : Ajout de la possibilité de modifier les fonctionnalitées à parser
   #ADD : Ajout de la possibilité de faire un "require" plutôt qu'un include
@@ -63,10 +63,10 @@
   #DEL : Talus__TPL_Compiler::$_namespace
   #DEL : Talus_TPL::_setFile()
   
-  #OBS : Fonctions TPL (remplacées par les inclusions paramétrées)
+  #OBS : Fonctions TPL (à remplacer par les inclusions paramétrées)
   #OBS : Accessors pour des classes externes
 
-  #TDO : Gérer le passage d'un array+clé dans les inclusions paramétrées
+  #TDO : Mieux gérer les vars dans les includes paramétrées
  
 ## 1.5.1 ==> 1.6.0 (Sortie : 17/07/09)
   #ADD : Ajout de la récursivité pour les filtres (sauf arrays de dimension > 1)
@@ -177,46 +177,46 @@
   #FIX : Bug des arrays multi dimentionnels
 
 ##1.2.0 ==> 1.3.0 (Sortie : 04/07/08)
-  #CHG : Les méthodes Talus_TPL::assign_var(s) sont maintenant dépreciées ; il faut désormais utiliser Talus_TPL::set().
-  #CHG : Le fonctionnement public de Talus_TPL::set_file() est maintenant déprecié ; appel lors de Talus_TPL::parse()
+  #ADD : Possibilité, lors des inclusions, de spécifier le nom d'une variable
+  #ADD : Ajout de la méthode Talus_TPL::multiparse()
+  #ADD : Getters & Setters pour les mode débug
+  #ADD : Ajout de variables par références
+
   #CHG : Pour le cache, réduction de la contrainte de vérification de son existence
+  #CHG : Le fonctionnement public de Talus_TPL::set_file() est maintenant déprecié
+  #CHG : Les méthodes Talus_TPL::assign_var(s) sont maintenant dépreciées.
   #CHG : Modification des commentaires type pour les TPLs.
   #CHG : Intégration de cache_write() dans cache_put().
   #CHG : Séparation Compilation / Class TPL
   #CHG : Passage à la license LGPL
   #CHG : Plus d'eval si cache FTP.
 
-  #ADD : Possibilité, lors des inclusions, de spécifier le nom d'un tpl... Et d'une variable
-  #ADD : Ajout de la méthode Talus_TPL::multiparse() (parse tous les tpls définis)
-  #ADD : Getters & Setters pour les mode débug
-  #ADD : Ajout de variables par références
-
   #DEL : Changement du temps de modification du cache lors de l'écriture dans celui-ci
-  #DEL : Fonction cache_write() (maintenant intégrée dans cache_put())
   #DEL : Appels inutiles à certaines fonctions (filesize(), ...).
   #DEL : Paramètre "débug" de Talus_TPL::__construct()
+  #DEL : Fonction cache_write()
   #DEL : Moteur d'erreurs
 
   #FIX : Bugs des arrays ({MAVAR[{$AUTREVAR}])
 
 ##1.1.0 ==> 1.2.0 (Sortie : 20/04/08)
-  #FIX : Réadaption entière du code, remplacement des tabs par des espaces pour des raisons de portabilité.
-  #FIX : Correction bug :unset() marchait pas (ou ne risquait pas de marcher)
-  #FIX : Les noms de variables, etc. sont plus spécifiques (caractère alphabétique seulement en début, etc.).
-  #FIX : Changement du mode d'ouverture des fichiers pour file_get_contents (require_ftp.php, require_sql.php)
-  #FIX : Correction UTF8 pour require_sql.php
-  #FIX : La constante NOW dans require_ftp.php n'était pas déclarée (mauvaise vérification de constantes...)
-  #FIX : Gestion des erreurs OK ?
-
-  #CHG : Seules les balises php "collées" sont remplacées.
-  #CHG : Normalisation XML de la balsie elseif.
-  #CHG : Passage en public de la méthode "include_tpl" et des propriétés $blocks, $vars.
-  #CHG : Le mode débug est désormais désactivé par défaut (un peu buggé...)
-
-  #ADD : Implémentation de fonctions plus avancées (tout est désormais parsé correctement)
+  #ADD : Implémentation de fonctions plus avancées
   #ADD : Ajout de Globales (fonctions only)
 
+  #CHG : Changement du mode d'ouverture des fichiers pour file_get_contents (require_ftp.php, require_sql.php)
+  #CHG : Les noms de variables, etc. sont plus spécifiques (caractère alphabétique seulement en début, etc.).
+  #CHG : Réadaption entière du code, remplacement des tabs par des espaces pour des raisons de portabilité.
+  #CHG : Passage en public de la méthode "include_tpl" et des propriétés $blocks, $vars.
+  #CHG : Le mode débug est désormais désactivé par défaut (un peu buggé...)
+  #CHG : Seules les balises php "collées" sont remplacées.
+  #CHG : Normalisation XML de la balsie elseif.
+
+  #FIX : unset() marchait pas (ou ne risquait pas de marcher)
+  #FIX : Déclaration de NOW dans require_ftp.php
+  #FIX : Correction UTF8 pour require_sql.php
+  #FIX : Gestion des erreurs OK ?
+
   #DEL : Plus possible de détruire UNE SEULE var.
-  #DEL : Suppression des balises de fin ?> dans talus_tpl.php, require_*.php, et les fichiers de caches.
+  #DEL : Suppression des balises de fin ?>
     
 /** EOF /**/

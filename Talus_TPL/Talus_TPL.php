@@ -87,7 +87,7 @@ class Talus_TPL {
 
     $dir = sprintf('%1$s/../%2$s/', dirname(__FILE__), __CLASS__);
     $className = mb_substr($className, mb_strlen(__CLASS__) + 1);
-    $className = explode($className, '_');
+    $className = explode('_', $className);
 
     // -- Classe d'exceptions... Sont une exception à la règle (har har) !
     if ($className[count($className) - 1] == 'Exception') {
@@ -291,7 +291,7 @@ class Talus_TPL {
   }
 
   /** 
-   *  Parse un TPL.
+   *  Parse & execute un TPL.
    * 
    * @param  mixed $tpl TPL concerné
    * @throws Talus_TPL_Parse_Exception
@@ -327,6 +327,29 @@ class Talus_TPL {
     }
     
     $cache->exec($this);
+    return true;
+  }
+
+  /**
+   * Parse & execute une chaine de caractère TPL
+   *
+   * @param string $str Chaine de caractère à parser
+   * @throws Talus_TPL_Parse_Exception
+   * @return boolean statut
+   */
+  public function str($str) {
+    if (empty($str)) {
+      throw new Talus_TPL_Parse_Exception('Aucune chaine spécifiée.');
+      return false;
+    }
+
+    $this->_tpl = sprintf('tmp_%s.html', sha1($str));
+    $cache = Talus_TPL_Cache::self();
+    $cache->file($this->_tpl, 0);
+    $cache->put(Talus_TPL_Compiler::self()->compile(file_get_contents($this->_tpl)));
+    $cache->exec($this);
+
+    $cache->destroy($this->_tpl);
     return true;
   }
   
@@ -390,9 +413,9 @@ class Talus_TPL {
       
       if (in_array($toInclude, $this->_included)) {
         return;
-      } else {
-        $this->_included[] = $toInclude;
       }
+
+      $this->_included[] = $toInclude;
     }
 
     $data = '';
@@ -402,31 +425,29 @@ class Talus_TPL {
      );
 
     try {
-      // -- Récupération des paramètres nommés
-      $vars = array();
-      parse_str($qString, $vars);
+      // -- On ne change les vars que si y'a la présence d'un QS
+      if (!empty($qString)) {
+        // -- Récupération des paramètres nommés
+        $vars = array();
+        parse_str($qString, $vars);
 
-      // -- Si MAGIC_QUOTES (grmph), on saute les \ en trop...
-      if (function_exists('get_magic_quotes_gpc') && get_magic_quotes_gpc()) {
-        $vars = array_map('stripslashes', $vars);
+        // -- Si MAGIC_QUOTES (grmph), on saute les \ en trop...
+        if (function_exists('get_magic_quotes_gpc') && get_magic_quotes_gpc()) {
+          $vars = array_map('stripslashes', $vars);
+        }
+
+        // -- Traitement des paramètres
+        $this->set(array_change_key_case($vars, CASE_UPPER));
       }
 
-      // -- Traitement des paramètres
-      $vars = array_change_key_case($vars, CASE_UPPER);
-      array_walk($vars, array($this, '_parseParams'));
-      $this->set($vars);
-      
       $data = $this->pparse($file);
     } catch (Talus_TPL_Parse_Exception $e) {
-      $this->_tpl = $current['tpl'];
-      $this->_vars = $current['vars'];
-
       /*
        * Si l'erreur est la n°6 (tpl non existant), et qu'il s'agit d'une balise
        * "require", on renvoit une autre exception (Talus_TPL_Runtime_Exception) ;
        * sinon, on affiche juste le message de l'exception capturée.
        */
-      if ($e->getCode() == 6 && $type == self::REQUIRE_TPL) {
+      if ($e->getCode() === 6 && $type == self::REQUIRE_TPL) {
         throw new Talus_TPL_Runtime_Exception(array('Ceci était une balise "require" : puisque le template %s n\'existe pas, le script est interrompu.', $file), 7);
         exit;
       } else {
@@ -438,27 +459,6 @@ class Talus_TPL {
     $this->_vars = $current['vars'];
 
     echo $data;
-  }
-
-  /**
-   * Callback pour le array_walk de Talus_TPL::includeTpl()
-   * Vérifie si une variable ne s'est pas glissé dans le tas, et l'interprete
-   * le cas échéant.
-   *
-   * @param mixed &$input Valeur pour la clé $key
-   * @param mixed $key Valeur de la clé courante
-   * @return void
-   */
-  protected function _parseParams(&$input, $key) {
-    static $prefLen = 0;
-
-    if ($prefLen == 0) {
-      $prefLen = mb_strlen('$__tpl_vars__');
-    }
-
-    if (mb_substr($input, 0, $prefLen) == '$__tpl_vars__') {
-      $input = $this->_vars[mb_substr($input, $prefLen)];
-    }
   }
   
   /**

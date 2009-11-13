@@ -229,9 +229,6 @@ class Talus_TPL_Compiler {
       }
     }
 
-    // -- Inclusions, le Retour (si quelqu'un a mieux pour s'occuper de variables dans les QS includes...) !
-    $compile = preg_replace_callback('`<\?php \$tpl->includeTpl\(\'(.+?\.html\?.+?)\', (?:true|false), Talus_TPL::(?:INCLUDE|REQUIRE)_TPL\); \?>`', array($this, '_includesParams'), $compile);
-        
     // -- Les définitions de fonctions (Déprécié)
     if ($this->parameter('parse') & self::FUNCTIONS) {
       $compile = preg_replace_callback('`<' . $nspace . 'function ' . $nspace . 'name="([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)"((?: ' . $nspace . 'arg="[A-Z_\xc0-\xd6\xd8-\xde][A-Z0-9_\xc0-\xd6\xd8-\xde]*")*)>(.+?)</function>`s', array($this, '_defineFunction'), $compile);
@@ -463,8 +460,17 @@ class Talus_TPL_Compiler {
    * @return string fonction d'inclusion tpl
    */
   protected function _includes(array $match) {
-    return sprintf('<?php $tpl->includeTpl(%1$s, %2$s, Talus_TPL::%3$s_TPL); ?>', 
-                   $this->_escape($match[2]), 
+    $qs = '';
+
+    // -- Présence d'un Query String
+    // TODO : Trouver un meilleur moyen pour les vars...
+    if (strpos($match[2], '?') !== false) {
+      list($match[2], $qs) = explode('?', $match[2], 2);
+      $qs = sprintf(' . "?%s"', str_replace(array('{', '}'), array('{{', '}}'), $qs));
+    }
+
+    return sprintf('<?php $tpl->includeTpl(%1$s%2$s, %3$s, Talus_TPL::%4$s_TPL); ?>',
+                   $this->_escape($match[2]), $qs,
                    isset($match[3]) && $match[3] == 'true' ? 'true' : 'false',
                    mb_strtoupper($match[1]));
   }
@@ -474,11 +480,12 @@ class Talus_TPL_Compiler {
    * variable, ou des nombres.
    *
    * @param string $arg Valeur à échapper
+   * @param string $delim Délimiteur de la chaine
    * @return string Valeur échappée
    */
-  protected function _escape($arg) {
+  protected function _escape($arg, $delim = '\'') {
     if (($arg[0] != '{' || $arg[mb_strlen($arg) - 1] != '}') && !ctype_digit($arg)) {
-      $arg = sprintf('\'%s\'', addcslashes($arg, '\''));
+      $arg = sprintf('%1$s%2$s%1$s', $delim, addcslashes($arg, $delim));
     }
     
     return $arg;

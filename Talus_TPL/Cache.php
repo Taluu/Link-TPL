@@ -109,16 +109,16 @@ class Talus_TPL_Cache {
     if ($file !== null) {
       $file = sprintf('%1$s/tpl_%2$s.%3$s', $this->dir(null), sha1(trim($file, '.')), PHP_EXT);
 
+      $filemtime = 0;
+      $filesize = 0;
+
       if (is_file($file)) {
         $filemtime = filemtime($file);
         $filesize = filesize($file);
-      } else {
-        $filemtime = 0;
-        $filesize = 0;
       }
 
       $this->_file = array(
-        'file' => $file,
+        'url' => $file,
         'last_modif' => $filemtime,
          'size' => $filesize
        );
@@ -157,7 +157,7 @@ class Talus_TPL_Cache {
     $file = $this->file(null);
 
     // -- Imposition d'un LOCK maison
-    $lockFile = sprintf('%1$s/__tpl_flock__.%2$s', $this->dir(null), sha1($file['file']));
+    $lockFile = sprintf('%1$s/__tpl_flock__.%2$s', $this->dir(null), sha1($file['url']));
     $lock = @fclose(fopen($lockFile, 'x'));
 
     if (!$lock){
@@ -165,12 +165,25 @@ class Talus_TPL_Cache {
       return false;
     }
 
-    file_put_contents($file['file'], $data);
-    chmod($file['file'], 0664);
+    file_put_contents($file['url'], $data);
+    chmod($file['url'], 0664);
 
     // -- Retirement (suppression) du LOCK
     unlink($lockFile);
     return true;
+  }
+
+  /**
+   * Supprime le fichier cache.. Si il existe.
+   *
+   * @return void
+   */
+  public function destroy() {
+    $file = $this->file(null);
+
+    if ($file !== array()) {
+      unlink($file['url']);
+    }
   }
   
   /**
@@ -180,7 +193,7 @@ class Talus_TPL_Cache {
    * @return bool status de l'execution
    */
   public function exec(Talus_TPL $tpl) {
-    $file = array();
+    $file = $this->file(null);
 
     if ($file === array()) {
       throw new Talus_TPL_Exec_Exception('Vous venez d\'essayer d\executer aucun fichier...');
@@ -188,7 +201,7 @@ class Talus_TPL_Cache {
     }
 
     extract($tpl->set(null), EXTR_PREFIX_ALL | EXTR_REFS, '__tpl_vars_');
-    include $file['file'];
+    include $file['url'];
 
     return true;
   }
