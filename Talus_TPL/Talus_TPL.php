@@ -60,7 +60,7 @@ class Talus_TPL {
 
     // -- Mise en place de l'autoload si il n'a pas encore été défini
     if (self::$_autoloadSet === false) {
-      spl_autoload_register(array('self', 'autoload'));
+      spl_autoload_register(array('self', '_autoload'));
       self::$_autoloadSet = true;
     }
     
@@ -80,7 +80,7 @@ class Talus_TPL {
    * @param string $className Nom de la classe à charger
    * @return bool
    */
-  public static function autoload($className) {
+  private static function _autoload($className) {
     if (mb_strpos($className, __CLASS__) !== 0) {
       return false;
     }

@@ -182,11 +182,7 @@ class Talus_TPL_Compiler {
     
     // -- Constantes
     if ($this->parameter('parse') & self::CONSTANTS) {
-      $not_recursives = array_merge($not_recursives, array(
-        // -- Constantes
-        '`\{__([a-zA-Z_\xe0-\xf6\xf8-\xff\xc0-\xd6\xd8-\xde][a-zA-Z0-9_\xe0-\xf6\xf8-\xff\xc0-\xd6\xd8-\xde]*)__}`i' => '<?php echo $1; ?>',
-        '`\{__\$([a-zA-Z_\xe0-\xf6\xf8-\xff\xc0-\xd6\xd8-\xde][a-zA-Z0-9_\xe0-\xf6\xf8-\xff\xc0-\xd6\xd8-\xde]*)__}`i' => '$1'
-       ));
+      $not_recursives['`\{__([a-zA-Z_\xe0-\xf6\xf8-\xff\xc0-\xd6\xd8-\xde][a-zA-Z0-9_\xe0-\xf6\xf8-\xff\xc0-\xd6\xd8-\xde]*)__}`i'] = '<?php echo $1; ?>';
     }
     
     // -- Balises de Conditions (<if>, <elseif>, <else>)

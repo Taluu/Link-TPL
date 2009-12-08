@@ -25,15 +25,17 @@
  */
 
 ## 1.6.0 ==> 1.7.0 (Sortie : ??/??/09) [[Refonte Cache + PHP 5.1 min]]
-  #ADD : Ajout de la possibilité de parser et d'exécuter une chaine de caractère TPL
-  #ADD : Ajout de la possibilité de modifier les fonctionnalitées à parser
-  #ADD : Ajout de la possibilité de faire un "require" plutôt qu'un include
+  #ADD : Possibilité de parser et d'exécuter une chaine de caractère TPL
   #ADD : Par défaut, le répertoire de cache est le tmp du système.
+  #ADD : Gestion des Dependency Injection (pour Cache & Compiler)
+  #ADD : Autoloader pour les classes TPL (Talus_TPL::_autoload())
+  #ADD : Possibilité de faire un "require" plutôt qu'un include
+  #ADD : Possibilité de modifier les fonctionnalitées à parser
   #ADD : Implémentation de __invoke() pour toutes les classes
-  #ADD : Ajout d'un autoloader pour les classes TPL
-  #ADD : Ajout des inclusions avec paramètres
-  #ADD : Ajout des classes d'exceptions
-  #ADD : Ajout d'une constante VERSION
+  #ADD : Destruction de cache (Talus_TPL_Cache::destroy())
+  #ADD : Constante Talus_TPL::VERSION
+  #ADD : Inclusions avec paramètres
+  #ADD : Classes d'exceptions
 
   #CHG : L'attribut Talus_TPL::$vars devient Talus_TPL::$_vars (privatisation)
   #CHG : Passage de tous les éléments privés en protected (sauf exceptions)
@@ -61,6 +63,7 @@
   #DEL : Talus_TPL::$_cache & Talus_TPL::$_compiler
   #DEL : Commentaires PHPDOC pour les attributs
   #DEL : Talus__TPL_Compiler::$_namespace
+  #DEL : Balise {__$CONSTANTE__}
   #DEL : Talus_TPL::_setFile()
   
   #OBS : Fonctions TPL (à remplacer par les inclusions paramétrées)
