@@ -38,7 +38,10 @@ class Talus_TPL {
     $_included = array(),
     
     $_blocks = array(),
-    $_vars = array();
+    $_vars = array(),
+
+    $_compiler = 'Talus_TPL_Compiler',
+    $_cache = 'Talus_TPL_Cache';
 
   protected static $_autoloadSet = false;
     
@@ -52,9 +55,10 @@ class Talus_TPL {
    * 
    * @param string $root Le dossier contenant les templates.
    * @param string $cache Le dossier contenant le cache.
+   * @param array $dependences Dépendances pour la Dependency Injection
    * @return void
    */
-  public function __construct($root, $cache){
+  public function __construct($root, $cache, array $dependences){
     // -- Destruction du cache des fichiers de PHP
     clearstatcache();
 
@@ -69,6 +73,10 @@ class Talus_TPL {
     $this->_included = array();
     $this->_blocks['.'] = array(array());
     $this->_vars = &$this->_blocks['.'][0];
+
+    // -- Gestion des dépendances
+    $this->_cache = isset($dependences['cache']) ? $dependences['cache'] : $this->_cache;
+    $this->_compiler = isset($dependences['compiler']) ? $dependences['compiler'] : $this->_compiler;
     
     // -- Mise en place du dossier de templates
     $this->dir($root, $cache);
