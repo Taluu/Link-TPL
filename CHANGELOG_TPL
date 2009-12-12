@@ -43,6 +43,7 @@
   #CHG : Pour FIX #1 : Utilisation d'un hash pour le nom du php cache
   #CHG : Intégration de Talus_TPL::_setFile() dans Talus_TPL::parse()
   #CHG : Talus_TPL::set() renvoit une référence sur Talus_TPL::$_vars
+  #CHG : La classe Filters est désormais finale et non plus abstraite
   #CHG : Utilisation de variables extraites lors de la compilation
   #CHG : Restrictions plus exactes pour le nommage de balisage TPL
   #CHG : L'attribut Talus_TPL::$_infos devient Talus_TPL::$_last

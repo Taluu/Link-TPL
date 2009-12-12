@@ -29,13 +29,13 @@
  * Exception Mère
  */
 class Talus_TPL_Exception extends Exception {
-  public function __construct($message = '', $code = 0, Exception $previous = null) {
+  public function __construct($message = '', $code = 0) {
     if (is_array($message)) {
       $str = array_shift($message);
       $message = vsprintf($str, $message);
     }
 
-    parent::__construct($message, $code, $previous);
+    parent::__construct($message, $code);
   }
 }
 

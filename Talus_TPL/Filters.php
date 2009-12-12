@@ -31,7 +31,7 @@
  * @version $Id$
  */
 
-abstract class Talus_TPL_Filters {
+final class Talus_TPL_Filters {
     /**
      * Arrondi la valeur donnée à l'entier supérieur
      *
@@ -121,7 +121,7 @@ abstract class Talus_TPL_Filters {
      * @return string
      */
     public static function invertCase($arg){
-        for ($i = 0, $length = strlen($arg); $i < $length; $i++){
+        for ($i = 0, $length = mb_strlen($arg); $i < $length; $i++){
             $tolower = mb_strtolower($arg[$i]);
             $arg[$i] = $arg[$i] == $tolower ? mb_strtoupper($arg[$i]) : $tolower;
         }

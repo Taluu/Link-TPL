@@ -58,7 +58,7 @@ class Talus_TPL {
    * @param array $dependences Dépendances pour la Dependency Injection
    * @return void
    */
-  public function __construct($root, $cache, array $dependences){
+  public function __construct($root, $cache, array $dependences = array()){
     // -- Destruction du cache des fichiers de PHP
     clearstatcache();
 
