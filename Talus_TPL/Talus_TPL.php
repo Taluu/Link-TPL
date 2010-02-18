@@ -351,14 +351,18 @@ class Talus_TPL {
       return false;
     }
 
+    // -- Compilation
+    $compiled = Talus_TPL_Compiler::self()->compile($str);
+    
+    // -- Mise en cache, execution
     $this->_tpl = sprintf('tmp_%s.html', sha1($str));
     $cache = Talus_TPL_Cache::self();
     $cache->file($this->_tpl, 0);
-    $cache->put(Talus_TPL_Compiler::self()->compile(file_get_contents($this->_tpl)));
+    $cache->put($compiled);
     $cache->exec($this);
-
-    $cache->destroy($this->_tpl);
-    return true;
+    $cache->destroy();
+    
+    return $compiled;
   }
   
   /**
@@ -453,13 +457,16 @@ class Talus_TPL {
       /*
        * Si l'erreur est la n°6 (tpl non existant), et qu'il s'agit d'une balise
        * "require", on renvoit une autre exception (Talus_TPL_Runtime_Exception) ;
-       * sinon, on affiche juste le message de l'exception capturée.
+       * sinon, on affiche juste le message de l'exception capturée si c'est
+       * include, ou on rejette l'erreur si c'en est pas un.
        */
       if ($e->getCode() === 6 && $type == self::REQUIRE_TPL) {
         throw new Talus_TPL_Runtime_Exception(array('Ceci était une balise "require" : puisque le template %s n\'existe pas, le script est interrompu.', $file), 7);
         exit;
-      } else {
+      } elseif ($e->getCode() == 6) {
         echo $e->getMessage();
+      } else {
+        throw $e;
       }
     }
 
@@ -488,7 +495,7 @@ class Talus_TPL {
   
   /**
    * @deprecated
-   * @ognore
+   * @ignore
    */
   public function getCacheDir() {
     return Talus_TPL_Cache::self()->dir();

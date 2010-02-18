@@ -89,7 +89,9 @@ final class Talus_TPL_Filters {
      * @return string
      */
     public static function ucfirst($arg){
-        return ucfirst($arg);
+        $arg[0] = mb_strtoupper($arg[0]);
+
+        return $arg;
     }
     
     /**
@@ -111,7 +113,7 @@ final class Talus_TPL_Filters {
      * @return string
      */
     public static function ucwords($arg){
-        return ucwords($arg);
+        return mb_convert_case($arg, MB_CASE_TITLE);
     }
     
     /**

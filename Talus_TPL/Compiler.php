@@ -32,7 +32,10 @@ if (version_compare(PHP_VERSION, '5.3.0', '<')) {
 }
 
 /**
- * Compileur pour les templates
+ * "Compilateur" (ou plutôt Interpréteur) de templates
+ *
+ * Cette classe gère la transformation d'un code Talus TPL en un code PHP
+ * optimisé et interprétable par PHP.
  */
 class Talus_TPL_Compiler {
   protected $_parameters = array();
@@ -158,7 +161,7 @@ class Talus_TPL_Compiler {
     
     // -- Balises ne nécessitant pas de Regex
     $noRegex = array(
-      "</{$nspace}block>" => '<?php } endif; ?>', 
+      "</{$nspace}block>" => '<?php } unset($__tplBlock[array_pop($__tpl_block_stack)]); endif; ?>', 
       "<{$nspace}blockelse />" => '<?php } else : if (true) { ?>', 
       
       '{\\' =>  '{'
@@ -167,8 +170,8 @@ class Talus_TPL_Compiler {
     // -- Regex non complexes qui ont besoin d'un traitement récursif
     $recursives = array(
       // -- Variables simples
-      '`\{([A-Z_\xc0-\xd6\xd8-\xde][A-Z0-9_\xc0-\xd6\xd8-\xde]*)(\[(?!]})(?:.*?)])?}`' => '<?php echo $__tpl_vars__$1$2; ?>',
-      '`\{\$([A-Z_\xc0-\xd6\xd8-\xde][A-Z0-9_\xc0-\xd6\xd8-\xde]*)(\[(?!]})(?:.*?)])?}`' => '$__tpl_vars__$1$2',
+      '`\{([A-Z_\xc0-\xd6\xd8-\xde][A-Z0-9_\xc0-\xd6\xd8-\xde]*(?:\[(?!]})(?:.*?)])?)}`' => '<?php echo $__tpl_vars__$1; ?>',
+      '`\{\$([A-Z_\xc0-\xd6\xd8-\xde][A-Z0-9_\xc0-\xd6\xd8-\xde]*(?:\[(?!]})(?:.*?)])?)}`' => '$__tpl_vars__$1',
       
       // -- Variables Blocs
       '`\{([a-z_\xe0-\xf6\xf8-\xff][a-z0-9_\xe0-\xf6\xf8-\xff]*)\.([A-Z_\xc0-\xd6\xd8-\xde][A-Z0-9_\xc0-\xd6\xd8-\xde]*)(\[(?!]})(?:.*?)])?}`' => '<?php echo $__tplBlock[\'$1\'][\'$2\']$3; ?>',
@@ -294,8 +297,13 @@ class Talus_TPL_Compiler {
      * forcément une variable (et pas une fonction) pour pouvoir faire une
      * itération par référence, on est ainsi obligé de créer un bloc
      * temporaire pour récupérer la référence retournée par $tpl->getBlock...
+     *
+     * Aussi, pour éviter un éventuel conflit de référenes (bloc appelé deux
+     * fois par exemple), qui est un bug connu de PHP, on instaure une sorte de
+     * "pile de noms de blocs" en cours, qu'on bidouille pour supprimer le
+     * symbole référence créée par le foreach (phew).
      */
-    return sprintf('<?php if (%1$s) : %2$s = &%3$s; foreach (%2$s as &$__tplBlock[\'%4$s\']){ ?>',
+    return sprintf('<?php if (%1$s) : %2$s = &%3$s; $__tpl_block_stack[] = \'%4$s\'; foreach (%2$s as &$__tplBlock[\'%4$s\']){ ?>',
                    $cond, $ref, $block, $match[1]);
   }
     

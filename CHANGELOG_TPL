@@ -24,7 +24,14 @@
  * @version $Id$
  */
 
-## 1.6.0 ==> 1.7.0 (Sortie : ??/??/09) [[Refonte Cache + PHP 5.1 min]]
+## 1.7.0 ==> 1.?.? (Sortie : ??/??/??)
+  #CHG : Les regex pour les variables ont une capture de moins à faire
+  #CHG : Le parsage de chaine de caractères renvoit désormais le php compilé
+  
+  #FIX : Parsage correct de chaines de caractères (Talus_TPL::str())
+  #FIX : Conflit de références à cause d'un "bug" connu de PHP (#29992)
+ 
+## 1.6.0 ==> 1.7.0 (Sortie : 17/12/09)
   #ADD : Possibilité de parser et d'exécuter une chaine de caractère TPL
   #ADD : Par défaut, le répertoire de cache est le tmp du système.
   #ADD : Gestion des Dependency Injection (pour Cache & Compiler)
