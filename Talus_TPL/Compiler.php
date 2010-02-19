@@ -192,7 +192,7 @@ class Talus_TPL_Compiler {
     if ($this->parameter('parse') & self::CONDITIONS) {
       $not_recursives = array_merge($not_recursives, array(
         '`<' . $nspace . 'if ' . $nspace . 'cond(?:ition)?="(?!">)(.+?)">`' => '<?php if ($1) : ?>',
-        '`<' . $nspace . 'elseif ' . $nspace . 'cond(?:ition)?="(?!" />)(.+?)" />`' => '<?php elseif ($1) : ?>'
+        '`<' . $nspace . 'el(?:se)?if ' . $nspace . 'cond(?:ition)?="(?!" />)(.+?)" />`' => '<?php elseif ($1) : ?>'
        ));
        
       $noRegex["<{$nspace}else />"] = '<?php else : ?>';
