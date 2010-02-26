@@ -31,13 +31,13 @@ if (!defined('PHP_EXT')) {
 }
 
 /**
- * Gère le cache des TPLs
+ * Gère le cache des TPLs (au niveau du FTP)
  * 
  * @package Talus' TPL
  * @author Baptiste "Talus" Clavié <clavie.b@gmail.com>
  * @since 1.4.0
  */
-class Talus_TPL_Cache {
+class Talus_TPL_Cache implements Talus_TPL_Cache_Interface {
   protected 
     $_dir = null,
     $_file = array();

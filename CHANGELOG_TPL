@@ -24,14 +24,17 @@
  * @version $Id$
  */
 
-## 1.7.0 ==> 1.?.? (Sortie : ??/??/??)
-  #ADD : Ajout d'un raccourci "elif" pour "elseif" (feignasses :p)
+## 1.7.0 ==> 1.?.? (Sortie : ??/??/10)
+  #ADD : Nouveau raccourci "elif" pour "elseif" (feignasses :p)
+  #ADD : Interfaces pour mieux contrôler l'injection de dépendances
 
   #CHG : Les regex pour les variables ont une capture de moins à faire
   #CHG : Le parsage de chaine de caractères renvoit désormais le php compilé
+  #CHG : Extraction de Talus_TPL.php en dehors du répertoire Talus_TPL
   
   #FIX : Parsage correct de chaines de caractères (Talus_TPL::str())
   #FIX : Conflit de références à cause d'un "bug" connu de PHP (#29992)
+  #FIX : Oubli apparent pour la dépendance d'injections ?
  
 ## 1.6.0 ==> 1.7.0 (Sortie : 17/12/09)
   #ADD : Possibilité de parser et d'exécuter une chaine de caractère TPL

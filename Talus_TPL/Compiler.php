@@ -37,7 +37,7 @@ if (version_compare(PHP_VERSION, '5.3.0', '<')) {
  * Cette classe gère la transformation d'un code Talus TPL en un code PHP
  * optimisé et interprétable par PHP.
  */
-class Talus_TPL_Compiler {
+class Talus_TPL_Compiler implements Talus_TPL_Singleton_Interface {
   protected $_parameters = array();
     
   const

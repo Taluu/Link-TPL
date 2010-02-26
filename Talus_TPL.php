@@ -48,17 +48,17 @@ class Talus_TPL {
   const 
     INCLUDE_TPL = 0,
     REQUIRE_TPL = 1,
-    VERSION = '1.7.0';
+    VERSION = '1.?.?'; // (probablement 1.8.0)
   
   /**
    * Initialisation. 
    * 
    * @param string $root Le dossier contenant les templates.
    * @param string $cache Le dossier contenant le cache.
-   * @param array $dependences Dépendances pour la Dependency Injection
+   * @param array $dependencies Dépendances pour la Dependency Injection
    * @return void
    */
-  public function __construct($root, $cache, array $dependences = array()){
+  public function __construct($root, $cache, array $dependencies = array()){
     // -- Destruction du cache des fichiers de PHP
     clearstatcache();
 
@@ -74,9 +74,23 @@ class Talus_TPL {
     $this->_blocks['.'] = array(array());
     $this->_vars = &$this->_blocks['.'][0];
 
-    // -- Gestion des dépendances
-    $this->_cache = isset($dependences['cache']) ? $dependences['cache'] : $this->_cache;
-    $this->_compiler = isset($dependences['compiler']) ? $dependences['compiler'] : $this->_compiler;
+    /*
+     * Gestion des dépendances.
+     *
+     * Pour le cache, toute classe implémentant l'interface
+     * Talus_TPL_Cache_Interface est valide (permettant une réécriture de la
+     * classe de Cache avec des besoins spécifiques)...
+     *
+     * Pour le compilateur, ce doit être une extension de la classe principale
+     * (pour avoir toujours accès aux méthodes mères de Talus_TPL_Compiler).
+     */
+    if (isset($dependencies['cache']) && $dependencies['cache'] instanceof Talus_TPL_Cache_Interface) {
+      $this->_cache = $dependencies['cache'];
+    }
+
+    if (isset($dependencies['compiler']) && $dependencies['compiler'] instanceof Talus_TPL_Compiler) {
+      $this->_compiler = $dependencies['compiler'];
+    }
     
     // -- Mise en place du dossier de templates
     $this->dir($root, $cache);
@@ -93,17 +107,17 @@ class Talus_TPL {
       return false;
     }
 
-    $dir = sprintf('%1$s/../%2$s/', dirname(__FILE__), __CLASS__);
+    $dir = sprintf('%1$s/%2$s', dirname(__FILE__), __CLASS__);
     $className = mb_substr($className, mb_strlen(__CLASS__) + 1);
     $className = explode('_', $className);
 
-    // -- Classe d'exceptions... Sont une exception à la règle (har har) !
-    if ($className[count($className) - 1] == 'Exception') {
-      $dir .= '/Exceptions';
+    // -- Cas particuliers des exceptions et des interfaces
+    if (in_array($className[count($className) - 1], array('Exception', 'Interface'))) {
+      $dir .= sprintf('/%1$ss', array_pop($className));
     }
 
     // -- Inclusion du bon fichier
-    require sprintf('%1$s/%2$s.%3$s', $dir, $className[0], PHP_EXT);
+    require sprintf('%1$s/%2$s.%3$s', $dir, implode('_', $className), PHP_EXT);
     return true;
   }
   
@@ -131,7 +145,7 @@ class Talus_TPL {
       $this->_root = $root;
     }
     
-    Talus_TPL_Cache::self()->dir($cache);
+    call_user_func(array($this->_cache, 'self'))->dir($cache);
   }
   
   /**
@@ -324,14 +338,14 @@ class Talus_TPL {
       $this->_last[$file] = filemtime($file);
     }
     
-    $cache = Talus_TPL_Cache::self();
+    $cache = call_user_func(array($this->_cache, 'self'));
     
     $this->_tpl = $tpl;
     $cache->file($this->_tpl, 0);
     
     // -- Si le cache n'existe pas, ou n'est pas valide, on le met à jour.
     if (!$cache->isValid($this->_last[$file])) {
-      $cache->put(Talus_TPL_Compiler::self()->compile(file_get_contents($file)));
+      $cache->put(call_user_func(array($this->_compiler, 'self'))->compile(file_get_contents($file)));
     }
     
     $cache->exec($this);
@@ -343,7 +357,7 @@ class Talus_TPL {
    *
    * @param string $str Chaine de caractère à parser
    * @throws Talus_TPL_Parse_Exception
-   * @return boolean statut
+   * @return string Code PHP généré
    */
   public function str($str) {
     if (empty($str)) {
@@ -352,11 +366,11 @@ class Talus_TPL {
     }
 
     // -- Compilation
-    $compiled = Talus_TPL_Compiler::self()->compile($str);
+    $compiled = call_user_func(array($this->_compiler, 'self'))->compile($str);
     
     // -- Mise en cache, execution
     $this->_tpl = sprintf('tmp_%s.html', sha1($str));
-    $cache = Talus_TPL_Cache::self();
+    $cache = call_user_func(array($this->_cache, 'self'));
     $cache->file($this->_tpl, 0);
     $cache->put($compiled);
     $cache->exec($this);
