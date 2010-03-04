@@ -120,7 +120,7 @@ class Talus_TPL_Cache implements Talus_TPL_Cache_Interface {
       $this->_file = array(
         'url' => $file,
         'last_modif' => $filemtime,
-         'size' => $filesize
+        'size' => $filesize
        );
     }
 

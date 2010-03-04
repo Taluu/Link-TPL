@@ -80,30 +80,6 @@ class Talus_TPL_Compiler implements Talus_TPL_Singleton_Interface {
   }
   
   /**
-   * @deprecated
-   * @ignore
-   */
-  public static function __init() {
-    return self::self();
-  }
-  
-  /**
-   * @deprecated
-   * @ignore
-   */
-  public function getNamespace() {
-    return $this->parameter('namespace');
-  }
-  
-  /**
-   * @deprecated
-   * @ignore
-   */
-  public function setNamespace($namespace = 'tpl') {
-    $this->parameter('namespace', $namespace);
-  }
-  
-  /**
    * Réglage / Récupération de la valeur d'un paramètre
    *
    * @param string $param Nom du paramètre
@@ -149,8 +125,7 @@ class Talus_TPL_Compiler implements Talus_TPL_Singleton_Interface {
     
     // -- Les blocs
     $compile = preg_replace_callback('`<' . $nspace . 'block ' . $nspace . 'name="([a-z_\xe0-\xf6\xf8-\xff][a-z0-9_\xe0-\xf6\xf8-\xff]*)"(?: ' . $nspace . 'parent="([a-z_\xe0-\xf6\xf8-\xff][a-z0-9_\xe0-\xf6\xf8-\xff]*)")?>`', array($this, '_block'), $compile);
-    $compile = preg_replace_callback('`<' . $nspace . 'block ' . $nspace . 'name="([a-z_\xe0-\xf6\xf8-\xff][a-z0-9_\xe0-\xf6\xf8-\xff]*)\.([a-z0-9_\xe0-\xf6\xf8-\xff]+)">`', array($this, '_block__Old'), $compile);
-
+    
     // -- Inclusions
     if ($this->parameter('parse') & self::INCLUDES) {
       $compile = preg_replace_callback('`<' . $nspace . '(include|require) ' . $nspace . 'tpl="((?:.+?\.html(?:\?[^\"]*)?)|(?:\{\$(?:[a-z_\xe0-\xf6\xf8-\xff][a-z0-9_\xe0-\xf6\xf8-\xff]*\.)?[A-Z_\xc0-\xd6\xd8-\xde][A-Z0-9_\xc0-\xd6\xd8-\xde]*(?:\[(?!]})(?:.*?)])?}))"(?: ' . $nspace . 'once="(true|false)")? />`', array($this, '_includes'), $compile);
@@ -244,7 +219,7 @@ class Talus_TPL_Compiler implements Talus_TPL_Singleton_Interface {
      * Sinon, un simple str_replace de deux balises PHP est effectué.
      */
     if ($this->parameter('set_compact')) {
-      $compile = preg_replace('`\?>/s*<\?php`', '', $compile);
+      $compile = preg_replace('`\?>\s*<\?php`', '', $compile);
     } else {
       $compile = str_replace('?><?php', '', $compile);
     }
@@ -305,20 +280,6 @@ class Talus_TPL_Compiler implements Talus_TPL_Singleton_Interface {
      */
     return sprintf('<?php if (%1$s) : %2$s = &%3$s; $__tpl_block_stack[] = \'%4$s\'; foreach (%2$s as &$__tplBlock[\'%4$s\']){ ?>',
                    $cond, $ref, $block, $match[1]);
-  }
-    
-  /**
-   * @ignore
-   * @deprecated
-   */
-  protected function _block__Old(array $match){
-    // -- Notice pour deprecated
-    trigger_error('La syntaxe <block name="parent.enfant"> est dépréciée ;
-                   Veuillez mettre à jour votre script TPL pour <block name="enfant" parent="parent">',
-                   E_USER_DEPRECATED);
-    
-    // -- Appel de la méthode actuelle, et inversion de match[1] et match[2]
-    $this->_Block(array($match[0], $match[2], $match[1]));
   }
   
   /**

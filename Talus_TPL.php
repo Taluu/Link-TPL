@@ -145,15 +145,7 @@ class Talus_TPL {
       $this->_root = $root;
     }
     
-    call_user_func(array($this->_cache, 'self'))->dir($cache);
-  }
-  
-  /**
-   * @deprecated
-   * @ignore
-   */
-  public function setDir($root = './', $cache = './cache/'){
-    $this->dir($root, $cache);
+    call_user_func($this->_cache . '::self')->dir($cache);
   }
 
   /**
@@ -192,22 +184,6 @@ class Talus_TPL {
     }
   
     $this->_vars[$var] = &$value;
-  }
-  
-  /**
-   * @deprecated
-   * @ignore
-   */
-  public function setRef($var, &$value){
-    $this->bind($var, $value);
-  }
-
-  /**
-   * @deprecated
-   * @ignore
-   */
-  public function setBlock($block, $vars, $value = null){
-    $this->block($block, $vars, $value);
   }
 
   /**
@@ -338,14 +314,14 @@ class Talus_TPL {
       $this->_last[$file] = filemtime($file);
     }
     
-    $cache = call_user_func(array($this->_cache, 'self'));
+    $cache = call_user_func($this->_cache . '::self');
     
     $this->_tpl = $tpl;
     $cache->file($this->_tpl, 0);
     
     // -- Si le cache n'existe pas, ou n'est pas valide, on le met à jour.
     if (!$cache->isValid($this->_last[$file])) {
-      $cache->put(call_user_func(array($this->_compiler, 'self'))->compile(file_get_contents($file)));
+      $cache->put(call_user_func($this->_compiler . '::self')->compile(file_get_contents($file)));
     }
     
     $cache->exec($this);
@@ -366,11 +342,11 @@ class Talus_TPL {
     }
 
     // -- Compilation
-    $compiled = call_user_func(array($this->_compiler, 'self'))->compile($str);
+    $compiled = call_user_func($this->_compiler . '::self')->compile($str);
     
     // -- Mise en cache, execution
     $this->_tpl = sprintf('tmp_%s.html', sha1($str));
-    $cache = call_user_func(array($this->_cache, 'self'));
+    $cache = call_user_func($this->_cache . '::self');
     $cache->file($this->_tpl, 0);
     $cache->put($compiled);
     $cache->exec($this);
@@ -497,38 +473,6 @@ class Talus_TPL {
    */
   public function root() {
     return $this->_root;
-  }
-  
-  /**
-   * @deprecated
-   * @ignore
-   */
-  public function getRootDir(){
-    return $this->root();
-  }
-  
-  /**
-   * @deprecated
-   * @ignore
-   */
-  public function getCacheDir() {
-    return Talus_TPL_Cache::self()->dir();
-  }
-  
-  /**
-   * @deprecated
-   * @ignore
-   */
-  public function &getBlock($block){
-    return $this->block($block, null);
-  }
-  
-  /**
-   * @deprecated
-   * @ignore
-   */
-  public function setNamespace($namespace = null) {
-    Talus_TPL_Compiler::self()->parameter('namespace', $namespace);
   }
 }
 

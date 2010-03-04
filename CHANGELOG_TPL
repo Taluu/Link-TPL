@@ -28,13 +28,16 @@
   #ADD : Nouveau raccourci "elif" pour "elseif" (feignasses :p)
   #ADD : Interfaces pour mieux contrôler l'injection de dépendances
 
-  #CHG : Les regex pour les variables ont une capture de moins à faire
   #CHG : Le parsage de chaine de caractères renvoit désormais le php compilé
+  #CHG : Les regex pour les variables ont une capture de moins à faire
   #CHG : Extraction de Talus_TPL.php en dehors du répertoire Talus_TPL
-  
-  #FIX : Parsage correct de chaines de caractères (Talus_TPL::str())
+
+  #DEL : Méthodes / Utilisations dépréciées depuis la 1.6.0
+
   #FIX : Conflit de références à cause d'un "bug" connu de PHP (#29992)
+  #FIX : Parsage correct de chaines de caractères (Talus_TPL::str())
   #FIX : Oubli apparent pour la dépendance d'injections ?
+  #FIX : Regex pour le mode compact (/s => \s)
  
 ## 1.6.0 ==> 1.7.0 (Sortie : 17/12/09)
   #ADD : Possibilité de parser et d'exécuter une chaine de caractère TPL
