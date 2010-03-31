@@ -113,7 +113,7 @@ class Talus_TPL_Compiler implements Talus_TPL_Singleton_Interface {
     // -- Utilisation de filtres (parsage récursif)
     if ($this->parameter('parse') & self::FILTERS) {
       $matches = array();
-      while (preg_match('`\{(?:(KEY|VALUE|GLOB),)?(\$?[a-zA-Z_\xc0-\xd6\xd8-\xde][a-zA-Z0-9_\xc0-\xd6\xd8-\xde.]*(?:\[(?!]\|)(?:.*?)])?)\|((?:[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*\|?)+)}`', $compile, $matches)) {
+      while (preg_match('`\{(?:(KEY|VALUE|GLOB),)?(\$?[a-zA-Z_\xc0-\xd6\xd8-\xde][a-zA-Z0-9_\xc0-\xd6\xd8-\xde.]*(?:\[(?!]\|)(?:.*?)])?)\|((?:[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff:]*\|?)+)}`', $compile, $matches)) {
         $compile = str_replace($matches[0], $this->_filters($matches[2], $matches[3], $matches[1]), $compile);
       }
     }
@@ -364,9 +364,8 @@ class Talus_TPL_Compiler implements Talus_TPL_Singleton_Interface {
    */
   protected function _filters($var = '', $filters = '', $type = null){
     $brackets = 0;
-    $return = '';
     $toPrint = false;
-    $var = sprintf('{%s}', $var);
+    $return = sprintf('{%s}', $var);
     $filters = array_reverse(array_filter(explode('|', $filters)));
     
     /*
@@ -377,8 +376,8 @@ class Talus_TPL_Compiler implements Talus_TPL_Singleton_Interface {
      * Si c'est le cas, on a juste besoin de rajouter le $ devant le nom
      * de la variable...
      */
-    if ($var[1] != '$') {
-      $var = '{$' . mb_substr($var, 1);
+    if ($return[1] != '$') {
+      $return = '{$' . mb_substr($return, 1);
       $toPrint = true;
     }
     
@@ -388,29 +387,36 @@ class Talus_TPL_Compiler implements Talus_TPL_Singleton_Interface {
      * variables TPL) par "{TYPE,"
      */
     if (!empty($type)) {
-      $var = sprintf('{%1$s,%2$s', $type, mb_substr($var, 1));
+      $return = sprintf('{%1$s,%2$s', $type, mb_substr($return, 1));
     }
     
     foreach ($filters as &$filter) {
+      $params = explode(':', $filter);
+      $fct = array_shift($params);
+
       // -- Filtre non déclaré ?
-      if (!method_exists('Talus_TPL_Filters', $filter)){
-        trigger_error("Le filtre \"$filter\" n'existe pas, et sera donc ignoré.\n\n",
+      if (!method_exists('Talus_TPL_Filters', $fct)){
+        trigger_error("Le filtre \"$fct\" n'existe pas, et sera donc ignoré.\n\n",
                       E_USER_NOTICE);
         continue;
       }
+
+      // -- Paramètres
+      if (count($params) > 0) {
+        foreach ($params as &$param) {
+          $param = $this->_escape($param);
+        }
+
+        $params = ', ' . implode(', ', $params);
+      } else {
+        $params = '';
+      }
       
-      // -- Ajout du filtre, incrémentation du nombre de (
-      $return .= sprintf('Talus_TPL_Filters::%s(', $filter);
-      ++$brackets;
+      // -- Ajout du filtre
+      $return = sprintf('Talus_TPL_Filters::%1$s(%2$s%3$s)', $fct, $return, $params);
     }
     
-    // -- Association de la variable, fermeture des différentes ( ouvertes
-    $return .= $var . str_repeat(')', $brackets);
-    
-    /*
-     * Si la variable ne commence pas par un $, il faut alors afficher son
-     * contenu.
-     */
+    // -- Il faut afficher le contenu de la variable plutôt que de la renvoyer
     if ($toPrint === true){
       $return = sprintf('<?php echo %s; ?>', $return);
     }
@@ -449,7 +455,9 @@ class Talus_TPL_Compiler implements Talus_TPL_Singleton_Interface {
    * @return string Valeur échappée
    */
   protected function _escape($arg, $delim = '\'') {
-    if (($arg[0] != '{' || $arg[mb_strlen($arg) - 1] != '}') && !ctype_digit($arg)) {
+    if (($arg[0] != $delim || $arg[mb_strlen($arg) - 1] != $delim)
+     && ($arg[0] != '{' || $arg[mb_strlen($arg) - 1] != '}') 
+     && !filter_var($arg, FILTER_VALIDATE_INT)) {
       $arg = sprintf('%1$s%2$s%1$s', $delim, addcslashes($arg, $delim));
     }
     

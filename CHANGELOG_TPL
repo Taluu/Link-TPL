@@ -24,13 +24,16 @@
  * @version $Id$
  */
 
-## 1.7.0 ==> 1.?.? (Sortie : ??/??/10)
+## 1.7.0 ==> 1.8.0 (Sortie : ??/??/10)
   #ADD : Nouveau raccourci "elif" pour "elseif" (feignasses :p)
   #ADD : Interfaces pour mieux contrôler l'injection de dépendances
+  #ADD : Arguments pour les filtres ({VAR|filtre:arg:arg})
+  #ADD : Argument "exec" pour Talus_TPL::str(), pour exécuter ou non le code
 
   #CHG : Le parsage de chaine de caractères renvoit désormais le php compilé
   #CHG : Les regex pour les variables ont une capture de moins à faire
   #CHG : Extraction de Talus_TPL.php en dehors du répertoire Talus_TPL
+  #CHG : ctype_digits => filter_var dans _escape du parseur
 
   #DEL : Méthodes / Utilisations dépréciées depuis la 1.6.0
 

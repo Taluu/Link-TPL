@@ -61,14 +61,6 @@ class Talus_TPL_Cache implements Talus_TPL_Cache_Interface {
   }
   
   /**
-   * @deprecated
-   * @ignore
-   */
-  public static function __init() {
-    return self::self();
-  }
-  
-  /**
    * Accessor pour $this->_dir
    *
    * @param string $dir Chemin du cache
@@ -89,14 +81,6 @@ class Talus_TPL_Cache implements Talus_TPL_Cache_Interface {
     }
     
     return $this->_dir;
-  }
-  
-  /**
-   * @deprecated
-   * @ignore
-   */
-  public function getDir(){
-    return $this->dir(null);
   }
   
   /**
@@ -125,14 +109,6 @@ class Talus_TPL_Cache implements Talus_TPL_Cache_Interface {
     }
 
     return $this->_file;
-  }
-  
-  /**
-   * @deprecated
-   * @ignore
-   */
-  public function setFile($file) {
-    return $this->file($file);
   }
   
   /**

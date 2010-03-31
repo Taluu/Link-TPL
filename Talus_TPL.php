@@ -48,7 +48,7 @@ class Talus_TPL {
   const 
     INCLUDE_TPL = 0,
     REQUIRE_TPL = 1,
-    VERSION = '1.?.?'; // (probablement 1.8.0)
+    VERSION = '1.8.0';
   
   /**
    * Initialisation. 
@@ -332,10 +332,11 @@ class Talus_TPL {
    * Parse & execute une chaine de caractère TPL
    *
    * @param string $str Chaine de caractère à parser
+   * @param bool $exec Faut-il exécuter le code TPL ?
    * @throws Talus_TPL_Parse_Exception
    * @return string Code PHP généré
    */
-  public function str($str) {
+  public function str($str, $exec = true) {
     if (empty($str)) {
       throw new Talus_TPL_Parse_Exception('Aucune chaine spécifiée.');
       return false;
@@ -345,12 +346,14 @@ class Talus_TPL {
     $compiled = call_user_func($this->_compiler . '::self')->compile($str);
     
     // -- Mise en cache, execution
-    $this->_tpl = sprintf('tmp_%s.html', sha1($str));
-    $cache = call_user_func($this->_cache . '::self');
-    $cache->file($this->_tpl, 0);
-    $cache->put($compiled);
-    $cache->exec($this);
-    $cache->destroy();
+    if ($exec === true) {
+      $this->_tpl = sprintf('tmp_%s.html', sha1($str));
+      $cache = call_user_func($this->_cache . '::self');
+      $cache->file($this->_tpl, 0);
+      $cache->put($compiled);
+      $cache->exec($this);
+      $cache->destroy();
+    }
     
     return $compiled;
   }
