@@ -137,7 +137,7 @@ class Talus_TPL_Compiler implements Talus_TPL_Singleton_Interface {
     // -- Balises ne nécessitant pas de Regex
     $noRegex = array(
       "</{$nspace}block>" => '<?php } unset($__tplBlock[array_pop($__tpl_block_stack)]); endif; ?>', 
-      "<{$nspace}blockelse />" => '<?php } else : if (true) { ?>', 
+      "<{$nspace}blockelse />" => '<?php } else : if (true) { $__tpl_block_stack[] = \'*foo*\'; ?>',
       
       '{\\' =>  '{'
      );
