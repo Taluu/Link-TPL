@@ -113,7 +113,11 @@ class Talus_TPL {
 
     // -- Cas particuliers des exceptions et des interfaces
     if (in_array($className[count($className) - 1], array('Exception', 'Interface'))) {
-      $dir .= sprintf('/%1$ss', array_pop($className));
+      $dir .= sprintf('/%1$ss', $className[count($className) - 1]);
+
+      if (count($className) > 1) {
+        array_pop($className);
+      }
     }
 
     // -- Inclusion du bon fichier
