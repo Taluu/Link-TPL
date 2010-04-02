@@ -64,7 +64,7 @@ class Talus_TPL {
 
     // -- Mise en place de l'autoload si il n'a pas encore été défini
     if (self::$_autoloadSet === false) {
-      spl_autoload_register(array('self', '_autoload'));
+      spl_autoload_register('self::_autoload');
       self::$_autoloadSet = true;
     }
     
@@ -84,11 +84,14 @@ class Talus_TPL {
      * Pour le compilateur, ce doit être une extension de la classe principale
      * (pour avoir toujours accès aux méthodes mères de Talus_TPL_Compiler).
      */
-    if (isset($dependencies['cache']) && $dependencies['cache'] instanceof Talus_TPL_Cache_Interface) {
+    if (isset($dependencies['cache']) && is_subclass_of($dependencies['cache'], 'Talus_TPL_Cache_Interface')) {
       $this->_cache = $dependencies['cache'];
     }
 
-    if (isset($dependencies['compiler']) && $dependencies['compiler'] instanceof Talus_TPL_Compiler) {
+    if (isset($dependencies['compiler']) && (
+     is_subclass_of($dependencies['compiler'], 'Talus_TPL_Compiler')
+     || $dependencies['compiler'] === 'Talus_TPL_Compiler')) {
+      
       $this->_compiler = $dependencies['compiler'];
     }
     
