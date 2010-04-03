@@ -124,7 +124,7 @@ class Talus_TPL {
       }
     }
 
-    $file = sprintf('%1$s/%2$s.%3$s', $dir, implode('_', $className), PHP_EXT);
+    $file = sprintf('%1$s/%2$s.%3$s', $dir, implode('-', $className), PHP_EXT);
     
     // -- Si le fichier n'existe pas, on jette une exception
     if (!file_exists($file)) {
