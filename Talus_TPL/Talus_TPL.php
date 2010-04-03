@@ -102,16 +102,17 @@ class Talus_TPL {
   /**
    * Gestion de l'autoload pour les classes Talus' TPL
    *
-   * @param string $className Nom de la classe à charger
+   * @param string $class Nom de la classe à charger
+   * @throws Talus_TPL_Autoload_Exception
    * @return bool
    */
-  private static function _autoload($className) {
-    if (mb_strpos($className, __CLASS__) !== 0) {
+  private static function _autoload($class) {
+    if (mb_strpos($class, __CLASS__) !== 0) {
       return false;
     }
 
-    $dir = sprintf('%1$s/%2$s', dirname(__FILE__), __CLASS__);
-    $className = mb_substr($className, mb_strlen(__CLASS__) + 1);
+    $dir = sprintf('%1$s', dirname(__FILE__));
+    $className = mb_substr($class, mb_strlen(__CLASS__) + 1);
     $className = explode('_', $className);
 
     // -- Cas particuliers des exceptions et des interfaces
@@ -123,8 +124,16 @@ class Talus_TPL {
       }
     }
 
+    $file = sprintf('%1$s/%2$s.%3$s', $dir, implode('_', $className), PHP_EXT);
+    
+    // -- Si le fichier n'existe pas, on jette une exception
+    if (!file_exists($file)) {
+      throw new Talus_TPL_Autoload_Exception(array('Classe %s non trouvée', $class));
+      return false;
+    }
+
     // -- Inclusion du bon fichier
-    require sprintf('%1$s/%2$s.%3$s', $dir, implode('_', $className), PHP_EXT);
+    require $file;
     return true;
   }
   

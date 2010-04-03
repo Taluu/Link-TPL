@@ -32,7 +32,6 @@
 
   #CHG : Le parsage de chaine de caractères renvoit désormais le php compilé
   #CHG : Les regex pour les variables ont une capture de moins à faire
-  #CHG : Extraction de Talus_TPL.php en dehors du répertoire Talus_TPL
   #CHG : ctype_digits => filter_var dans _escape du parseur
 
   #DEL : Méthodes / Utilisations dépréciées depuis la 1.6.0
