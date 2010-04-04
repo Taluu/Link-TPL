@@ -128,7 +128,7 @@ class Talus_TPL {
     
     // -- Si le fichier n'existe pas, on jette une exception
     if (!file_exists($file)) {
-      throw new Talus_TPL_Autoload_Exception(array('Classe %s non trouvée', $class));
+      throw new Talus_TPL_Autoload_Exception(array('Classe %s non trouvée', $class), 8);
       return false;
     }
 
@@ -312,12 +312,23 @@ class Talus_TPL {
    * @return bool
    */
   public function parse($tpl){
+    // -- Si plusieurs fichiers en paramètres, alors on appelle plusieurs fois parse()
+    if (func_num_args() > 1 || is_array($tpl)) {
+      $tpls = func_num_args() > 1 ? func_get_args() : $tpl;
+
+      foreach ($tpls as &$tpl) {
+        $this->_parse($tpl);
+      }
+
+      return true;
+    }
+
     // -- Erreur critique si vide
     if (empty($tpl)) {
       throw new Talus_TPL_Parse_Exception('Aucun modèle à parser.', 5);
       return false;
     }
-    
+
     $file = sprintf('%1$s/%2$s', $this->root(), $tpl);
     
     // -- Déclaration du fichier
@@ -469,10 +480,12 @@ class Talus_TPL {
        * sinon, on affiche juste le message de l'exception capturée si c'est
        * include, ou on rejette l'erreur si c'en est pas un.
        */
-      if ($e->getCode() === 6 && $type == self::REQUIRE_TPL) {
-        throw new Talus_TPL_Runtime_Exception(array('Ceci était une balise "require" : puisque le template %s n\'existe pas, le script est interrompu.', $file), 7);
-        exit;
-      } elseif ($e->getCode() == 6) {
+      if ($e->getCode() === 6) {
+        if ($type == self::REQUIRE_TPL) {
+          throw new Talus_TPL_Runtime_Exception(array('Ceci était une balise "require" : puisque le template %s n\'existe pas, le script est interrompu.', $file), 7);
+          exit;
+        }
+
         echo $e->getMessage();
       } else {
         throw $e;

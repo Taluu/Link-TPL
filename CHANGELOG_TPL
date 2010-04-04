@@ -25,10 +25,12 @@
  */
 
 ## 1.7.0 ==> 1.8.0 (Sortie : ??/??/10)
-  #ADD : Nouveau raccourci "elif" pour "elseif" (feignasses :p)
-  #ADD : Interfaces pour mieux contrôler l'injection de dépendances
-  #ADD : Arguments pour les filtres ({VAR|filtre:arg:arg})
   #ADD : Argument "exec" pour Talus_TPL::str(), pour exécuter ou non le code
+  #ADD : Possibilité de parser plusieurs templates à la suite pour parse()
+  #ADD : Interfaces pour mieux contrôler l'injection de dépendances
+  #ADD : Nouveau raccourci "elif" pour "elseif" (feignasses :p)
+  #ADD : Arguments pour les filtres ({VAR|filtre:arg:arg})
+  #ADD : Exception Autoload si l'autoloader échoue
 
   #CHG : Le parsage de chaine de caractères renvoit désormais le php compilé
   #CHG : Les regex pour les variables ont une capture de moins à faire

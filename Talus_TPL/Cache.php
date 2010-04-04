@@ -54,7 +54,7 @@ class Talus_TPL_Cache implements Talus_TPL_Cache_Interface {
    */
   public static function self(){
     if (self::$_instance === null){
-        self::$_instance = new self;
+      self::$_instance = new self;
     }
     
     return self::$_instance;
