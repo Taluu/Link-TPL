@@ -27,7 +27,7 @@
  * @version $Id$
  */
 
-interface Talus_TPL_Cache_Interface extends Talus_TPL_Singleton_Interface {
+interface Talus_TPL_Cache_Interface {
   /**
    * Définit le répertoire, ou plutôt l'emplacement des fichiers caches
    * (dossier si ftp, base de données si cache sql, ...)

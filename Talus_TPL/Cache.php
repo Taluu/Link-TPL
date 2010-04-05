@@ -42,23 +42,7 @@ class Talus_TPL_Cache implements Talus_TPL_Cache_Interface {
     $_dir = null,
     $_file = array();
   
-  private static $_instance = null;
-  private function __construct(){}
-  private function __clone(){}
-  
-  /**
-   * Pattern Singleton ; si l'instance n'a pas été démarrée, on la démarre...
-   * Sinon, on renvoit l'objet déjà créé.
-   *
-   * @return self
-   */
-  public static function self(){
-    if (self::$_instance === null){
-      self::$_instance = new self;
-    }
-    
-    return self::$_instance;
-  }
+  public static function self(){} /** @deprecated **/
   
   /**
    * Accessor pour $this->_dir

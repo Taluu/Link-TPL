@@ -40,8 +40,15 @@ class Talus_TPL {
     $_blocks = array(),
     $_vars = array(),
 
-    $_compiler = 'Talus_TPL_Compiler',
-    $_cache = 'Talus_TPL_Cache';
+    /**
+     * @var Talus_TPL_Compiler_Interface
+     */
+    $_compiler = null,
+
+    /**
+     * @var Talus_TPL_Cache_Interface
+     */
+    $_cache = null;
 
   protected static $_autoloadSet = false;
     
@@ -84,15 +91,21 @@ class Talus_TPL {
      * Pour le compilateur, ce doit être une extension de la classe principale
      * (pour avoir toujours accès aux méthodes mères de Talus_TPL_Compiler).
      */
-    if (isset($dependencies['cache']) && is_subclass_of($dependencies['cache'], 'Talus_TPL_Cache_Interface')) {
-      $this->_cache = $dependencies['cache'];
+    foreach ($dependencies as &$dependency) {
+      if ($dependency instanceof Talus_TPL_Compiler_Interface) {
+        $this->_compiler = $dependency;
+      } elseif ($dependency instanceof Talus_TPL_Cache_Interface) {
+        $this->_cache = $dependency;
+      }
     }
 
-    if (isset($dependencies['compiler']) && (
-     is_subclass_of($dependencies['compiler'], 'Talus_TPL_Compiler')
-     || $dependencies['compiler'] === 'Talus_TPL_Compiler')) {
-      
-      $this->_compiler = $dependencies['compiler'];
+    // -- Si pas de DI, comportement par défaut
+    if ($this->_compiler === null) {
+      $this->_compiler = new Talus_TPL_Compiler;
+    }
+
+    if ($this->_cache === null) {
+      $this->_cache = new Talus_TPL_Cache;
     }
     
     // -- Mise en place du dossier de templates
@@ -124,7 +137,7 @@ class Talus_TPL {
       }
     }
 
-    $file = sprintf('%1$s/%2$s.%3$s', $dir, implode('-', $className), PHP_EXT);
+    $file = sprintf('%1$s/%2$s.%3$s', $dir, implode('_', $className), PHP_EXT);
     
     // -- Si le fichier n'existe pas, on jette une exception
     if (!file_exists($file)) {
@@ -161,7 +174,7 @@ class Talus_TPL {
       $this->_root = $root;
     }
     
-    call_user_func($this->_cache . '::self')->dir($cache);
+    $this->_cache->dir($cache);
   }
 
   /**
@@ -341,17 +354,15 @@ class Talus_TPL {
       $this->_last[$file] = filemtime($file);
     }
     
-    $cache = call_user_func($this->_cache . '::self');
-    
     $this->_tpl = $tpl;
-    $cache->file($this->_tpl, 0);
+    $this->_cache->file($this->_tpl, 0);
     
     // -- Si le cache n'existe pas, ou n'est pas valide, on le met à jour.
-    if (!$cache->isValid($this->_last[$file])) {
-      $cache->put(call_user_func($this->_compiler . '::self')->compile(file_get_contents($file)));
+    if (!$this->_cache->isValid($this->_last[$file])) {
+      $this->_cache->put($this->_compiler->compile(file_get_contents($file)));
     }
     
-    $cache->exec($this);
+    $this->_cache->exec($this);
     return true;
   }
 
@@ -370,16 +381,15 @@ class Talus_TPL {
     }
 
     // -- Compilation
-    $compiled = call_user_func($this->_compiler . '::self')->compile($str);
+    $compiled = $this->_compiler->compile($str);
     
     // -- Mise en cache, execution
     if ($exec === true) {
       $this->_tpl = sprintf('tmp_%s.html', sha1($str));
-      $cache = call_user_func($this->_cache . '::self');
-      $cache->file($this->_tpl, 0);
-      $cache->put($compiled);
-      $cache->exec($this);
-      $cache->destroy();
+      $this->_cache->file($this->_tpl, 0);
+      $this->_cache->put($compiled);
+      $this->_cache->exec($this);
+      $this->_cache->destroy();
     }
     
     return $compiled;
@@ -498,14 +508,48 @@ class Talus_TPL {
     echo $data;
   }
   
+  /**#@+
+   * Getters / Setters
+   */
+
   /**
-   * Getter pour $this->_root
+   * Root
    *
    * @return string
    */
   public function root() {
     return $this->_root;
   }
+
+  /**
+   * Compilateur
+   *
+   * @param Talus_TPL_Compiler_Interface $compiler Nouveau compilateur
+   * @return Talus_TPL_Compiler_Interface
+   */
+  public function compiler(Talus_TPL_Compiler_Interface $compiler = null) {
+    if ($compiler !== null) {
+      $this->_compiler = $compiler;
+    }
+
+    return $this->_compiler;
+  }
+
+  /**
+   * Cache
+   *
+   * @param Talus_TPL_Cache_Interface $cache Nouveau cache
+   * @return Talus_TPL_Cache_Interface
+   */
+  public function cache(Talus_TPL_cache_Interface $cache = null) {
+    if ($cache !== null) {
+      $this->_cache = $cache;
+    }
+
+    return $this->_cache;
+  }
+
+  /**#@-*/
 }
 
 /*

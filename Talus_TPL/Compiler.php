@@ -37,7 +37,7 @@ if (version_compare(PHP_VERSION, '5.3.0', '<')) {
  * Cette classe gère la transformation d'un code Talus TPL en un code PHP
  * optimisé et interprétable par PHP.
  */
-class Talus_TPL_Compiler implements Talus_TPL_Singleton_Interface {
+class Talus_TPL_Compiler implements Talus_TPL_Compiler_Interface {
   protected $_parameters = array();
     
   const
@@ -53,31 +53,19 @@ class Talus_TPL_Compiler implements Talus_TPL_Singleton_Interface {
     DEFAULTS = 119,
     ALL = 127;
   
-  private static $_inst = null;
-  private function __clone(){}
-  
   /**
-   * @ignore
+   * Constructeur du Compilateur. Initialise les paramètres avec les valeurs
+   * par défaut.
+   *
+   * @return void
    */
-  private function __construct(){
+  public function __construct(){
     $this->parameter('parse', self::DEFAULTS);
     $this->parameter('set_compact', false);
     $this->parameter('namespace', '');
   }
   
-  /**
-   * Pattern Singleton ; si l'instance n'a pas été démarrée, on la démarre...
-   * Sinon, on renvoit l'objet déjà créé.
-   *
-   * @return Talus_TPL_Compiler
-   */
-  public static function self(){
-    if (self::$_inst === null){
-      self::$_inst = new self;
-    }
-    
-    return self::$_inst;
-  }
+  public static function self(){} /** @deprecated **/
   
   /**
    * Réglage / Récupération de la valeur d'un paramètre

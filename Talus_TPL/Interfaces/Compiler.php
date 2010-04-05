@@ -1,6 +1,6 @@
 <?php
 /**
- * Interface pour les singletons de Talus' TPL.
+ * Interface pour le compilateur de tpl.
  * (Facilite la Dependency Injection)
  *
  * This program is free software; you can redistribute it and/or modify
@@ -27,11 +27,23 @@
  * @version $Id$
  */
 
-interface Talus_TPL_Singleton_Interface {
-  private function __construct();
-  private function __clone();
+interface Talus_TPL_Compiler_Interface {
+  /**
+   * Setter pour les paramètres de compilation
+   *
+   * @param string $name Nom du paramètre
+   * @param mixed $val Valeur du paramètre
+   * @return mixed Valeur du paramètre $name
+   */
+  public function parameter($name, $val = null);
 
-  public function self();
+  /**
+   * Compile la chaîne de caractère $str
+   *
+   * @param string $str Chaîne à compiler
+   * @return string Code PHP résultant
+   */
+  public function compile($str);
 }
 
 /*

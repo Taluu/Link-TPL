@@ -31,12 +31,15 @@
   #ADD : Nouveau raccourci "elif" pour "elseif" (feignasses :p)
   #ADD : Arguments pour les filtres ({VAR|filtre:arg:arg})
   #ADD : Exception Autoload si l'autoloader échoue
+  #ADD : Accessors pour le compilateur & le cache
 
   #CHG : Le parsage de chaine de caractères renvoit désormais le php compilé
+  #CHG : Changement de méthode de renseignement de la dépendance d'injection
   #CHG : Les regex pour les variables ont une capture de moins à faire
   #CHG : ctype_digits => filter_var dans _escape du parseur
 
   #DEL : Méthodes / Utilisations dépréciées depuis la 1.6.0
+  #DEL : Pattern Singleton pour le cache & le compilateur
 
   #FIX : Conflit de références à cause d'un "bug" connu de PHP (#29992)
   #FIX : Parsage correct de chaines de caractères (Talus_TPL::str())
