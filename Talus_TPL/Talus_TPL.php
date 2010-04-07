@@ -81,31 +81,16 @@ class Talus_TPL {
     $this->_blocks['.'] = array(array());
     $this->_vars = &$this->_blocks['.'][0];
 
-    /*
-     * Gestion des dépendances.
-     *
-     * Pour le cache, toute classe implémentant l'interface
-     * Talus_TPL_Cache_Interface est valide (permettant une réécriture de la
-     * classe de Cache avec des besoins spécifiques)...
-     *
-     * Pour le compilateur, ce doit être une extension de la classe principale
-     * (pour avoir toujours accès aux méthodes mères de Talus_TPL_Compiler).
-     */
-    foreach ($dependencies as &$dependency) {
-      if ($dependency instanceof Talus_TPL_Compiler_Interface) {
-        $this->_compiler = $dependency;
-      } elseif ($dependency instanceof Talus_TPL_Cache_Interface) {
-        $this->_cache = $dependency;
-      }
-    }
+    // -- Gestion des dépendances
+    $this->dependencies($dependencies);
 
     // -- Si pas de DI, comportement par défaut
     if ($this->_compiler === null) {
-      $this->_compiler = new Talus_TPL_Compiler;
+      $this->compiler(new Talus_TPL_Compiler);
     }
 
     if ($this->_cache === null) {
-      $this->_cache = new Talus_TPL_Cache;
+      $this->cache(new Talus_TPL_Cache);
     }
     
     // -- Mise en place du dossier de templates
@@ -524,29 +509,43 @@ class Talus_TPL {
   /**
    * Compilateur
    *
-   * @param Talus_TPL_Compiler_Interface $compiler Nouveau compilateur
    * @return Talus_TPL_Compiler_Interface
    */
-  public function compiler(Talus_TPL_Compiler_Interface $compiler = null) {
-    if ($compiler !== null) {
-      $this->_compiler = $compiler;
-    }
-
+  public function compiler() {
     return $this->_compiler;
   }
 
   /**
    * Cache
    *
-   * @param Talus_TPL_Cache_Interface $cache Nouveau cache
    * @return Talus_TPL_Cache_Interface
    */
-  public function cache(Talus_TPL_cache_Interface $cache = null) {
-    if ($cache !== null) {
-      $this->_cache = $cache;
+  public function cache() {
+    return $this->_cache;
+  }
+
+  /**
+   * Mets à jour les dépendances.
+   *
+   * @param mixed $dependencies,.. Dépendances
+   * @return void
+   * @throws Talus_TPL_Dependency_Exception
+   */
+  public function dependencies($dependencies = array()) {
+    if (func_num_args() > 1) {
+      $dependencies = func_get_args();
     }
 
-    return $this->_cache;
+    foreach ($dependencies as &$dependency) {
+      if ($dependency instanceof Talus_TPL_Compiler_Interface) {
+        $this->_compiler = $dependency;
+      } elseif ($dependency instanceof Talus_TPL_Cache_Interface) {
+        $this->_cache = $dependency;
+      } else {
+        throw new Talus_TPL_Dependency_Exception(
+                array('%s n\'est pas une dépendance reconnue.', get_class($dependency)));
+      }
+    }
   }
 
   /**#@-*/

@@ -27,6 +27,7 @@
 ## 1.7.0 ==> 1.8.0 (Sortie : ??/??/10)
   #ADD : Argument "exec" pour Talus_TPL::str(), pour exécuter ou non le code
   #ADD : Possibilité de parser plusieurs templates à la suite pour parse()
+  #ADD : Méthodes Talus_TPL::dependencies, compiler, cache pour la DI
   #ADD : Interfaces pour mieux contrôler l'injection de dépendances
   #ADD : Nouveau raccourci "elif" pour "elseif" (feignasses :p)
   #ADD : Arguments pour les filtres ({VAR|filtre:arg:arg})
@@ -37,6 +38,7 @@
   #CHG : Changement de méthode de renseignement de la dépendance d'injection
   #CHG : Les regex pour les variables ont une capture de moins à faire
   #CHG : ctype_digits => filter_var dans _escape du parseur
+  #CHG : Amélioration pour la regex des filtres
 
   #DEL : Méthodes / Utilisations dépréciées depuis la 1.6.0
   #DEL : Pattern Singleton pour le cache & le compilateur

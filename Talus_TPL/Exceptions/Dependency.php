@@ -1,7 +1,6 @@
 <?php
 /**
- * Interface pour le compilateur de tpl.
- * (Facilite la Dependency Injection)
+ * Gestion des exceptions pour les injections de dépendance de Talus' TPL
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,31 +19,13 @@
  *
  * @package Talus' TPL
  * @author Baptiste "Talus" Clavié <clavie.b@gmail.com>
- * @copyright ©Talus, Talus' Works 2006+
+ * @copyright ©Talus, Talus' Works 2007+
  * @link http://www.talus-works.net Talus' Works
- * @link http://www.slideshare.net/fabpot/dependency-injection-with-php-53 Slideshare DI
- * @license http://www.gnu.org/licenses/lgpl.html LGNU Public License 3+
+ * @license http://www.gnu.org/licenses/lgpl.html Lesser GNU Public License 3+
  * @version $Id$
  */
 
-interface Talus_TPL_Compiler_Interface extends Talus_TPL_Dependency_Interface {
-  /**
-   * Setter pour les paramètres de compilation
-   *
-   * @param string $name Nom du paramètre
-   * @param mixed $val Valeur du paramètre
-   * @return mixed Valeur du paramètre $name
-   */
-  public function parameter($name, $val = null);
-
-  /**
-   * Compile la chaîne de caractère $str
-   *
-   * @param string $str Chaîne à compiler
-   * @return string Code PHP résultant
-   */
-  public function compile($str);
-}
+class Talus_TPL_Dependency_Exception extends Talus_TPL_Exception {}
 
 /*
  * EOF

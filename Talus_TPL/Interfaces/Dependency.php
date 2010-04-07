@@ -1,6 +1,6 @@
 <?php
 /**
- * Interface pour le compilateur de tpl.
+ * Interface pour les classes acceptant l'injection de dépendances
  * (Facilite la Dependency Injection)
  *
  * This program is free software; you can redistribute it and/or modify
@@ -27,24 +27,7 @@
  * @version $Id$
  */
 
-interface Talus_TPL_Compiler_Interface extends Talus_TPL_Dependency_Interface {
-  /**
-   * Setter pour les paramètres de compilation
-   *
-   * @param string $name Nom du paramètre
-   * @param mixed $val Valeur du paramètre
-   * @return mixed Valeur du paramètre $name
-   */
-  public function parameter($name, $val = null);
-
-  /**
-   * Compile la chaîne de caractère $str
-   *
-   * @param string $str Chaîne à compiler
-   * @return string Code PHP résultant
-   */
-  public function compile($str);
-}
+interface Talus_TPL_Dependency_Interface {}
 
 /*
  * EOF
