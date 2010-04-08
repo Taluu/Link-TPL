@@ -527,6 +527,7 @@ class Talus_TPL {
   /**
    * Mets à jour les dépendances.
    *
+   * @contributor Jordan Vaspard
    * @param mixed $dependencies,.. Dépendances
    * @return void
    * @throws Talus_TPL_Dependency_Exception
@@ -534,6 +535,8 @@ class Talus_TPL {
   public function dependencies($dependencies = array()) {
     if (func_num_args() > 1) {
       $dependencies = func_get_args();
+    } elseif (!is_array($dependencies)) {
+      $dependencies = (array) $dependencies;
     }
 
     foreach ($dependencies as &$dependency) {
