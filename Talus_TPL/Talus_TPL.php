@@ -6,16 +6,16 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
- *      
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *      
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
- * MA 02110-1301, USA. 
+ * MA 02110-1301, USA.
  *
  * @package Talus' TPL
  * @author Baptiste "Talus" Clavié <clavie.b@gmail.com>
@@ -32,11 +32,11 @@ if (!defined('PHP_EXT')) {
 class Talus_TPL {
   protected
     $_root = './',
-    
+
     $_tpl = '',
     $_last = array(),
     $_included = array(),
-    
+
     $_blocks = array(),
     $_vars = array(),
 
@@ -51,15 +51,15 @@ class Talus_TPL {
     $_cache = null;
 
   protected static $_autoloadSet = false;
-    
-  const 
+
+  const
     INCLUDE_TPL = 0,
     REQUIRE_TPL = 1,
     VERSION = '1.8.0';
-  
+
   /**
-   * Initialisation. 
-   * 
+   * Initialisation.
+   *
    * @param string $root Le dossier contenant les templates.
    * @param string $cache Le dossier contenant le cache.
    * @param array $dependencies Dépendances pour la Dependency Injection
@@ -74,7 +74,7 @@ class Talus_TPL {
       spl_autoload_register('self::_autoload');
       self::$_autoloadSet = true;
     }
-    
+
     // -- Init des paramètres
     $this->_last = array();
     $this->_included = array();
@@ -92,7 +92,7 @@ class Talus_TPL {
     if ($this->_cache === null) {
       $this->cache(new Talus_TPL_Cache);
     }
-    
+
     // -- Mise en place du dossier de templates
     $this->dir($root, $cache);
   }
@@ -123,7 +123,7 @@ class Talus_TPL {
     }
 
     $file = sprintf('%1$s/%2$s.%3$s', $dir, implode('_', $className), PHP_EXT);
-    
+
     // -- Si le fichier n'existe pas, on jette une exception
     if (!file_exists($file)) {
       throw new Talus_TPL_Autoload_Exception(array('Classe %s non trouvée', $class), 8);
@@ -134,10 +134,10 @@ class Talus_TPL {
     require $file;
     return true;
   }
-  
+
   /**
    * Permet de choisir le dossier contenant les tpls.
-   * 
+   *
    * @param string $root Le dossier contenant les templates.
    * @param string $cache Le dossier contenant le cache des tpls.
    * @throws Talus_Dir_Exception
@@ -148,23 +148,21 @@ class Talus_TPL {
   public function dir($root = './', $cache = './cache/') {
     // -- On ampute le root du slash final, si il existe.
     $root = rtrim($root, '/');
-    
+
     // -- Le dossier existe-t-il ?
     if (!is_dir($root)) {
       throw new Talus_TPL_Dir_Exception(array('%s n\'est pas un répertoire.', $root), 1);
       return;
     }
-    
-    if ($root !== $this->_root) {
-      $this->_root = $root;
-    }
-    
+
+    $this->_root = $root;
     $this->_cache->dir($cache);
   }
 
   /**
-   * Définit une ou plusieurs variable.
-   * 
+   * Définit une ou plusieurs variable. Agit également comme getter (pour
+   * Talus_TPL_Cache::exec()).
+   *
    * @param array|string $vars Variable(s) à ajouter
    * @param mixed $value Valeur de la variable si $vars n'est pas un array
    * @return &array
@@ -177,13 +175,13 @@ class Talus_TPL {
     } elseif ($vars !== null) {
       $this->_vars[$vars] = $value;
     }
-    
+
     return $this->_vars;
   }
-  
+
   /**
    * Définit une variable par référence.
-   * 
+   *
    * @param mixed $var Nom de la variable à ajouter
    * @param mixed &$value Valeur de la variable à ajouter.
    * @throws Talus_TPL_Var_Exception
@@ -196,7 +194,7 @@ class Talus_TPL {
       throw new Talus_TPL_Var_Exception('Nom de variable référencée invalide.', 3);
       return;
     }
-  
+
     $this->_vars[$var] = &$value;
   }
 
@@ -234,8 +232,8 @@ class Talus_TPL {
     if (!is_array($vars)) {
       $vars = array($vars => $value);
     }
-    
-    /* 
+
+    /*
      * Récupération de tous les blocs, du nombre de blocs, et mise en place d'une
      * référence sur la variable globale des blocs.
      *
@@ -248,27 +246,27 @@ class Talus_TPL {
     $current = &$this->_blocks;
     $cur = array();
     $nbRows = 0;
-    
+
     foreach ($blocks as &$cur) {
       if (!isset($current[$cur])) {
         throw new Talus_TPL_Block_Exception(array('Le bloc %s n\'est pas défini.', $cur), 4);
         return null;
       }
-      
+
       $current = &$current[$cur];
       $current = &$current[count($current) -  1];
     }
-    
+
     if (!isset($current[$curBlock])) {
       $current[$curBlock] = array();
       $nbRows = 0;
     } else {
       $nbRows = count($current[$curBlock]);
     }
-    
+
     /*
      * Variables spécifiques aux blocs (inutilisables autre part) :
-     * 
+     *
      * FIRST : Est-ce la première itération (true/false) ?
      * LAST : Est-ce la dernière itération (true/false) ?
      * CURRENT : Itération actuelle du bloc.
@@ -276,9 +274,9 @@ class Talus_TPL {
      *
      * On peut être à la première itération ; mais ce qui est sur, c'est
      * qu'on est forcément à la dernière itération.
-     * 
+     *
      * Si le nombre d'itération est supérieur à 0, alors ce n'est pas la
-     * première itération, et celle d'avant n'était pas la dernière. 
+     * première itération, et celle d'avant n'était pas la dernière.
      *
      * Quant au nombre d'itérations (SIZE_OF), il suffit de lier la variable
      * de l'instance actuelle aux autres, et ensuite d'incrémenter cette
@@ -288,23 +286,23 @@ class Talus_TPL {
     $vars['LAST'] = true;
     $vars['CURRENT'] = $nbRows + 1;
     $vars['SIZE_OF'] = 0;
-    
-    if ($nbRows > 0) { 
+
+    if ($nbRows > 0) {
       $vars['FIRST'] = false;
       $current[$curBlock][$nbRows - 1]['LAST'] = false;
-      
+
       $vars['SIZE_OF'] = &$current[$curBlock][0]['SIZE_OF'];
     }
-    
+
     ++$vars['SIZE_OF'];
     $current[$curBlock][] = $vars;
 
     return $current[$curBlock];
   }
 
-  /** 
+  /**
    *  Parse & execute un TPL.
-   * 
+   *
    * @param  mixed $tpl TPL concerné
    * @throws Talus_TPL_Parse_Exception
    * @return bool
@@ -315,20 +313,20 @@ class Talus_TPL {
       $tpls = func_num_args() > 1 ? func_get_args() : $tpl;
 
       foreach ($tpls as &$tpl) {
-        $this->_parse($tpl);
+        $this->parse($tpl);
       }
 
       return true;
     }
 
     // -- Erreur critique si vide
-    if (empty($tpl)) {
+    if (strlen((string) $tpl) === 0) {
       throw new Talus_TPL_Parse_Exception('Aucun modèle à parser.', 5);
       return false;
     }
 
-    $file = sprintf('%1$s/%2$s', $this->root(), $tpl);
-    
+    $file = sprintf('%1$s/%2$s', $this->_root, $tpl);
+
     // -- Déclaration du fichier
     if (!isset($this->_last[$file])) {
       if (!is_file($file)) {
@@ -338,15 +336,15 @@ class Talus_TPL {
 
       $this->_last[$file] = filemtime($file);
     }
-    
+
     $this->_tpl = $tpl;
     $this->_cache->file($this->_tpl, 0);
-    
+
     // -- Si le cache n'existe pas, ou n'est pas valide, on le met à jour.
     if (!$this->_cache->isValid($this->_last[$file])) {
-      $this->_cache->put($this->_compiler->compile(file_get_contents($file)));
+      $this->_cache->put($this->str(file_get_contents($file), false));
     }
-    
+
     $this->_cache->exec($this);
     return true;
   }
@@ -367,7 +365,7 @@ class Talus_TPL {
 
     // -- Compilation
     $compiled = $this->_compiler->compile($str);
-    
+
     // -- Mise en cache, execution
     if ($exec === true) {
       $this->_tpl = sprintf('tmp_%s.html', sha1($str));
@@ -376,14 +374,14 @@ class Talus_TPL {
       $this->_cache->exec($this);
       $this->_cache->destroy();
     }
-    
+
     return $compiled;
   }
-  
+
   /**
    * Parse un TPL
    * Implémention de __invoke() pour PHP >= 5.3
-   * 
+   *
    * @param mixed $tpl TPL concerné
    * @see Talus_TPL::parse()
    * @return void
@@ -395,7 +393,7 @@ class Talus_TPL {
   /**
    * Parse le TPL, mais renvoi directement le résultat de celui-ci (entièrement
    * parsé, et donc déjà executé par PHP).
-   * 
+   *
    * @param string $tpl Nom du TPL à parser.
    * @param integer $ttl Temps de vie (en secondes) du cache de niveau 2
    * @return string
@@ -410,7 +408,7 @@ class Talus_TPL {
 
   /**
    * Inclue un TPL : Le parse si nécessaire
-   * 
+   *
    * @param string $file Fichier à inclure.
    * @param bool $once N'inclure qu'une fois ?
    * @param integer $type Inclusion requise ?
@@ -431,13 +429,13 @@ class Talus_TPL {
     /*
      * Si un fichier ne doit être présent qu'une seule fois, on regarde si il a
      * déjà été inclus au moins une fois.
-     * 
-     * Si oui, on ne l'inclue pas ; 
+     *
+     * Si oui, on ne l'inclue pas ;
      * Si non, on l'ajoute à la pile des fichiers inclus.
      */
     if ($once){
       $toInclude = sprintf('%1$s/%2$s', $this->root(), $file);
-      
+
       if (in_array($toInclude, $this->_included)) {
         return;
       }
@@ -492,7 +490,7 @@ class Talus_TPL {
 
     echo $data;
   }
-  
+
   /**#@+
    * Getters / Setters
    */
@@ -527,7 +525,7 @@ class Talus_TPL {
   /**
    * Mets à jour les dépendances.
    *
-   * @contributor Jordan Vaspard
+   * @contributor Jordane Vaspard
    * @param mixed $dependencies,.. Dépendances
    * @return void
    * @throws Talus_TPL_Dependency_Exception
@@ -536,7 +534,7 @@ class Talus_TPL {
     if (func_num_args() > 1) {
       $dependencies = func_get_args();
     } elseif (!is_array($dependencies)) {
-      $dependencies = (array) $dependencies;
+      $dependencies = array($dependencies);
     }
 
     foreach ($dependencies as &$dependency) {
