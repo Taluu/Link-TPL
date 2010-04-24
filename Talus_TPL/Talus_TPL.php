@@ -86,11 +86,11 @@ class Talus_TPL {
 
     // -- Si pas de DI, comportement par défaut
     if ($this->_compiler === null) {
-      $this->compiler(new Talus_TPL_Compiler);
+      $this->_compiler = new Talus_TPL_Compiler;
     }
 
     if ($this->_cache === null) {
-      $this->cache(new Talus_TPL_Cache);
+      $this->_cache = new Talus_TPL_Cache;
     }
 
     // -- Mise en place du dossier de templates
