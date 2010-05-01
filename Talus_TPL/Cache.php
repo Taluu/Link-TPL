@@ -154,13 +154,19 @@ class Talus_TPL_Cache implements Talus_TPL_Cache_Interface {
    */
   public function exec(Talus_TPL $tpl) {
     $file = $this->file(null);
+    $vars = $tpl->set(null);
 
     if ($file === array()) {
-      throw new Talus_TPL_Exec_Exception('Vous venez d\'essayer d\executer aucun fichier...');
+      throw new Talus_TPL_Exec_Exception('Vous venez d\'essayer d\'executer aucun fichier...');
       return false;
     }
 
-    extract($tpl->set(null), EXTR_PREFIX_ALL | EXTR_REFS, '__tpl_vars_');
+    $varCount = extract($vars, EXTR_PREFIX_ALL | EXTR_REFS, '__tpl_vars_');
+
+    if ($varCount < count($vars)) {
+      trigger_error('Certaines variables au nom invalide n\'ont pas pu être extraites...', E_USER_NOTICE);
+    }
+
     include $file['url'];
 
     return true;
