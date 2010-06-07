@@ -47,7 +47,7 @@
   #FIX : Conflit de références à cause d'un "bug" connu de PHP (#29992)
   #FIX : Parsage correct de chaines de caractères (Talus_TPL::str())
   #FIX : Fix autoload pour les classes étant dans un dossier à part
-  #FIX : Oubli apparent pour la dépendance d'injections ?
+  #FIX : Oubli apparent pour l'injection de dépendances ?
   #FIX : Regex pour le mode compact (/s => \s)
  
 ## 1.6.0 ==> 1.7.0 (Sortie : 17/12/09)

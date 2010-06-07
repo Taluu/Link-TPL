@@ -303,17 +303,24 @@ class Talus_TPL {
   /**
    *  Parse & execute un TPL.
    *
-   * @param  mixed $tpl TPL concerné
+   * @param mixed $tpl TPL concerné
+   * @param mixed $cache Utiliser le cache si il existe ?
    * @throws Talus_TPL_Parse_Exception
    * @return bool
    */
-  public function parse($tpl){
-    // -- Si plusieurs fichiers en paramètres, alors on appelle plusieurs fois parse()
-    if (func_num_args() > 1 || is_array($tpl)) {
-      $tpls = func_num_args() > 1 ? func_get_args() : $tpl;
+  public function parse($tpl, $cache = true){
+    // -- Si plusieurs fichiers en paramètres, alors plusieurs appels de parse()
+    if (func_num_args() > 2 || is_array($tpl)) {
+      // -- Retrait du deuxieme paramètre ($cache) si nombre de paramètres > 2
+      if (func_num_args() > 2) {
+        $tpl = func_get_args();
+        array_shift($tpl); array_shift($tpl);
 
-      foreach ($tpls as &$tpl) {
-        $this->parse($tpl);
+        $tpl = func_get_arg(0) + $tpl;
+      }
+
+      foreach ($tpl as &$file) {
+        $this->parse($file);
       }
 
       return true;
@@ -340,8 +347,8 @@ class Talus_TPL {
     $this->_tpl = $tpl;
     $this->_cache->file($this->_tpl, 0);
 
-    // -- Si le cache n'existe pas, ou n'est pas valide, on le met à jour.
-    if (!$this->_cache->isValid($this->_last[$file])) {
+    // -- Si le cache n'existe pas, ou n'est pas valide (ou qu'on force), on le met à jour.
+    if (!$this->_cache->isValid($this->_last[$file]) || !$cache) {
       $this->_cache->put($this->str(file_get_contents($file), false));
     }
 
