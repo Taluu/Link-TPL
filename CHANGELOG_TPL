@@ -34,6 +34,7 @@
   #ADD : Arguments pour les filtres ({VAR|filtre:arg:arg})
   #ADD : Exception Autoload si l'autoloader échoue
   #ADD : Accessors pour le compilateur & le cache
+  #ADD : Ajout de nouveaux filtres
 
   #CHG : Le parsage de chaine de caractères renvoit désormais le php compilé
   #CHG : Changement de méthode de renseignement de la dépendance d'injection

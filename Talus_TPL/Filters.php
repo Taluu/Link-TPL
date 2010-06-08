@@ -140,6 +140,70 @@ final class Talus_TPL_Filters {
     public static function nl2br($arg){
         return nl2br($arg);
     }
+
+    /**
+     * Transforme la chaine de caractère en chaine slug
+     *
+     * @param string $arg Argument à slugifier
+     * @example "Bernard au Marché" => "bernard-au-marche"
+     * @link http://www.symfony-project.org/jobeet/ Méthode Jobeet::Slugify()
+     * @return string
+     */
+    static public function slugify($arg) {
+      $arg = preg_replace('~[^\\pL\d]+~u', '-', $arg);
+      $arg = trim($arg, '-');
+
+      if (function_exists('iconv')) {
+        $arg = iconv('utf-8', 'us-ascii//TRANSLIT', $arg);
+      }
+
+      $arg = strtolower($arg);
+      $arg = preg_replace('~[^-\w]+~', '', $arg);
+
+      if (!$arg) {
+        $arg = 'n-a';
+      }
+
+      return $arg;
+    }
+
+    /**
+     * Coupe une chaine de caractères (sans interrompre un mot)
+     *
+     * @param string $arg chaine à couper
+     * @param integer $max nombre maximum de caractères
+     * @param string $finish chaine de caractère à appliquer en fin si $str est coupée.
+     * @return string
+     */
+    function cut($arg, $max = 50, $finish = '...'){
+      if (strlen($arg) <= $max){
+        return $arg;
+      }
+
+      $max = intval($max) - strlen($finish);
+
+      $arg = substr($arg, 0, $max + 1);
+      $arg = strrev(strpbrk(strrev($arg), " \t\n\r\0\x0B"));
+
+      return rtrim($arg) . $finish;
+    }
+
+    /**
+     * Transforme les sauts de lignes intelligement
+     * Deux sauts de lignes font un paragraphe (<p>), et un saut de ligne donne un <br />
+     * Adapté de python à php d'après le package "utils.html" de Django.
+     *
+     * @param string $arg Texte à parser
+     * @return string
+     */
+    function linebreaks($arg){
+      $arg = str_replace(array("\r\n", "\r"), "\n", $arg);
+      
+      $paras = preg_split("`\n{2,}`si", $arg);
+      array_walk($paras, 'nl2br');
+
+      return '<p>' . implode('</p>' . PHP_EOL . PHP_EOL . '<p>', $params) . '</p>';
+    }
 }
 
 /** EOF /**/
