@@ -101,7 +101,7 @@ class Talus_TPL_Compiler implements Talus_TPL_Compiler_Interface {
     // -- Utilisation de filtres (parsage récursif)
     if ($this->parameter('parse') & self::FILTERS) {
       $matches = array();
-      while (preg_match('`\{(?:(KEY|VALUE|GLOB),)?(\$?[a-zA-Z_\xc0-\xd6\xd8-\xde][a-zA-Z0-9_\xc0-\xd6\xd8-\xde.]*(?:\[(?!]\|)(?:.*?)])?)\|((?:[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*(?::.+?)*(?<!\\)\|?)+)}`', $compile, $matches)) {
+      while (preg_match('`\{(?:(KEY|VALUE|GLOB),)?(\$?[a-zA-Z_\xc0-\xd6\xd8-\xde][a-zA-Z0-9_\xc0-\xd6\xd8-\xde.]*(?:\[(?!]\|)(?:.*?)])?)\|((?:[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*(?::.+?)*\|?)+)}`', $compile, $matches)) {
         $compile = str_replace($matches[0], $this->_filters($matches[2], $matches[3], $matches[1]), $compile);
       }
     }
