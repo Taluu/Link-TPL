@@ -175,7 +175,7 @@ final class Talus_TPL_Filters {
      * @param string $finish chaine de caractère à appliquer en fin si $str est coupée.
      * @return string
      */
-    function cut($arg, $max = 50, $finish = '...'){
+    public static function cut($arg, $max = 50, $finish = '...'){
       if (strlen($arg) <= $max){
         return $arg;
       }
@@ -196,13 +196,16 @@ final class Talus_TPL_Filters {
      * @param string $arg Texte à parser
      * @return string
      */
-    function linebreaks($arg){
+    public static function linebreaks($arg){
       $arg = str_replace(array("\r\n", "\r"), "\n", $arg);
       
       $paras = preg_split("`\n{2,}`si", $arg);
-      array_walk($paras, 'nl2br');
 
-      return '<p>' . implode('</p>' . PHP_EOL . PHP_EOL . '<p>', $params) . '</p>';
+      foreach ($paras as &$para) {
+        $para = str_replace("\n", '<br />' . "\n", $para);
+      }
+
+      return '<p>' . implode('</p>' . PHP_EOL . PHP_EOL . '<p>', $paras) . '</p>';
     }
 }
 
