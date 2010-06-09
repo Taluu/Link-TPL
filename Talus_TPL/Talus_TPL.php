@@ -314,9 +314,7 @@ class Talus_TPL {
       // -- Retrait du deuxieme paramètre ($cache) si nombre de paramètres > 2
       if (func_num_args() > 2) {
         $tpl = func_get_args();
-        array_shift($tpl); array_shift($tpl);
-
-        $tpl = func_get_arg(0) + $tpl;
+        array_shift($tpl); array_shift($tpl); array_unshift($tpl, func_get_arg(0));
       }
 
       foreach ($tpl as &$file) {
