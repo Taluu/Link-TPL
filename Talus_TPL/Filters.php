@@ -194,7 +194,7 @@ final class Talus_TPL_Filters {
    * @return string
    */
   public static function paragraphy($arg){
-    $arg = str_replace(array("\r\n", "\r"), "\n", $arg);
+    $arg = str_replace(PHP_EOL, "\n", $arg);
 
     $paras = preg_split("`\n{2,}`si", $arg);
 
