@@ -142,22 +142,20 @@ final class Talus_TPL_Filters {
   }
 
   /**
-   * Créé le slug du nom de l'objet, et le renvoi
-   * Méthode venant du projet Jobeet par le tutoriel Symfony
+   * Créé le slug du nom de l'objet, et le renvoi.
+   * Méthode venant du projet Jobeet par le tutoriel Practical Symfony
    *
    * @link http://www.symfony-project.org Framework Symfony
-   * @return string
+   * @return string Slug de l'argument, n-a si non valide.
    */
   static public function slugify($arg) {
-    $arg = preg_replace('~[^\\pL\d]+~u', '-', $arg);
-    $arg = trim($arg, '-');
+    $arg = trim(preg_replace('`[^\\pL\d]+`u', '-', trim($arg)), '-');
 
     if (function_exists('iconv')) {
       $arg = iconv('utf-8', 'us-ascii//TRANSLIT', $arg);
     }
 
-    $arg = strtolower($arg);
-    $arg = preg_replace('~[^-\w]+~', '', $arg);
+    $arg = preg_replace('`[^-\w]+`', '', strtolower($arg));
 
     if (!$arg) {
       $arg = 'n-a';
