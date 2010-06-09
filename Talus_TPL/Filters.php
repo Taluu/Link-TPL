@@ -199,7 +199,7 @@ final class Talus_TPL_Filters {
     $paras = preg_split("`\n{2,}`si", $arg);
 
     foreach ($paras as &$para) {
-      $para = str_replace("\n", '<br />' . "\n", $para);
+      $para = str_replace("\n", '<br />' . PHP_EOL, $para);
     }
 
     return '<p>' . implode('</p>' . PHP_EOL . PHP_EOL . '<p>', $paras) . '</p>';
