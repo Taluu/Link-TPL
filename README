@@ -1,1 +1,7 @@
 Version 1.8.0 gelée et prête à être distribuée.
+
+Nouvelle branche crée ; la branche future. La master est différenciée au cas où des bugs pourraient être trouvés dans la version gelée de la 1.8.0 et qui ne peuvent attendre la prochaine version (représentée par future).
+
+De même, le tag 1.8.0 ayant été pas mal de fois déplacé, pensez à bien faire un pull complet du projet si vous désirez avoir le projet sous la main (révision 1.8.0 : 7711a).
+
+Des tags (bon, UN : 1.7.0) ont été ajoutés sur de vieilles révisions.
