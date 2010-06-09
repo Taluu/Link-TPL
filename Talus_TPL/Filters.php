@@ -193,7 +193,7 @@ final class Talus_TPL_Filters {
    * @param string $arg Texte à parser
    * @return string
    */
-  public static function linebreaks($arg){
+  public static function paragraphy($arg){
     $arg = str_replace(array("\r\n", "\r"), "\n", $arg);
 
     $paras = preg_split("`\n{2,}`si", $arg);
