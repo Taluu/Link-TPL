@@ -44,14 +44,13 @@ class Talus_TPL_Compiler implements Talus_TPL_Compiler_Interface {
     SET = 1,
     FILTERS = 2,
     INCLUDES = 4,
-    FUNCTIONS = 8,
-    FOREACHS = 16,
-    CONDITIONS = 32,
-    CONSTANTS = 64,
+    FOREACHS = 8,
+    CONDITIONS = 16,
+    CONSTANTS = 32,
     
-    BASICS = 36,
-    DEFAULTS = 119,
-    ALL = 127;
+    BASICS = 20,
+    DEFAULTS = self::ALL,
+    ALL = 63;
   
   /**
    * Constructeur du Compilateur. Initialise les paramètres avec les valeurs
@@ -64,8 +63,6 @@ class Talus_TPL_Compiler implements Talus_TPL_Compiler_Interface {
     $this->parameter('set_compact', false);
     $this->parameter('namespace', '');
   }
-  
-  public static function self(){} /** @deprecated **/
   
   /**
    * Réglage / Récupération de la valeur d'un paramètre
@@ -104,11 +101,6 @@ class Talus_TPL_Compiler implements Talus_TPL_Compiler_Interface {
       while (preg_match('`\{(?:(KEY|VALUE|GLOB),)?(\$?[a-zA-Z_\xc0-\xd6\xd8-\xde][a-zA-Z0-9_\xc0-\xd6\xd8-\xde.]*(?:\[(?!]\|)(?:.*?)])?)\|((?:[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*(?::.+?)*\|?)+)}`', $compile, $matches)) {
         $compile = str_replace($matches[0], $this->_filters($matches[2], $matches[3], $matches[1]), $compile);
       }
-    }
-    
-    // -- Appels de fonctions (Déprécié)
-    if ($this->parameter('parse') & self::FUNCTIONS) {
-      $compile = preg_replace_callback('`<' . $nspace . 'call ' . $nspace . 'name="([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)"((?: ' . $nspace . 'arg="[^"]*?")*) />`', array($this, '_callFunction'), $compile);
     }
     
     // -- Les blocs
@@ -192,11 +184,6 @@ class Talus_TPL_Compiler implements Talus_TPL_Compiler_Interface {
       }
     }
 
-    // -- Les définitions de fonctions (Déprécié)
-    if ($this->parameter('parse') & self::FUNCTIONS) {
-      $compile = preg_replace_callback('`<' . $nspace . 'function ' . $nspace . 'name="([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)"((?: ' . $nspace . 'arg="[A-Z_\xc0-\xd6\xd8-\xde][A-Z0-9_\xc0-\xd6\xd8-\xde]*")*)>(.+?)</function>`s', array($this, '_defineFunction'), $compile);
-    }
-    
     // -- Les str_replace (moins de ressources que les preg_replace !)
     $compile = str_replace(array_keys($noRegex), array_values($noRegex), $compile);
 
@@ -234,7 +221,7 @@ class Talus_TPL_Compiler implements Talus_TPL_Compiler_Interface {
    * @param array $match Capture de la regex
    * @return string
    * @see self::compile()
-   * @see 97
+   * @see #97
    */
   protected function _block(array $match){
     /*
@@ -269,78 +256,6 @@ class Talus_TPL_Compiler implements Talus_TPL_Compiler_Interface {
      */
     return sprintf('<?php if (%1$s) : %2$s = &%3$s; $__tpl_block_stack[] = \'%4$s\'; foreach (%2$s as &$__tplBlock[\'%4$s\']){ ?>',
                    $cond, $ref, $block, $match[1]);
-  }
-  
-  /**
-   * Parse les déclarations de fonctions
-   *
-   * @param array $matches Capture de la regex
-   * @return string syntaxe de définition de la fonction
-   * @see self::_compile()
-   * @see #159
-   *
-   * @deprecated
-   */
-  protected function _defineFunction(array $matches){
-    // -- Notice pour deprecated
-    trigger_error('Les fonctions TPL sont maintenant dépréciées ; Veuillez mettre à jour votre script TPL pour les inclusions paramétrées.', E_USER_DEPRECATED);
-
-    $nspace = $this->parameter('namespace');
-    $php = sprintf('<?php function __tpl_%s(Talus_TPL $tpl, ', $matches[1]);
-
-    if (!empty($nspace)) {
-      $nspace .= ':';
-    }
-    
-    // -- Demande d'arguments...
-    if (!empty($matches[2])) {
-      $matches[2] = ltrim(mb_substr($matches[2], 5 + mb_strlen($nspace), -1));
-      $args = explode(sprintf('" %sarg=" ', $nspace), $matches[2]);
-
-      foreach ($args as &$arg) {
-        $php .= sprintf('$%s, ', $arg);
-      }
-    }
-    
-    $php = rtrim($php, ', ') . '){ $__tpl_vars = $tpl->set(null); ?>';
-    
-    $script = preg_replace('`\$__tpl_vars__([A-Z_\xc0-\xd6\xd8-\xde][A-Z0-9_\xc0-\xd6\xd8-\xde]*)`', '$$1', $matches[3]);
-    $script = preg_replace('`\$GLOB,([A-Z_\xc0-\xd6\xd8-\xde][A-Z0-9_\xc0-\xd6\xd8-\xde]*)`', '$__tpl_vars[\'$1\']', $script );
-    
-    return sprintf('%1$s%2$s<?php } ?>', $php, $script);
-  }
-  
-  /**
-   * Parse les appels de fonctions
-   *
-   * @param array $matches Capture de la regex
-   * @return string syntaxe à utiliser pour appeler la fonction
-   * @see self::_compile()
-   * @see #249
-   * 
-   * @deprecated
-   */
-  protected function _callFunction(array $matches){
-    // -- Notice pour deprecated
-    trigger_error('Les fonctions TPL sont maintenant dépréciées ; Veuillez
-                   mettre à jour votre script TPL pour les inclusions paramétrées.', E_USER_DEPRECATED);
-    
-    $nspace = $this->parameter('namespace');
-    $php = sprintf('<?php __tpl_%s($tpl, ', $matches[1]);
-
-    if (!empty($nspace)) {
-      $nspace .= ':';
-    }
-    
-    if (!empty($matches[2])) {
-      $args = explode(sprintf('" %sarg="', $nspace), mb_substr(ltrim($matches[2]), 5 + mb_strlen($nspace), -1));
-      
-      foreach ($args as &$arg ){
-        $php .= $this->_escape($arg) . ', ';
-      }
-    }
-    
-    return rtrim($php, ', ') . '); ?>';
   }
   
   /**

@@ -21,10 +21,12 @@
  * @copyright ©Talus, Talus' Works 2008+
  * @link http://www.talus-works.net Talus' Works
  * @license http://www.gnu.org/licenses/lgpl.html Lesser GNU Public License 3+
- * @version $Id$
  */
 
-## 1.7.0 ==> 1.8.0 (Sortie : ??/??/10)
+## 1.8.0 ==> ?.?.? (Sortie : ??/??/??)
+  #DEL : Fonctions TPL
+
+## 1.7.0 ==> 1.8.0 (Sortie : ??/06/10)
   #ADD : Notice si des variables n'ont pas été correctement importées lors de l'exec cache
   #ADD : Argument "exec" pour Talus_TPL::str(), pour exécuter ou non le code
   #ADD : Possibilité de parser plusieurs templates à la suite pour parse()
