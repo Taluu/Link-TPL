@@ -364,8 +364,7 @@ class Talus_TPL {
    */
   public function str($str, $exec = true) {
     if (empty($str)) {
-      throw new Talus_TPL_Parse_Exception('Aucune chaine spécifiée.');
-      return false;
+      return '';
     }
 
     // -- Compilation
