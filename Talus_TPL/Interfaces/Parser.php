@@ -1,7 +1,6 @@
 <?php
 /**
- * Interface pour le compilateur de tpl.
- * (Facilite la Dependency Injection)
+ * Interface to implement a new Parser for the templates.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,26 +23,25 @@
  * @link http://www.talus-works.net Talus' Works
  * @link http://www.slideshare.net/fabpot/dependency-injection-with-php-53 Slideshare DI
  * @license http://www.gnu.org/licenses/lgpl.html LGNU Public License 3+
- * @version $Id$
  */
 
-interface Talus_TPL_Compiler_Interface extends Talus_TPL_Dependency_Interface {
+interface Talus_TPL_Parser_Interface extends Talus_TPL_Dependency_Interface {
   /**
-   * Setter pour les paramètres de compilation
+   * Accessor for a given parameter
    *
-   * @param string $name Nom du paramètre
-   * @param mixed $val Valeur du paramètre
-   * @return mixed Valeur du paramètre $name
+   * @param string $param Parameter's name
+   * @param mixed $value Parameter's value (if setter)
+   * @return mixed Parameter's value
    */
   public function parameter($name, $val = null);
 
   /**
-   * Compile la chaîne de caractère $str
+   * Transform a TPL syntax towards an optimized PHP syntax
    *
-   * @param string $str Chaîne à compiler
-   * @return string Code PHP résultant
+   * @param string $script TPL script to parse
+   * @return string
    */
-  public function compile($str);
+  public function parse($str);
 }
 
 /*

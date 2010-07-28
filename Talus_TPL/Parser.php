@@ -1,6 +1,6 @@
 <?php
 /**
- * Compilateur de Talus' TPL.
+ * Parser for Talus' TPL's templates scripts.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,22 +22,21 @@
  * @copyright ©Talus, Talus' Works 2008+
  * @link http://www.talus-works.net Talus' Works
  * @license http://www.gnu.org/licenses/gpl.html GNU Public License 2+
- * @version $Id$
  */
- 
-// -- Si PHP < 5.3, déclaration de E_USER_DEPRECATED et de la classe Closure
+
+// -- If PHP < 5.3, emulating E_USER_DEPRECATED & Closure's class
 if (version_compare(PHP_VERSION, '5.3.0', '<')) {
   define('E_USER_DEPRECATED', E_USER_NOTICE);
   //final class Closure {}
 }
 
 /**
- * "Compilateur" (ou plutôt Interpréteur) de templates
+ * Template's Parser
  *
- * Cette classe gère la transformation d'un code Talus TPL en un code PHP
- * optimisé et interprétable par PHP.
+ * This class handle the transformation from a Talus TPL code to an optimized
+ * PHP code, which can be used by PHP.
  */
-class Talus_TPL_Compiler implements Talus_TPL_Compiler_Interface {
+class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
   protected $_parameters = array();
     
   const
@@ -49,12 +48,11 @@ class Talus_TPL_Compiler implements Talus_TPL_Compiler_Interface {
     CONSTANTS = 32,
     
     BASICS = 20,
-    DEFAULTS = self::ALL,
+    DEFAULTS = 63,
     ALL = 63;
   
   /**
-   * Constructeur du Compilateur. Initialise les paramètres avec les valeurs
-   * par défaut.
+   * Initialisation
    *
    * @return void
    */
@@ -65,11 +63,11 @@ class Talus_TPL_Compiler implements Talus_TPL_Compiler_Interface {
   }
   
   /**
-   * Réglage / Récupération de la valeur d'un paramètre
+   * Accessor for a given parameter
    *
-   * @param string $param Nom du paramètre
-   * @param mixed $value Valeur du paramètre
-   * @return mixed Valeur du paramètre
+   * @param string $param Parameter's name
+   * @param mixed $value Parameter's value (if setter)
+   * @return mixed Parameter's value
    */
   public function parameter($param, $value = null) {
     if ($value !== null) {
@@ -80,14 +78,14 @@ class Talus_TPL_Compiler implements Talus_TPL_Compiler_Interface {
   }
   
   /**
-   * Transforme une chaine en syntaxe TPL vers une syntaxe PHP.
+   * Transform a TPL syntax towards an optimized PHP syntax
    * 
-   * @param string $compile Code TPL à compiler
+   * @param string $script TPL script to parse
    * @return string
    */
-  public function compile($compile){
-    $compile = str_replace('<?' ,'<?php echo \'<?\'; ?>', $compile);
-    $compile = preg_replace('`/\*.*?\*/`s', '', $compile);
+  public function parse($script){
+    $script = str_replace('<?' ,'<?php echo \'<?\'; ?>', $script);
+    $script = preg_replace('`/\*.*?\*/`s', '', $script);
     
     $nspace = $this->parameter('namespace');
 
@@ -95,26 +93,26 @@ class Talus_TPL_Compiler implements Talus_TPL_Compiler_Interface {
       $nspace .= ':';
     }
     
-    // -- Utilisation de filtres (parsage récursif)
+    // -- Filter's transformations
     if ($this->parameter('parse') & self::FILTERS) {
       $matches = array();
-      while (preg_match('`\{(?:(KEY|VALUE|GLOB),)?(\$?[a-zA-Z_\xc0-\xd6\xd8-\xde][a-zA-Z0-9_\xc0-\xd6\xd8-\xde.]*(?:\[(?!]\|)(?:.*?)])?)\|((?:[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*(?::.+?)*\|?)+)}`', $compile, $matches)) {
-        $compile = str_replace($matches[0], $this->_filters($matches[2], $matches[3], $matches[1]), $compile);
+      while (preg_match('`\{(?:(KEY|VALUE|GLOB),)?(\$?[a-zA-Z_\xc0-\xd6\xd8-\xde][a-zA-Z0-9_\xc0-\xd6\xd8-\xde.]*(?:\[(?!]\|)(?:.*?)])?)\|((?:[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*(?::.+?)*\|?)+)}`', $script, $matches)) {
+        $script = str_replace($matches[0], $this->_filters($matches[2], $matches[3], $matches[1]), $script);
       }
     }
     
-    // -- Les blocs
-    $compile = preg_replace_callback('`<' . $nspace . 'block ' . $nspace . 'name="([a-z_\xe0-\xf6\xf8-\xff][a-z0-9_\xe0-\xf6\xf8-\xff]*)"(?: ' . $nspace . 'parent="([a-z_\xe0-\xf6\xf8-\xff][a-z0-9_\xe0-\xf6\xf8-\xff]*)")?>`', array($this, '_block'), $compile);
+    // -- Blocks
+    $script = preg_replace_callback('`<' . $nspace . 'block ' . $nspace . 'name="([a-z_\xe0-\xf6\xf8-\xff][a-z0-9_\xe0-\xf6\xf8-\xff]*)"(?: ' . $nspace . 'parent="([a-z_\xe0-\xf6\xf8-\xff][a-z0-9_\xe0-\xf6\xf8-\xff]*)")?>`', array($this, '_block'), $script);
     
     // -- Inclusions
     if ($this->parameter('parse') & self::INCLUDES) {
-      $compile = preg_replace_callback('`<' . $nspace . '(include|require) ' . $nspace . 'tpl="((?:.+?\.html(?:\?[^\"]*)?)|(?:\{\$(?:[a-z_\xe0-\xf6\xf8-\xff][a-z0-9_\xe0-\xf6\xf8-\xff]*\.)?[A-Z_\xc0-\xd6\xd8-\xde][A-Z0-9_\xc0-\xd6\xd8-\xde]*(?:\[(?!]})(?:.*?)])?}))"(?: ' . $nspace . 'once="(true|false)")? />`', array($this, '_includes'), $compile);
+      $script = preg_replace_callback('`<' . $nspace . '(include|require) ' . $nspace . 'tpl="((?:.+?\.html(?:\?[^\"]*)?)|(?:\{\$(?:[a-z_\xe0-\xf6\xf8-\xff][a-z0-9_\xe0-\xf6\xf8-\xff]*\.)?[A-Z_\xc0-\xd6\xd8-\xde][A-Z0-9_\xc0-\xd6\xd8-\xde]*(?:\[(?!]})(?:.*?)])?}))"(?: ' . $nspace . 'once="(true|false)")? />`', array($this, '_includes'), $script);
     }
 
-    // -- Regex non complexes qui n'ont pas besoin d'un traitement récursif
+    // -- Simple regex which doesn't need any recursive treatment.
     $not_recursives = array();
     
-    // -- Balises ne nécessitant pas de Regex
+    // -- No Regex (faster !)
     $noRegex = array(
       "</{$nspace}block>" => '<?php } unset($__tplBlock[array_pop($__tpl_block_stack)]); endif; ?>', 
       "<{$nspace}blockelse />" => '<?php } else : if (true) { $__tpl_block_stack[] = \'*foo*\'; ?>',
@@ -122,29 +120,30 @@ class Talus_TPL_Compiler implements Talus_TPL_Compiler_Interface {
       '{\\' =>  '{'
      );
     
-    // -- Regex non complexes qui ont besoin d'un traitement récursif
+    // -- Simple regex needing a recursive treatment
     $recursives = array(
-      // -- Variables simples
+      // -- Simple variables ({VAR1}, {VAR2[with][a][set][of][keys]}, ...)
       '`\{([A-Z_\xc0-\xd6\xd8-\xde][A-Z0-9_\xc0-\xd6\xd8-\xde]*(?:\[(?!]})(?:.*?)])?)}`' => '<?php echo $__tpl_vars__$1; ?>',
       '`\{\$([A-Z_\xc0-\xd6\xd8-\xde][A-Z0-9_\xc0-\xd6\xd8-\xde]*(?:\[(?!]})(?:.*?)])?)}`' => '$__tpl_vars__$1',
       
-      // -- Variables Blocs
+      // -- Block variables ({block.VAR1}, ...)
       '`\{([a-z_\xe0-\xf6\xf8-\xff][a-z0-9_\xe0-\xf6\xf8-\xff]*)\.([A-Z_\xc0-\xd6\xd8-\xde][A-Z0-9_\xc0-\xd6\xd8-\xde]*)(\[(?!]})(?:.*?)])?}`' => '<?php echo $__tplBlock[\'$1\'][\'$2\']$3; ?>',
       '`\{\$([a-z_\xe0-\xf6\xf8-\xff][a-z0-9_\xe0-\xf6\xf8-\xff]*)\.([A-Z_\xc0-\xd6\xd8-\xde][A-Z0-9_\xc0-\xd6\xd8-\xde]*)(\[(?!]})(?:.*?)])?}`' => '$__tplBlock[\'$1\'][\'$2\']$3'
      );
     
-    // -- Balise <set>
+    // -- <set> Tag
     if ($this->parameter('parse') & self::SET) {
       $not_recursives['`<' . $nspace . 'set ' . $nspace . 'var="([A-Z_\xc0-\xd6\xd8-\xde][A-Z0-9_\xc0-\xd6\xd8-\xde]*)(\[(?!]">)(?:.*?)])?">(?!"</set>)(.+?)</set>`'] = '<?php $__tpl_vars__$1$2 = \'$3\'; ?>';
     }
     
-    // -- Constantes
+    // -- Constants
     if ($this->parameter('parse') & self::CONSTANTS) {
       //[a-zA-Z_\xe0-\xf6\xf8-\xff\xc0-\xd6\xd8-\xde][a-zA-Z0-9_\xe0-\xf6\xf8-\xff\xc0-\xd6\xd8-\xde]*
       $not_recursives['`\{__([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)__}`i'] = '<?php echo $1; ?>';
+      $not_recursives['`\{__$([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)__}`i'] = '$1';
     }
     
-    // -- Balises de Conditions (<if>, <elseif>, <else>)
+    // -- Conditions tags (<if>, <elseif />, <else />)
     if ($this->parameter('parse') & self::CONDITIONS) {
       $not_recursives = array_merge($not_recursives, array(
         '`<' . $nspace . 'if ' . $nspace . 'cond(?:ition)?="(?!">)(.+?)">`' => '<?php if ($1) : ?>',
@@ -155,20 +154,20 @@ class Talus_TPL_Compiler implements Talus_TPL_Compiler_Interface {
       $noRegex["</{$nspace}if>"] = '<?php endif; ?>';
     }
     
-    // -- Balises <foreach>
+    // -- <foreach> tag
     if ($this->parameter('parse') & self::FOREACHS) {
       $not_recursives = array_merge($not_recursives, array(      
         // -- Foreachs
         '`<' . $nspace . 'foreach ' . $nspace . 'ar(?:ra)?y="\{\$([A-Z_\xc0-\xd6\xd8-\xde][A-Z0-9_\xc0-\xd6\xd8-\xde]*)}">`i' => '<?php foreach ({$$1} as $__tpl_foreach_key[\'$1\'] => &$__tpl_foreach_value[\'$1\']) : ?>',
         '`<' . $nspace . 'foreach ' . $nspace . 'ar(?:ra)?y="\{((?:(?:VALUE,)?\$[A-Z_\xc0-\xd6\xd8-\xde][A-Z0-9_\xc0-\xd6\xd8-\xde]*)(?:\[(?!]})(?:.*?)])?)}" ' . $nspace . 'as="\{\$([A-Z_\x7f-\xff][A-Z0-9_\x7f-\xff]*)}">`i' => '<?php foreach ({$1} as $__tpl_foreach_key[\'$2\'] => &$__tpl_foreach_value[\'$2\']) : ?>', 
         
-        // -- Clés Foreach
+        // -- Foreach keys
         '`\{KEY,([A-Z_\xc0-\xd6\xd8-\xde][A-Z0-9_\xc0-\xd6\xd8-\xde]*)}`i' => '<?php echo $__tpl_foreach_key[\'$1\']; ?>',
         '`\{KEY,\$([A-Z_\xc0-\xd6\xd8-\xde][A-Z0-9_\xc0-\xd6\xd8-\xde]*)}`i' => '$__tpl_foreach_key[\'$1\']'
        ));
        
       $recursives = array_merge($recursives, array(
-        // -- Valeurs Foreachs
+        // -- Foreach values
         '`\{VALUE,([A-Z_\xc0-\xd6\xd8-\xde][A-Z0-9_\xc0-\xd6\xd8-\xde]*)(\[(?!]})(?:.*?)])?}`' => '<?php echo $__tpl_foreach_value[\'$1\']$2; ?>',
         '`\{VALUE,\$([A-Z_\xc0-\xd6\xd8-\xde][A-Z0-9_\xc0-\xd6\xd8-\xde]*)(\[(?!]})(?:.*?)])?}`' => '$__tpl_foreach_value[\'$1\']$2'
        ));
@@ -176,43 +175,45 @@ class Talus_TPL_Compiler implements Talus_TPL_Compiler_Interface {
        $noRegex["</{$nspace}foreach>"] = '<?php endforeach; ?>';
     }
     
-    $compile = preg_replace(array_keys($not_recursives), array_values($not_recursives), $compile);
+    $script = preg_replace(array_keys($not_recursives), array_values($not_recursives), $script);
     
     foreach ($recursives as $regex => $replace) {
-      while(preg_match($regex, $compile)) {
-        $compile = preg_replace($regex, $replace, $compile);
+      while(preg_match($regex, $script)) {
+        $script = preg_replace($regex, $replace, $script);
       }
     }
+    
+    $script = str_replace(array_keys($noRegex), array_values($noRegex), $script);
 
-    // -- Les str_replace (moins de ressources que les preg_replace !)
-    $compile = str_replace(array_keys($noRegex), array_values($noRegex), $compile);
-
-    /* 
-     * On nettoie le code... De manière étendue ou simple suivant le paramètre
-     * "set_compact". Si il est activé, alors tout ce qui est considéré comme
-     * "vide" entre deux balises PHP (?><?php) est supprimé, les balises inclues.
+    /*
+     * Cleaning the newly made script...
      *
-     * Sinon, un simple str_replace de deux balises PHP est effectué.
+     * Depending on the value of the "set_compact" parameter, if it is on, everything
+     * considered as "emptyness" between two php tags (?><?php), meaning any spaces,
+     * newlines, tabs, or whatever will be cleaned, including the PHP tags in the
+     * middle.
+     *
+     * If it is off (by default), only the ?><?php tags will be removed.
      */
     if ($this->parameter('set_compact')) {
-      $compile = preg_replace('`\?>\s*<\?php`', '', $compile);
+      $script = preg_replace('`\?>\s*<\?php`', '', $script);
     } else {
-      $compile = str_replace('?><?php', '', $compile);
+      $script = str_replace('?><?php', '', $script);
     }
 
-    return $compile;
+    return $script;
   }
   
   /**
-   * Compile un code TPL donné
-   * Implémentation de __invoke() pour PHP >= 5.3
+   * Parse a TPL script
+   * Implementation of the magic method __invoke() for PHP >= 5.3
    *
-   * @param string $compile Code TPL à compiler
-   * @return string
-   * @see self::compile()
+   * @param string $script TPL Script to be parsed
+   * @return string PHP Code made
+   * @see self::parse()
    */
-  public function __invoke($compile) {
-    return $this->compile($compile);
+  public function __invoke($script) {
+    return $this->parse($script);
   }
     
   /**
@@ -221,17 +222,17 @@ class Talus_TPL_Compiler implements Talus_TPL_Compiler_Interface {
    * @param array $match Capture de la regex
    * @return string
    * @see self::compile()
-   * @see #97
+   * @see 97
    */
   protected function _block(array $match){
     /*
-     * Par défaut (absence de blocs parents), on a juste à récupérer le bloc
-     * à la racine... Ca sert à la fois de condition, et à la fois pour le nom
-     * du bloc.
+     * If there are no parent block, it means it is a root block ; We just need
+     * to fetch it thanks to the getter. It can be used as the if condition and
+     * for the block's name. This is the default behaviour.
      * 
-     * Sinon, il faut récupérer le bloc parent, désigner pour le "bloc"
-     * l'itération actuelle du parent, et pour la condition, verifier que le
-     * bloc existe.
+     * Else, we have to fetch the parent block, get the current iteration, and
+     * associate it with the current block. For the if condition, we just need
+     * to check if the block is defined within the parent block.
      */
     $cond = $block = sprintf('$tpl->block(\'%s\', null)', $match[1]);
 
@@ -240,31 +241,35 @@ class Talus_TPL_Compiler implements Talus_TPL_Compiler_Interface {
       $cond = sprintf('isset(%s)', $block);
     }
     
-    // -- Variable référençant le bloc actuel
+    // -- Referencing variable for this block.
     $ref = '$__tpl_' . sha1(uniqid(mt_rand(), true));
     
-    /* 
-     * Afin de pouvoir faire un foreach par référence, celui-ci demandant
-     * forcément une variable (et pas une fonction) pour pouvoir faire une
-     * itération par référence, on est ainsi obligé de créer un bloc
-     * temporaire pour récupérer la référence retournée par $tpl->getBlock...
+    /*
+     * In order to make a foreach with referenced values, which wants a variable
+     * (and not a function), we have to create a temporary variable to get the
+     * reference given by $tpl->getBlock (or the parent block)...
      *
-     * Aussi, pour éviter un éventuel conflit de référenes (bloc appelé deux
-     * fois par exemple), qui est un bug connu de PHP, on instaure une sorte de
-     * "pile de noms de blocs" en cours, qu'on bidouille pour supprimer le
-     * symbole référence créée par le foreach (phew).
+     * To avoid a conflict between two references (e.g the block is called two
+     * times in a row), which is a acknowledged bug in PHP (#29992), we have to
+     * set a kind of stack for the block's name, insert the current block's name
+     * at the top and removing it at the end of the loop, deleting the reference
+     * made by the foreach (phew).
      */
-    return sprintf('<?php if (%1$s) : %2$s = &%3$s; $__tpl_block_stack[] = \'%4$s\'; foreach (%2$s as &$__tplBlock[\'%4$s\']){ ?>',
+    return sprintf('<?php if (%1$s) : 
+                            %2$s = &%3$s; $__tpl_block_stack[] = \'%4$s\';
+                            foreach (%2$s as &$__tplBlock[\'%4$s\']){ ?>',
                    $cond, $ref, $block, $match[1]);
   }
   
   /**
-   * Parse les filtres $filters pour une variable $var donnée
+   * Filters implementation
    *
-   * @param mixed $var Variable à parser
-   * @param string $filters Filtres à parser
-   * @param string $type Type de la variable (pour {TYPE,VAR})
-   * @return string variable filtrée
+   * Parse all the $filters given for the var $var
+   *
+   * @param mixed $var Variable
+   * @param string $filters Filters
+   * @param string $type Variable's type (for {TYPE,VAR})
+   * @return string filtered var
    */
   protected function _filters($var = '', $filters = '', $type = null){
     $brackets = 0;
@@ -273,12 +278,11 @@ class Talus_TPL_Compiler implements Talus_TPL_Compiler_Interface {
     $filters = array_reverse(array_filter(explode('|', $filters)));
     
     /*
-     * Si on souhaite afficher la variable (absence du $ significatif), il
-     * faut alors bidouiller la variable pour qu'elle ait un $... En étant
-     * affichée, et non retournée.
+     * If we wish to print the variable (the significative $ is missing), we have
+     * to set up the variable to have a $... Being printed and not returned.
      *
-     * Si c'est le cas, on a juste besoin de rajouter le $ devant le nom
-     * de la variable...
+     * Weh just have to add the $ in front of the name of the variable, and clearly
+     * say we have to print the result.
      */
     if ($return[1] != '$') {
       $return = '{$' . mb_substr($return, 1);
@@ -286,9 +290,8 @@ class Talus_TPL_Compiler implements Talus_TPL_Compiler_Interface {
     }
     
     /*
-     * Si on a affaire à une variable du type {TYPE,VAR}, on doit alors
-     * remplacer la première accolade ouvrante "{" (caractéristique des
-     * variables TPL) par "{TYPE,"
+     * If it is a typed variable ({TYPE,VAR}), we have to replace the first opening
+     * { by {TYPE,
      */
     if (!empty($type)) {
       $return = sprintf('{%1$s,%2$s', $type, mb_substr($return, 1));
@@ -298,14 +301,14 @@ class Talus_TPL_Compiler implements Talus_TPL_Compiler_Interface {
       $params = explode(':', $filter);
       $fct = array_shift($params);
 
-      // -- Filtre non déclaré ?
+      // -- unimplemented filter ?
       if (!method_exists('Talus_TPL_Filters', $fct)){
         trigger_error("Le filtre \"$fct\" n'existe pas, et sera donc ignoré.\n\n",
                       E_USER_NOTICE);
         continue;
       }
 
-      // -- Paramètres
+      // -- Filter's Parameters
       if (count($params) > 0) {
         foreach ($params as &$param) {
           $param = $this->_escape($param);
@@ -316,11 +319,10 @@ class Talus_TPL_Compiler implements Talus_TPL_Compiler_Interface {
         $params = '';
       }
       
-      // -- Ajout du filtre
       $return = sprintf('Talus_TPL_Filters::%1$s(%2$s%3$s)', $fct, $return, $params);
     }
     
-    // -- Il faut afficher le contenu de la variable plutôt que de la renvoyer
+    // -- Printing the return rather than returning it
     if ($toPrint === true){
       $return = sprintf('<?php echo %s; ?>', $return);
     }
@@ -329,16 +331,16 @@ class Talus_TPL_Compiler implements Talus_TPL_Compiler_Interface {
   }
   
   /**
-   * Parse les inclusions
+   * Inclusions' Parser
    *
-   * @param array $match Capture de la Regex
-   * @return string fonction d'inclusion tpl
+   * @param array $match Regex matchs
+   * @return string include function with the right parameters
+   * @todo Find a better way to handle variables in the QS
    */
   protected function _includes(array $match) {
     $qs = '';
 
-    // -- Présence d'un Query String
-    // TODO : Trouver un meilleur moyen pour les vars...
+    // -- A QS was found
     if (strpos($match[2], '?') !== false) {
       list($match[2], $qs) = explode('?', $match[2], 2);
       $qs = sprintf(' . "?%s"', str_replace(array('{', '}'), array('{{', '}}'), $qs));
@@ -351,12 +353,13 @@ class Talus_TPL_Compiler implements Talus_TPL_Compiler_Interface {
   }
   
   /**
-   * Echappe une valeur, suivant que ce soit une chaine de caractères, une
-   * variable, ou des nombres.
+   * Escape a given value
    *
-   * @param string $arg Valeur à échapper
-   * @param string $delim Délimiteur de la chaine
-   * @return string Valeur échappée
+   * Will act accordingly if it is a string, a variable, or numbers
+   *
+   * @param string $arg Value to escape
+   * @param string $delim String's delimiters
+   * @return string Escaped value
    */
   protected function _escape($arg, $delim = '\'') {
     if (($arg[0] != $delim || $arg[mb_strlen($arg) - 1] != $delim)

@@ -1,5 +1,15 @@
-Version 1.8.0 gelée et prête à être distribuée.
+The project was just freshly translated in english.
 
-Nouvelle branche crée ; la branche future. La master est différenciée au cas où des bugs pourraient être trouvés dans la version gelée de la 1.8.0 et qui ne peuvent attendre la prochaine version (représentée par future).
+Important Tags :
+  -> 1.8.0.1  : 4323d7e40728b4a626f3da151902df50f0a841d7
+  -> 1.8.0    : 982fd61826653d8a4cb1605b0854913523d609df
+  -> 1.7.0    : 1218f0e88e2d60b0287df00ffd6afdcf3e298fe2
 
-De même, le tag 1.8.0 ayant été pas mal de fois déplacé, pensez à bien faire un pull complet du projet si vous désirez avoir le projet sous la main (révision 1.8.0 : 7711a).
+Branches :
+  -> Master   : 4323d7e40728b4a626f3da151902df50f0a841d7
+  Freezed for a certain amount of time, in case of found bugs into the 1.8.0
+
+  -> "Future" : lastest commit
+  Used to develop further the project, preparing new versions. Will be merged
+  into Master when 1.8.0 will be mature... And exists again when a new version
+  will be released.

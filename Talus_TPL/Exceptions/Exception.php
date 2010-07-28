@@ -1,6 +1,6 @@
 <?php
 /**
- * Gestion des exceptions pour Talus' TPL
+ * Top Exception for the whole library
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

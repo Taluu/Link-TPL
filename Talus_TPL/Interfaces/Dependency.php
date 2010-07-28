@@ -1,7 +1,6 @@
 <?php
 /**
- * Interface pour les classes acceptant l'injection de dépendances
- * (Facilite la Dependency Injection)
+ * Top Interface used to implement the engines for the Dependency Injection
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,7 +23,6 @@
  * @link http://www.talus-works.net Talus' Works
  * @link http://www.slideshare.net/fabpot/dependency-injection-with-php-53 Slideshare DI
  * @license http://www.gnu.org/licenses/lgpl.html LGNU Public License 3+
- * @version $Id$
  */
 
 interface Talus_TPL_Dependency_Interface {}

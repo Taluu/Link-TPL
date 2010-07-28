@@ -1,7 +1,6 @@
 <?php
 /**
- * Interface pour le cache des templates.
- * (Facilite la Dependency Injection)
+ * Interface to implement a new Cache engine for the templates
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,52 +23,53 @@
  * @link http://www.talus-works.net Talus' Works
  * @link http://www.slideshare.net/fabpot/dependency-injection-with-php-53 Slideshare DI
  * @license http://www.gnu.org/licenses/lgpl.html LGNU Public License 3+
- * @version $Id$
  */
 
 interface Talus_TPL_Cache_Interface extends Talus_TPL_Dependency_Interface {
   /**
-   * Définit le répertoire, ou plutôt l'emplacement des fichiers caches
-   * (dossier si ftp, base de données si cache sql, ...)
+   * Accessor for $this->_dir
    *
-   * Si $dir est à null, le dossier courant est renvoyé.
+   * $dir should be either a directory for FTP Cache, a DB if SQL, ...
    *
-   * @param string|null $dir Dossier à définir
+   * @param string $dir Directory for the cache
+   * @return string
    */
   public function dir($dir = null);
 
   /**
-   * Définit le tpl à mettre en cache (ou plutôt l'id du tpl en compilation).
-   * Agit aussi comme getter si $file est à null
+   * Sets the id to use for the cache engine
    *
-   * @param string|null $file Fichier concerné
+   * @param string $file File's name
+   * @return array Information on  the file
    */
   public function file($file = null);
 
   /**
-   * Indique si le cache est expiré pour un certain template (et si il faut donc
-   * le recompiler)
+   * Check if the cache file is still valid
    *
-   * @param integer $time Date à comparer
+   * @param integer $time Last modification's timestamp
+   * @return boolean true if still valid, false if not
    */
   public function isValid($time);
 
   /**
-   * Insère le résultat d'une compilation (ou plutôt de la variable $data) dans
-   * le cache correspondant
+   * Write the content in the cache file
    *
-   * @param string $data Code PHP à insérer
+   * @param string $data Data to be written
+   * @return boolean
    */
   public function put($data);
 
   /**
-   * Détruit le cache donné pour le tpl actuel.
+   * Delete the current cache id.
+   *
+   * @return void
    */
   public function destroy();
 
   /**
    * Execute le contenu du cache
-   * 
+   *
    * @param Talus_TPL $tpl TPL à executer
    */
   public function exec(Talus_TPL $tpl);

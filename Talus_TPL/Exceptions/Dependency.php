@@ -1,6 +1,6 @@
 <?php
 /**
- * Gestion des exceptions pour les injections de dépendance de Talus' TPL
+ * Dependencies Exceptions
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,7 +22,6 @@
  * @copyright ©Talus, Talus' Works 2007+
  * @link http://www.talus-works.net Talus' Works
  * @license http://www.gnu.org/licenses/lgpl.html Lesser GNU Public License 3+
- * @version $Id$
  */
 
 class Talus_TPL_Dependency_Exception extends Talus_TPL_Exception {}

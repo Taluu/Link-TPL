@@ -1,77 +1,74 @@
 <?php
 /**
- * Gestion du cache FTP de Talus' TPL.
+ * Filecache engine for Talus' TPL.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
- *      
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *      
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
- * MA 02110-1301, USA. 
+ * MA 02110-1301, USA.
  *
  * @package Talus' TPL
  * @author Baptiste "Talus" Clavié <clavie.b@gmail.com>
  * @copyright ©Talus, Talus' Works 2006+
  * @link http://www.talus-works.net Talus' Works
  * @license http://www.gnu.org/licenses/lgpl.html LGNU Public License 2+
- * @version $Id$
  */
 
-// -- Constantes pour les fichiers
+// -- File constants
 if (!defined('PHP_EXT')) {
   define('PHP_EXT', pathinfo(__FILE__, PATHINFO_EXTENSION));
 }
 
 /**
- * Gère le cache des TPLs (au niveau du FTP)
- * 
+ * Cache Handler (file)
+ *
  * @package Talus' TPL
  * @author Baptiste "Talus" Clavié <clavie.b@gmail.com>
  * @since 1.4.0
  */
 class Talus_TPL_Cache implements Talus_TPL_Cache_Interface {
-  protected 
+  protected
     $_dir = null,
     $_file = array();
-  
-  public static function self(){} /** @deprecated **/
-  
+
   /**
-   * Accessor pour $this->_dir
+   * Accessor for $this->_dir
    *
-   * @param string $dir Chemin du cache
+   * @param string $dir Directory for the cache
    * @return string
    */
   public function dir($dir = null) {
     if ($dir !== null) {
       $dir = rtrim($dir, '/');
-      
+
       if (!is_dir($dir)){
-        throw new Talus_TPL_Dir_Exception(array('Dossier "%s" non existant.', $dir));
+        throw new Talus_TPL_Dir_Exception(array('The directory <b>"%s"</b> doesn\'t exist.', $dir));
         return false;
       }
-      
+
       $this->_dir = $dir;
     } elseif ($this->_dir === null) {
       $this->_dir = sys_get_temp_dir();
     }
-    
+
     return $this->_dir;
   }
-  
+
   /**
-   * Définit le fichier à stocker
+   * Set the file to use
    *
-   * @param string $file Nom du fichier à stocker
-   * @return array Informations sur le fichier en cache
+   * @param string $file File's name
+   * @return array Information on  the file
    */
   public function file($file = null) {
     if ($file !== null) {
@@ -94,47 +91,46 @@ class Talus_TPL_Cache implements Talus_TPL_Cache_Interface {
 
     return $this->_file;
   }
-  
+
   /**
-   * Indique si le cache est toujours valide
+   * Check if the cache file is still valid
    *
-   * @param integer $time Timestamp de dernière modif du fichier
-   * @return boolean Vrai si le cache est encore valide, faux sinon.
+   * @param integer $time Last modification's timestamp
+   * @return boolean true if still valid, false if not
    */
   public function isValid($time) {
     $file = $this->file(null);
     return $file['last_modif'] >= abs($time) && $file['size'] > 0;
   }
-  
+
   /**
-   * Ecrit le contenu dans le cache
+   * Write the content in the cache file
    *
-   * @param string $data Données à écrire
+   * @param string $data Data to be written
    * @return boolean
    */
   public function put($data) {
-    // -- Récupération des informations du fichier cache
     $file = $this->file(null);
 
-    // -- Imposition d'un LOCK maison
+    // -- Setting a homemade LOCK
     $lockFile = sprintf('%1$s/__tpl_flock__.%2$s', $this->dir(null), sha1($file['url']));
     $lock = @fclose(fopen($lockFile, 'x'));
 
     if (!$lock){
-      throw new Talus_TPL_Write_Exception('Ecriture en cache impossible');
+      throw new Talus_TPL_Write_Exception('Writing in the cache not possible for now');
       return false;
     }
 
     file_put_contents($file['url'], $data);
     chmod($file['url'], 0664);
 
-    // -- Retirement (suppression) du LOCK
+    // -- Removing the LOCK
     unlink($lockFile);
     return true;
   }
 
   /**
-   * Supprime le fichier cache.. Si il existe.
+   * Delete the cache file... If it exists.
    *
    * @return void
    */
@@ -143,38 +139,38 @@ class Talus_TPL_Cache implements Talus_TPL_Cache_Interface {
 
     if ($file !== array()) {
       unlink($file['url']);
+      unset($file);
     }
   }
-  
+
   /**
-   * Execute le contenu du fichier de cache (en l'incluant)
+   * Executes the file's content
    *
-   * @param Talus_TPL $tpl Objet TPL à utiliser lors de la lecture du cache
-   * @return bool status de l'execution
+   * @param Talus_TPL $tpl Templating object to be used in this file
+   * @return bool execution's status
    */
   public function exec(Talus_TPL $tpl) {
     $file = $this->file(null);
     $vars = $tpl->set(null);
 
     if ($file === array()) {
-      throw new Talus_TPL_Exec_Exception('Vous venez d\'essayer d\'executer aucun fichier...');
+      throw new Talus_TPL_Exec_Exception('Beware, this file is a ghost !');
       return false;
     }
 
     $varCount = extract($vars, EXTR_PREFIX_ALL | EXTR_REFS, '__tpl_vars_');
 
     if ($varCount < count($vars)) {
-      trigger_error('Certaines variables au nom invalide n\'ont pas pu être extraites...', E_USER_NOTICE);
+      trigger_error('Beware, some variables couldn\'t be extracted (invalid name maybe ?)...', E_USER_NOTICE);
     }
 
     include $file['url'];
-
     return true;
   }
-  
+
   /**
-   * Execute le contenu du fichier de cache (en l'incluant)
-   * Implémentation de __invoke() pour PHP >= 5.3
+   * Executes the file's content
+   * Implementation of the magic method __invoke() for PHP >= 5.3
    *
    * @param Talus_TPL $tpl Objet TPL à utiliser lors de la lecture du cache
    * @return bool

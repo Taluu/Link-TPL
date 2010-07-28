@@ -1,30 +1,40 @@
 /**
- * CHANGELOG de Talus' TPL.
+ * Talus' TPL's CHANGELOG.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
- *      
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *      
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
- * MA 02110-1301, USA. 
+ * MA 02110-1301, USA.
  *
  * @package Talus' TPL
- * @author Baptiste "Talus" Clavié <clavie.b@gmail.com> 
+ * @author Baptiste "Talus" Clavié <clavie.b@gmail.com>
  * @copyright ©Talus, Talus' Works 2008+
  * @link http://www.talus-works.net Talus' Works
  * @license http://www.gnu.org/licenses/lgpl.html Lesser GNU Public License 3+
  */
 
-## 1.8.0 ==> ?.?.? (Sortie : ??/??/??)
-  #DEL : Fonctions TPL
+## 1.8.0 ==> 1.?.? (Release : ??/??/??)
+  #ADD : The return of {__$CONSTANT__} tag !
+  #ADD : New filter : convertCase
+
+  #CHG : The filters minimize, maximize are now helpers of convertCase.
+  #CHG : Compiler now have a new name : Parser.
+  #CHG : Now, all the comments are in english.
+
+  #DEL : All the 1.7.0 deprecated functions are now removed.
+  #DEL : The tpl functions are now completely deleted.
+  #DEL : The filter ucwords was removed.
+  #DEL : @version tags
 
 ## 1.7.0 ==> 1.8.0 (Sortie : 12/06/10)
   #ADD : Notice si des variables n'ont pas été correctement importées lors de l'exec cache
@@ -52,7 +62,7 @@
   #FIX : Fix autoload pour les classes étant dans un dossier à part
   #FIX : Oubli apparent pour l'injection de dépendances ?
   #FIX : Regex pour le mode compact (/s => \s)
- 
+
 ## 1.6.0 ==> 1.7.0 (Sortie : 17/12/09)
   #ADD : Possibilité de parser et d'exécuter une chaine de caractère TPL
   #ADD : Par défaut, le répertoire de cache est le tmp du système.
@@ -83,11 +93,11 @@
   #CHG : Talus_TPL_Cache::file() renvoit une valeur.
   #CHG : Changements mineurs un peu partout
   #CHG : Condensation des attributs privés
-  
+
   #FIX : Fichiers de cache identiques pour /dir/file.html & /dir.file.html
   #FIX : Espace en trop lors de la déclaration de fonctions
   #FIX : Mauvaise fin de capture pour <set>
-  
+
   #DEL : Emulations de file_get|put_contents() de talus_tpl_cache.php
   #DEL : Talus_TPL_Cache::$_filemtime & Talus_TPL_Cache::$_filesize
   #DEL : Talus_TPL::$_cache & Talus_TPL::$_compiler
@@ -95,12 +105,12 @@
   #DEL : Talus__TPL_Compiler::$_namespace
   #DEL : Balise {__$CONSTANTE__}
   #DEL : Talus_TPL::_setFile()
-  
+
   #OBS : Fonctions TPL (à remplacer par les inclusions paramétrées)
   #OBS : Accessors pour des classes externes
 
   #TDO : Mieux gérer les vars dans les includes paramétrées
- 
+
 ## 1.5.1 ==> 1.6.0 (Sortie : 17/07/09)
   #ADD : Ajout de la récursivité pour les filtres (sauf arrays de dimension > 1)
   #ADD : Concernant set, possibilité de redéfinir la valeur d'une clé d'array
@@ -109,7 +119,7 @@
   #ADD : Ajout de la syntaxe <block name="enfant" parent="parent">
   #ADD : Ajout de la gestion de namespaces xml
 
-  #CHG : Changement de la référence utilisée pour les blocs et leurs variables 
+  #CHG : Changement de la référence utilisée pour les blocs et leurs variables
   #CHG : La méthode habituelle <block name="parent.enfant"> est dépréciée
   #CHG : new Talus_TPL_Compiler et new Talus_TPL_Cache ==> new self
   #CHG : Syntaxe de la balise de changement / assignement intpl
@@ -251,5 +261,5 @@
 
   #DEL : Plus possible de détruire UNE SEULE var.
   #DEL : Suppression des balises de fin ?>
-    
+
 /** EOF /**/
