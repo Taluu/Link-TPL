@@ -303,7 +303,7 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
 
       // -- unimplemented filter ?
       if (!method_exists('Talus_TPL_Filters', $fct)){
-        trigger_error("Le filtre \"$fct\" n'existe pas, et sera donc ignoré.\n\n",
+        trigger_error("The filter \"$fct\" does not exist, and thus shall be ignored.\n\n",
                       E_USER_NOTICE);
         continue;
       }
