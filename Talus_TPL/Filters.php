@@ -195,7 +195,7 @@ final class Talus_TPL_Filters {
    * @link http://www.symfony-project.org Symfony Framework
    * @return string $arg's slug, n-a if not valid.
    */
-  static public function slugify($arg) {
+  public static function slugify($arg) {
     $arg = trim(preg_replace('`[^\\pL\d]+`u', '-', trim($arg)), '-');
 
     if (function_exists('iconv')) {
@@ -253,6 +253,22 @@ final class Talus_TPL_Filters {
     }
 
     return '<p>' . implode('</p>' . PHP_EOL . PHP_EOL . '<p>', $paras) . '</p>';
+  }
+
+  /**
+   * Unescape a var (meaning she is "safe")
+   *
+   * @param string $arg Variable
+   * @param int $quote_style <b>[Optional]</b>
+   *                         <p>Like the htmlspecialchars and htmlentities
+   *                         functions you can optionally specify the quote_style
+   *                         you are working with.</p>
+   *                         See the description of these modes in htmlspecialchars.
+   *
+   * @return string unescaped var
+   */
+  public static function safe($arg, $quote_style = ENT_COMPAT) {
+    return htmlspecialchars_decode($arg, $quote_style);
   }
 }
 

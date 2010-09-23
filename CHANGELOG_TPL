@@ -23,12 +23,13 @@
  * @license http://www.gnu.org/licenses/lgpl.html Lesser GNU Public License 3+
  */
 
-## 1.8.0 ==> 1.?.? (Release : ??/??/??)
+## 1.8.0 ==> 1.9.0 ? (Release : ??/??/??)
+  #ADD : Possibility of setting default filters
   #ADD : The return of {__$CONSTANT__} tag !
-  #ADD : New filter : convertCase
+  #ADD : New filters : convertCase & safe
 
   #CHG : The filters minimize, maximize are now helpers of convertCase.
-  #CHG : Compiler now have a new name : Parser.
+  #CHG : Compiler have now a new name : Parser.
   #CHG : Now, all the comments are in english.
 
   #DEL : All the 1.7.0 deprecated functions are now removed.

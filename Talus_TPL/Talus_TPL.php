@@ -28,6 +28,10 @@ if (!defined('PHP_EXT')) {
   define('PHP_EXT', pathinfo(__FILE__, PATHINFO_EXTENSION));
 }
 
+if (!defined('E_USER_DEPRECATED')) {
+  define('E_USER_DEPRECATED', E_USER_NOTICE);
+}
+
 class Talus_TPL {
   protected
     $_root = './',
@@ -38,6 +42,9 @@ class Talus_TPL {
 
     $_blocks = array(),
     $_vars = array(),
+    $_references = array(),
+
+     $_autoFilters = array(),
 
     /**
      * @var Talus_TPL_Parser_Interface
@@ -172,8 +179,16 @@ class Talus_TPL {
    */
   public function &set($vars, $value = null){
     if (is_array($vars)) {
+      foreach ($this->autoFilters(null) as $filter) {
+        $vars = $this->_mapRecursive($vars, array('Talus_TPL_Filters', $filter));
+      }
+
       $this->_vars = array_merge($this->_vars, $vars);
     } elseif ($vars !== null) {
+      foreach ($this->autoFilters(null) as $filter) {
+        $value = call_user_func(array('Talus_TPL_Filters', $filter), $value);
+      }
+
       $this->_vars[$vars] = $value;
     }
 
@@ -181,7 +196,53 @@ class Talus_TPL {
   }
 
   /**
-   * Set a variable $var, referencing $value.
+   * Adds defaults filters to be applied to every variables (... except references)
+   * WARNING : BEWARE of the order of declaration !
+   *
+   * @param array|string $name Filters' names ; if null, gets all the filters and do nothing
+   * @throws Talus_TPL_Filter_Exception
+   * @return array
+   *
+   * @since 1.9.0 (?)
+   */
+  public function autoFilters($name = null) {
+    if ($name !== null) {
+      if (is_array($name)) {
+        foreach ($name as $filter) {
+          $this->autoFilters($filter);
+        }
+
+        return $this->_autoFilters;
+      }
+
+      if (!method_exists('Talus_TPL_Filters', $name)) {
+        throw new Talus_TPL_Filter_Exception(array('The filter %s doesn\'t exist...', $name), 404);
+      }
+
+      // -- Applying this filter to all previously declared vars.
+      foreach ($this->_blocks as $name => &$block) {
+        if ($name == '.') {
+          foreach ($block[0] as $var => $val) {
+            // -- Avoiding references ! ...Or, at least, declared references...
+            if (!in_array($var, $this->_references)) {
+              $block[0][$var] = $this->_mapRecursive($val, array('Talus_TPL_Filters', $name));
+            }
+          }
+          
+          continue;
+        }
+
+        foreach ($block as $$vars) {
+          $vars = $this->_mapRecursive($vars, array('Talus_TPL_Filters', $name));
+        }
+      }
+    }
+
+    return $this->_autoFilters;
+  }
+
+  /**
+   * Sets a variable $var, referencing $value.
    *
    * @param mixed $var Var's name
    * @param mixed &$value Variable to be referenced by $var
@@ -197,6 +258,7 @@ class Talus_TPL {
     }
 
     $this->_vars[$var] = &$value;
+    $this->_references[] = $var;
   }
 
   /**
@@ -237,6 +299,11 @@ class Talus_TPL {
 
     if (!is_array($vars)) {
       $vars = array($vars => $value);
+    }
+
+    // -- Applying filters
+    foreach ($this->autoFilters(null) as $filter) {
+      $vars = $this->_mapRecursive($vars, array('Talus_TPL_Filter', $filter));
     }
 
     /*
@@ -515,12 +582,21 @@ class Talus_TPL {
   }
 
   /**
-   * Compiler
+   * Parser
    *
-   * @return Talus_TPL_Compiler_Interface
+   * @return Talus_TPL_Parser_Interface
+   */
+  public function parser() {
+    return $this->_parser;
+  }
+
+  /**
+   * @deprecated 1.9.0
    */
   public function compiler() {
-    return $this->_parser;
+    trigger_error('Talus_TPL::compiler() is deprecated. Please use Talus_TPL::parser() instead.', E_USER_DEPRECATED);
+
+    return $this->parser();
   }
 
   /**
@@ -558,6 +634,31 @@ class Talus_TPL {
       }
     }
   }
+
+  /**
+   * Apply a function on a multidimentionnal array.
+   *
+   * @param array $ary concerned array
+   * @param string $fct function
+   * @return array
+   */
+  protected function _mapRecursive($ary, $fct) {
+    if (!is_array($ary)) {
+      return call_user_func($fct, $ary);
+    }
+
+    foreach ($ary as &$val) {
+      if (is_array($val)) {
+        $val = $this->_mapRecursive($val, $fct);
+        continue;
+      }
+      
+      $val = call_user_func($fct, $val);
+    }
+
+    return $ary;
+  }
+
 
   /**#@-*/
 }
