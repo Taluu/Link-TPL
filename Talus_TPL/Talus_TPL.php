@@ -232,7 +232,7 @@ class Talus_TPL {
           continue;
         }
 
-        foreach ($block as $$vars) {
+        foreach ($block as &$vars) {
           $vars = $this->_mapRecursive($vars, array('Talus_TPL_Filters', $name));
         }
       }
@@ -638,17 +638,17 @@ class Talus_TPL {
   /**
    * Apply a function on a multidimentionnal array.
    *
-   * @param array $ary concerned array
+   * @param mixed $ary concerned array
    * @param string $fct function
    * @return array
    */
   protected function _mapRecursive($ary, $fct) {
-    if (!is_array($ary)) {
+    if (is_scalar($ary)) {
       return call_user_func($fct, $ary);
     }
 
     foreach ($ary as &$val) {
-      if (is_array($val)) {
+      if (is_scalar($val)) {
         $val = $this->_mapRecursive($val, $fct);
         continue;
       }
