@@ -6,10 +6,8 @@ Important Tags :
   -> 1.7.0    : 1218f0e88e2d60b0287df00ffd6afdcf3e298fe2
 
 Branches :
-  -> Master   : 4323d7e40728b4a626f3da151902df50f0a841d7
-  Freezed for a certain amount of time, in case of found bugs into the 1.8.0
+  -> Master : Lastest commit
 
-  -> "Future" : lastest commit
-  Used to develop further the project, preparing new versions. Will be merged
-  into Master when 1.8.0 will be mature... And exists again when a new version
-  will be released.
+The Future branch is now merged with the Master branch... And will probably never
+exist again (the Master will be doing this job, and the tags will do the current
+Master's job, with a temporary branch if necessary).
