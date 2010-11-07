@@ -30,7 +30,8 @@
 
   #CHG : The filters minimize, maximize are now helpers of convertCase.
   #CHG : Compiler have now a new name : Parser.
-  #CHG : Now, all the comments are in english.
+  #CHG : Now, all the comments are in english
+  #CHG : Talus_TPL::set & Talus_TPL::block dosen't return references anymore (stability reasons)
 
   #DEL : All the 1.7.0 deprecated functions are now removed.
   #DEL : The tpl functions are now completely deleted.

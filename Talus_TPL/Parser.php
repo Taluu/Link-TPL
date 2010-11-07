@@ -217,9 +217,9 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
   }
     
   /**
-   * Parse les blocs pour la syntaxe de Talus_TPL >= 1.6.0
+   * Blocks interpretations
    *
-   * @param array $match Capture de la regex
+   * @param array $match Regex matches
    * @return string
    * @see self::compile()
    * @see 97
@@ -227,22 +227,25 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
   protected function _block(array $match){
     /*
      * If there are no parent block, it means it is a root block ; We just need
-     * to fetch it thanks to the getter. It can be used as the if condition and
+     * to fetch it thanks to the getter. It can be used as the loop condition and
      * for the block's name. This is the default behaviour.
      * 
-     * Else, we have to fetch the parent block, get the current iteration, and
-     * associate it with the current block. For the if condition, we just need
+     * If not, we have to fetch the parent block, get the current iteration, and
+     * associate it with the current block. For the loop condition, we just need
      * to check if the block is defined within the parent block.
      */
-    $cond = $block = sprintf('$tpl->block(\'%s\', null)', $match[1]);
+    $cond = sprintf('$tpl->block(\'%s\', null)', $match[1]);
+
+    // -- Referencing variable for this block.
+    $block = '$__tpl_' . sha1(uniqid(mt_rand(), true));
+    $ref = sprintf('%1$s = %2$s;', $block, $cond);
 
     if (!empty($match[2])) {
       $block = sprintf('$__tplBlock[\'%2$s\'][\'%1$s\']', $match[1], $match[2]);
       $cond = sprintf('isset(%s)', $block);
+      $ref = '';
     }
     
-    // -- Referencing variable for this block.
-    $ref = '$__tpl_' . sha1(uniqid(mt_rand(), true));
     
     /*
      * In order to make a foreach with referenced values, which wants a variable
@@ -256,8 +259,8 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
      * made by the foreach (phew).
      */
     return sprintf('<?php if (%1$s) : 
-                            %2$s = &%3$s; $__tpl_block_stack[] = \'%4$s\';
-                            foreach (%2$s as &$__tplBlock[\'%4$s\']){ ?>',
+                            %2$s $__tpl_block_stack[] = \'%4$s\';
+                            foreach (%3$s as &$__tplBlock[\'%4$s\']){ ?>',
                    $cond, $ref, $block, $match[1]);
   }
   

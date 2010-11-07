@@ -173,11 +173,11 @@ class Talus_TPL {
    *
    * @param array|string $vars Var(s)
    * @param mixed $value Var's value if $vars is not an array
-   * @return &array
+   * @return array
    *
    * @since 1.3.0
    */
-  public function &set($vars, $value = null){
+  public function set($vars, $value = null){
     if (is_array($vars)) {
       foreach ($this->autoFilters(null) as $filter) {
         $vars = $this->_mapRecursive($vars, array('Talus_TPL_Filters', $filter));
@@ -262,21 +262,21 @@ class Talus_TPL {
   }
 
   /**
-   * Add an iteration to the block $block
+   * Adds an iteration to the block $block
    *
    * Can act as a getter for this block if $vars is null and $block is a
-   * root block. If $vars is not null, a reference to this block will be returned ;
-   * If $vars is not an array (lets say... a string), $value will be the value of
-   * the only variable for this iteration.
+   * root block. If $vars is not null, nothing will be returned ;
+   * If $vars is not an array (lets say... a string), $value will be the value
+   * of the only variable for this iteration.
    *
    * @param string $block Block's name.
    * @param array|string $vars Variable(s) to be used in this iteration
    * @param string $value $vars value if $vars is a string
-   * @return void
+   * @return mixed
    *
    * @since 1.5.1
    */
-  public function &block($block, $vars, $value = null) {
+  public function block($block, $vars, $value = null) {
     /*
      * If $block is a root block (no parents), and $vars is null, this method acts
      * as a getter for this block, without allowing any extra iteration or variables
@@ -294,7 +294,6 @@ class Talus_TPL {
       }
 
       throw new Talus_TPL_Block_Exception('Variable\'s name not valid.');
-      return null;
     }
 
     if (!is_array($vars)) {
@@ -322,7 +321,6 @@ class Talus_TPL {
     foreach ($blocks as &$cur) {
       if (!isset($current[$cur])) {
         throw new Talus_TPL_Block_Exception(array('The <b>%s</b> block is not defined.', $cur), 4);
-        return null;
       }
 
       $current = &$current[$cur];
@@ -370,7 +368,7 @@ class Talus_TPL {
     ++$vars['SIZE_OF'];
     $current[$curBlock][] = $vars;
 
-    return $current[$curBlock];
+    return;
   }
 
   /**
@@ -643,17 +641,18 @@ class Talus_TPL {
    * @return array
    */
   protected function _mapRecursive($ary, $fct) {
-    if (is_scalar($ary)) {
+    // -- Not a scalar ? Fine then, just returning the $fct on the $ary !
+    if (!is_scalar($ary)) {
       return call_user_func($fct, $ary);
     }
 
+    // -- Not traversable (resource, object) ?
+    if ((is_object($ary) && !($ary instanceof Traversable)) || is_resource($ary)) {
+      return $art;
+    }
+
     foreach ($ary as &$val) {
-      if (is_scalar($val)) {
-        $val = $this->_mapRecursive($val, $fct);
-        continue;
-      }
-      
-      $val = call_user_func($fct, $val);
+      $val = $this->_mapRecursive($val, $fct);
     }
 
     return $ary;
