@@ -220,21 +220,13 @@ class Talus_TPL {
       }
 
       // -- Applying this filter to all previously declared vars.
-      foreach ($this->_blocks as $name => &$block) {
-        if ($name == '.') {
-          foreach ($block[0] as $var => $val) {
-            // -- Avoiding references ! ...Or, at least, declared references...
-            if (!in_array($var, $this->_references)) {
-              $block[0][$var] = $this->_mapRecursive($val, array('Talus_TPL_Filters', $name));
-            }
-          }
-          
+      // @todo Implements for blocks ?
+      foreach ($this->_vars as $var => &$value) {
+        if (in_array($var, $this->_references)) {
           continue;
         }
 
-        foreach ($block as &$vars) {
-          $vars = $this->_mapRecursive($vars, array('Talus_TPL_Filters', $name));
-        }
+        $value = $this->_mapRecursive($value, $name);
       }
     }
 
@@ -438,7 +430,7 @@ class Talus_TPL {
     }
 
     // -- Compilation
-    $compiled = $this->_parser->compile($str);
+    $compiled = $this->_parser->parse($str);
 
     // -- Cache if need to be executed. Will be destroyed right after the execution
     if ($exec === true) {
@@ -454,7 +446,7 @@ class Talus_TPL {
 
   /**
    * Parse a TPL
-   * Implémention of magic method __invoke() for PHP >= 5.3
+   * Implemention of magic method __invoke() for PHP >= 5.3
    *
    * @param mixed $tpl TPL to be parsed & executed
    * @see Talus_TPL::parse()

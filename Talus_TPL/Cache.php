@@ -140,6 +140,8 @@ class Talus_TPL_Cache implements Talus_TPL_Cache_Interface {
     if ($file !== array()) {
       unlink($file['url']);
       unset($file);
+
+      $this->_file = array();
     }
   }
 
@@ -161,7 +163,7 @@ class Talus_TPL_Cache implements Talus_TPL_Cache_Interface {
     $varCount = extract($vars, EXTR_PREFIX_ALL | EXTR_REFS, '__tpl_vars_');
 
     if ($varCount < count($vars)) {
-      trigger_error('Beware, some variables couldn\'t be extracted (invalid name maybe ?)...', E_USER_NOTICE);
+      trigger_error('Some variables couldn\'t be extracted (invalid name maybe ?)...', E_USER_NOTICE);
     }
 
     include $file['url'];

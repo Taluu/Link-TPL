@@ -40,7 +40,7 @@ interface Talus_TPL_Cache_Interface extends Talus_TPL_Dependency_Interface {
    * Sets the id to use for the cache engine
    *
    * @param string $file File's name
-   * @return array Information on  the file
+   * @return array Information on the file
    */
   public function file($file = null);
 
