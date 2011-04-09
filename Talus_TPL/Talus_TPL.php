@@ -61,7 +61,7 @@ class Talus_TPL {
   const
     INCLUDE_TPL = 0,
     REQUIRE_TPL = 1,
-    VERSION = '1.8.1';
+    VERSION = '1.9.0';
 
   /**
    * Initialisation.

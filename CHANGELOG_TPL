@@ -23,7 +23,7 @@
  * @license http://www.gnu.org/licenses/lgpl.html Lesser GNU Public License 3+
  */
 
-## 1.8.0 ==> 1.9.0 ? (Release : ??/??/??)
+## 1.8.0 ==> 1.9.0 (Release : ??/04/11)
   #ADD : Possibility of setting default filters
   #ADD : The return of {__$CONSTANT__} tag !
   #ADD : New filters : convertCase & safe
