@@ -114,7 +114,7 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
     
     // -- No Regex (faster !)
     $noRegex = array(
-      "</{$nspace}block>" => '<?php } unset($__tplBlock[array_pop($__tpl_block_stack)]); endif; ?>', 
+      "</{$nspace}block>" => '<?php } $__block = array_pop($__tpl_block_stack); if (isset($__tplBlock[$__block])) unset($__tplBlock[$__block]); endif; ?>',
       "<{$nspace}blockelse />" => '<?php } else : if (true) { $__tpl_block_stack[] = \'*foo*\'; ?>',
       
       '{\\' =>  '{'

@@ -33,6 +33,8 @@
   #CHG : Now, all the comments are in english
   #CHG : Talus_TPL::set & Talus_TPL::block dosen't return references anymore (stability reasons)
 
+  #FIX : Notice possibility when using <blockelse />
+
   #DEL : All the 1.7.0 deprecated functions are now removed.
   #DEL : The tpl functions are now completely deleted.
   #DEL : The filter ucwords was removed.
