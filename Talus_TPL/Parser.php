@@ -24,10 +24,9 @@
  * @license http://www.gnu.org/licenses/gpl.html GNU Public License 2+
  */
 
-// -- If PHP < 5.3, emulating E_USER_DEPRECATED & Closure's class
-if (version_compare(PHP_VERSION, '5.3.0', '<')) {
+// -- If PHP < 5.3, emulating E_USER_DEPRECATED
+if (!defined('E_USER_DEPRECATED')) {
   define('E_USER_DEPRECATED', E_USER_NOTICE);
-  //final class Closure {}
 }
 
 /**
