@@ -179,14 +179,12 @@ class Talus_TPL {
    */
   public function set($vars, $value = null){
     if (is_array($vars)) {
-      foreach ($this->autoFilters(null) as $filter) {
-        $vars = $this->_mapRecursive($vars, array('Talus_TPL_Filters', $filter));
+      foreach ($vars as $var => &$val) {
+        $this->set($var, $val);
       }
-
-      $this->_vars = array_merge($this->_vars, $vars);
     } elseif ($vars !== null) {
       foreach ($this->autoFilters(null) as $filter) {
-        $value = call_user_func(array('Talus_TPL_Filters', $filter), $value);
+        $value = $this->_mapRecursive($value, array('Talus_TPL_Filters', $filter));
       }
 
       $this->_vars[$vars] = $value;
@@ -290,11 +288,6 @@ class Talus_TPL {
 
     if (!is_array($vars)) {
       $vars = array($vars => $value);
-    }
-
-    // -- Applying filters
-    foreach ($this->autoFilters(null) as $filter) {
-      $vars = $this->_mapRecursive($vars, array('Talus_TPL_Filter', $filter));
     }
 
     /*
