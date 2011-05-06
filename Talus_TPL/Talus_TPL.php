@@ -36,7 +36,6 @@ class Talus_TPL {
   protected
     $_root = './',
 
-    $_tpl = '',
     $_last = array(),
     $_included = array(),
 
@@ -61,7 +60,7 @@ class Talus_TPL {
   const
     INCLUDE_TPL = 0,
     REQUIRE_TPL = 1,
-    VERSION = '1.9.0';
+    VERSION = 'DEV';
 
   /**
    * Initialisation.
@@ -119,7 +118,7 @@ class Talus_TPL {
       return false;
     }
 
-    $dir = sprintf('%1$s', dirname(__FILE__));
+    $dir = dirname(__FILE__);
     $className = mb_substr($class, mb_strlen(__CLASS__) + 1);
     $className = explode('_', $className);
 
@@ -224,7 +223,7 @@ class Talus_TPL {
           continue;
         }
 
-        $value = $this->_mapRecursive($value, $name);
+        $value = $this->_mapRecursive($value, array('Talus_TPL_Filters', $name));
       }
     }
 
@@ -398,8 +397,7 @@ class Talus_TPL {
       $this->_last[$file] = filemtime($file);
     }
 
-    $this->_tpl = $tpl;
-    $this->_cache->file($this->_tpl, 0);
+    $this->_cache->file($tpl, 0);
 
     if (!$this->_cache->isValid($this->_last[$file]) || !$cache) {
       $this->_cache->put($this->str(file_get_contents($file), false));
@@ -427,8 +425,7 @@ class Talus_TPL {
 
     // -- Cache if need to be executed. Will be destroyed right after the execution
     if ($exec === true) {
-      $this->_tpl = sprintf('tmp_%s.html', sha1($str));
-      $this->_cache->file($this->_tpl, 0);
+      $this->_cache->file(sprintf('tmp_%s.html', sha1($str)), 0);
       $this->_cache->put($compiled);
       $this->_cache->exec($this);
       $this->_cache->destroy();
@@ -475,7 +472,7 @@ class Talus_TPL {
    * @param integer $type Inclusion or requirement ?
    * @return void
    *
-   * @see Talus_TPL_Compiler::compile()
+   * @see Talus_TPL_Parser::parse()
    * @throws Talus_TPL_Runtime_Exception
    * @throws Talus_TPL_Parse_Exception
    */
@@ -504,9 +501,8 @@ class Talus_TPL {
     }
 
     $data = '';
-    $current = array(
-      'vars' => $this->_vars,
-      'tpl' => $this->_tpl
+    $save = array(
+      'vars' => $this->_vars
      );
 
     try {
@@ -535,7 +531,7 @@ class Talus_TPL {
        */
       if ($e->getCode() === 6) {
         if ($type == self::REQUIRE_TPL) {
-          throw new Talus_TPL_Runtime_Exception(array('That was a "require" tag ; The template <b>%s</b> not existing, the script is interrupted.', $file), 7);
+          throw new Talus_TPL_Runtime_Exception(array('That was a "require" tag ; The template <b>%s</b> not existing,  the script shall then be interrupted.', $file), 7);
           exit;
         }
 
@@ -545,8 +541,7 @@ class Talus_TPL {
       }
     }
 
-    $this->_tpl = $current['tpl'];
-    $this->_vars = $current['vars'];
+    $this->_vars = $save['vars'];
 
     echo $data;
   }
@@ -607,7 +602,7 @@ class Talus_TPL {
     }
 
     foreach ($dependencies as &$dependency) {
-      if ($dependency instanceof Talus_TPL_Compiler_Interface) {
+      if ($dependency instanceof Talus_TPL_Parser_Interface) {
         $this->_parser = $dependency;
       } elseif ($dependency instanceof Talus_TPL_Cache_Interface) {
         $this->_cache = $dependency;
@@ -626,14 +621,14 @@ class Talus_TPL {
    * @return array
    */
   protected function _mapRecursive($ary, $fct) {
-    // -- Not a scalar ? Fine then, just returning the $fct on the $ary !
-    if (!is_scalar($ary)) {
-      return call_user_func($fct, $ary);
+    // -- Is it a scalar ? Fine then, just have to execute $fct on $ary !
+    if (is_scalar($ary)) {
+      return $fct($ary);
     }
 
     // -- Not traversable (resource, object) ?
     if ((is_object($ary) && !($ary instanceof Traversable)) || is_resource($ary)) {
-      return $art;
+      return $ary;
     }
 
     foreach ($ary as &$val) {
