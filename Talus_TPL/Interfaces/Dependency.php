@@ -23,6 +23,7 @@
  * @link http://www.talus-works.net Talus' Works
  * @link http://www.slideshare.net/fabpot/dependency-injection-with-php-53 Slideshare DI
  * @license http://www.gnu.org/licenses/lgpl.html LGNU Public License 3+
+ * @version $Id$
  */
 
 interface Talus_TPL_Dependency_Interface {}

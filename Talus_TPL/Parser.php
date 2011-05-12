@@ -6,22 +6,23 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
- *      
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *      
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
- * MA 02110-1301, USA. 
+ * MA 02110-1301, USA.
  *
  * @package Talus' Works
  * @author Baptiste "Talus" Clavié <clavie.b@gmail.com>
  * @copyright ©Talus, Talus' Works 2008+
  * @link http://www.talus-works.net Talus' Works
  * @license http://www.gnu.org/licenses/gpl.html GNU Public License 2+
+ * @version $Id$
  */
 
 // -- If PHP < 5.3, emulating E_USER_DEPRECATED
@@ -37,19 +38,22 @@ if (!defined('E_USER_DEPRECATED')) {
  */
 class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
   protected $_parameters = array();
-    
+
   const
     SET = 1,
     FILTERS = 2,
     INCLUDES = 4,
-    FOREACHS = 8,
-    CONDITIONS = 16,
-    CONSTANTS = 32,
-    
-    BASICS = 20,
-    DEFAULTS = 63,
-    ALL = 63;
-  
+    CONDITIONS = 8,
+    CONSTANTS = 16,
+
+    BASICS = 4,
+    DEFAULTS = 31,
+    ALL = 31,
+
+    // -- Regex used
+    REGEX_PHP_ID = '[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*', // PHP Identifier
+    REGEX_ARRAYS = '\[(?!]})(?:.*?)]'; // PHP Arrays
+
   /**
    * Initialisation
    *
@@ -60,7 +64,7 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
     $this->parameter('set_compact', false);
     $this->parameter('namespace', '');
   }
-  
+
   /**
    * Accessor for a given parameter
    *
@@ -72,116 +76,125 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
     if ($value !== null) {
       $this->_parameters[$param] = $value;
     }
-    
+
     return $this->_parameters[$param];
   }
-  
+
   /**
    * Transform a TPL syntax towards an optimized PHP syntax
-   * 
+   *
    * @param string $script TPL script to parse
    * @return string
    */
   public function parse($script){
     $script = str_replace('<?' ,'<?php echo \'<?\'; ?>', $script);
     $script = preg_replace('`/\*.*?\*/`s', '', $script);
-    
+
     $nspace = $this->parameter('namespace');
 
     if (!empty($nspace)) {
       $nspace .= ':';
     }
-    
+
+    // -- Stubs for blocks
+    $script = str_replace(array('<blockelse />', '</block>'), array('<foreachelse />', '</foreach>'), $script);
+    $script = preg_replace_callback('`<' . $nspace . 'block ' . $nspace . 'name="([a-z_\xe0-\xf6\xf8-\xff][a-z0-9_\xe0-\xf6\xf8-\xff]*)"(?: ' . $nspace . 'parent="([a-z_\xe0-\xf6\xf8-\xff][a-z0-9_\xe0-\xf6\xf8-\xff]*)")?>`', array($this, '_block'), $script);
+
+    $recursives = array(
+      // -- Block variables ({block.VAR1}, ...)
+      // -- EX REGEX ; [a-z_\xe0-\xf6\xf8-\xff][a-z0-9_\xe0-\xf6\xf8-\xff]*
+      '`\{(' . self::REGEX_PHP_ID . ')\.(' . self::REGEX_PHP_ID . ')(' . self::REGEX_ARRAYS . ')?}`' => '{$1.value[\'$2\']$3}',
+      '`\{\$(' . self::REGEX_PHP_ID . ')\.(' . self::REGEX_PHP_ID . ')(' . self::REGEX_ARRAYS . ')?}`' => '{$$1.value[\'$2\']$3}'
+     );
+
     // -- Filter's transformations
     if ($this->parameter('parse') & self::FILTERS) {
       $matches = array();
-      while (preg_match('`\{(?:(KEY|VALUE|GLOB),)?(\$?[a-zA-Z_\xc0-\xd6\xd8-\xde][a-zA-Z0-9_\xc0-\xd6\xd8-\xde.]*(?:\[(?!]\|)(?:.*?)])?)\|((?:[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*(?::.+?)*\|?)+)}`', $script, $matches)) {
+      while (preg_match('`\{(\$?' . self::REGEX_PHP_ID . '(?:\.value(?:' . self::REGEX_ARRAYS . ')?|key|is_(?:first|last)|current|size)?)\|((?:' . self::REGEX_PHP_ID . '(?::.+?)*\|?)+)}`', $script, $matches)) {
         $script = str_replace($matches[0], $this->_filters($matches[2], $matches[3], $matches[1]), $script);
       }
     }
-    
-    // -- Blocks
-    $script = preg_replace_callback('`<' . $nspace . 'block ' . $nspace . 'name="([a-z_\xe0-\xf6\xf8-\xff][a-z0-9_\xe0-\xf6\xf8-\xff]*)"(?: ' . $nspace . 'parent="([a-z_\xe0-\xf6\xf8-\xff][a-z0-9_\xe0-\xf6\xf8-\xff]*)")?>`', array($this, '_block'), $script);
-    
+
     // -- Inclusions
     if ($this->parameter('parse') & self::INCLUDES) {
-      $script = preg_replace_callback('`<' . $nspace . '(include|require) ' . $nspace . 'tpl="((?:.+?\.html(?:\?[^\"]*)?)|(?:\{\$(?:[a-z_\xe0-\xf6\xf8-\xff][a-z0-9_\xe0-\xf6\xf8-\xff]*\.)?[A-Z_\xc0-\xd6\xd8-\xde][A-Z0-9_\xc0-\xd6\xd8-\xde]*(?:\[(?!]})(?:.*?)])?}))"(?: ' . $nspace . 'once="(true|false)")? />`', array($this, '_includes'), $script);
+      $script = preg_replace_callback('`<' . $nspace . '(include|require) ' . $nspace . 'tpl="((?:.+?\.html(?:\?[^\"]*)?)|(?:\{\$(?:' . self::REGEX_PHP_ID . '(?:' . self::REGEX_ARRAYS . ')?}))"(?: ' . $nspace . 'once="(true|false)")? />`', array($this, '_includes'), $script);
     }
 
+    // -- <foreach> tags// -- <foreach> tag
+    $script = preg_replace_callback('`<' . $nspace . 'foreach ' . $nspace . 'ar(?:ra)?y="\{\$(' . self::REGEX_PHP_ID . ')}">`', array($this, '_foreach'), $script);
+    $script = preg_replace_callback('`<' . $nspace . 'foreach ' . $nspace . 'ar(?:ra)?y="\{\$(' . self::REGEX_PHP_ID . '(?:\.value(?:' . self::REGEX_ARRAYS . ')?)?)}" ' . $nspace . 'as="\{\$(' . self::REGEX_PHP_ID . ')}">`', array($this, '_foreach'), $script);
+
     // -- Simple regex which doesn't need any recursive treatment.
-    $not_recursives = array();
-    
+    $not_recursives = array(
+       // -- Foreach special vars (key, size, is_last, is_first, current)
+       // -- keys : key of this iteration
+       '`\{(' . self::REGEX_PHP_ID . ').key}`' => '<?php echo $__tpl_foreach[\'$1\'][\'key\']; ?>',
+       '`\{\$(' . self::REGEX_PHP_ID . ').key}`' => '$__tpl_foreach[\'$1\'][\'key\']',
+
+       // -- size : shows the size of the array
+       '`\{(' . self::REGEX_PHP_ID . ').size}`' => '<?php echo $__tpl_foreach[\'$1\'][\'size\']; ?>',
+       '`\{$(' . self::REGEX_PHP_ID . ').size}`' => '$__tpl_foreach[\'$1\'][\'size\']',
+
+       // -- current : returns in which iteration we are
+       '`\{(' . self::REGEX_PHP_ID . ').current}`' => '<?php echo $__tpl_foreach[\'$1\'][\'current\']; ?>',
+       '`\{$(' . self::REGEX_PHP_ID . ').current}`' => '$__tpl_foreach[\'$1\'][\'current\']',
+
+       // -- is_first : checks if this is the first iteration
+       '`\{$(' . self::REGEX_PHP_ID . ').is_first}`' => '$__tpl_foreach[\'$1\'][\'current\'] == 1',
+
+       // -- is_last : checks if this is the last iteration
+       '`\{$(' . self::REGEX_PHP_ID . ').is_last}`' => '$__tpl_foreach[\'$1\'][\'current\'] == $__tpl_foreach[\'$1\'][\'count\']'
+      );
+
+    $recursives = array(
+      // -- Foreach values
+      '`\{(' . self::REGEX_PHP_ID . ').val(?:ue)?(' . self::REGEX_ARRAYS . ')?}`' => '<?php echo $__tpl_foreach[\'$1\'][\'value\']$2; ?>',
+      '`\{\$(' . self::REGEX_PHP_ID . ').val(?:ue)?(' . self::REGEX_ARRAYS . ')?}`' => '$__tpl_foreach[\'$1\'][\'value\']$2',
+
+      // -- Simple variables ({VAR1}, {VAR2[with][a][set][of][keys]}, ...)
+      '`\{(' . self::REGEX_PHP_ID . '(?:' . self::REGEX_ARRAYS . ')?)}`' => '<?php echo $__tpl_vars__$1; ?>',
+      '`\{\$(' . self::REGEX_PHP_ID . '(?:' . self::REGEX_ARRAYS . ')?)}`' => '$__tpl_vars__$1'
+     );
+
     // -- No Regex (faster !)
     $noRegex = array(
-      "</{$nspace}block>" => '<?php } $__block = array_pop($__tpl_block_stack); if (isset($__tplBlock[$__block])) unset($__tplBlock[$__block]); endif; ?>',
-      "<{$nspace}blockelse />" => '<?php } else : if (true) { $__tpl_block_stack[] = \'*foo*\'; ?>',
-      
+      "</{$nspace}foreach>" => '<?php } endif; $__tpl_refering_var = array_pop($__tpl_foreach_ref); if (isset($__tpl_foreach[$__tpl_refering_var])) unset($__tpl_foreach[$__tpl_refering_var]); ?>',
+      "<{$nspace}foreachelse />" => '<?php } else : if (true) { ?>',
+
       '{\\' =>  '{'
      );
-    
-    // -- Simple regex needing a recursive treatment
-    $recursives = array(
-      // -- Simple variables ({VAR1}, {VAR2[with][a][set][of][keys]}, ...)
-      '`\{([A-Z_\xc0-\xd6\xd8-\xde][A-Z0-9_\xc0-\xd6\xd8-\xde]*(?:\[(?!]})(?:.*?)])?)}`' => '<?php echo $__tpl_vars__$1; ?>',
-      '`\{\$([A-Z_\xc0-\xd6\xd8-\xde][A-Z0-9_\xc0-\xd6\xd8-\xde]*(?:\[(?!]})(?:.*?)])?)}`' => '$__tpl_vars__$1',
-      
-      // -- Block variables ({block.VAR1}, ...)
-      '`\{([a-z_\xe0-\xf6\xf8-\xff][a-z0-9_\xe0-\xf6\xf8-\xff]*)\.([A-Z_\xc0-\xd6\xd8-\xde][A-Z0-9_\xc0-\xd6\xd8-\xde]*)(\[(?!]})(?:.*?)])?}`' => '<?php echo $__tplBlock[\'$1\'][\'$2\']$3; ?>',
-      '`\{\$([a-z_\xe0-\xf6\xf8-\xff][a-z0-9_\xe0-\xf6\xf8-\xff]*)\.([A-Z_\xc0-\xd6\xd8-\xde][A-Z0-9_\xc0-\xd6\xd8-\xde]*)(\[(?!]})(?:.*?)])?}`' => '$__tplBlock[\'$1\'][\'$2\']$3'
-     );
-    
+
     // -- <set> Tag
     if ($this->parameter('parse') & self::SET) {
-      $not_recursives['`<' . $nspace . 'set ' . $nspace . 'var="([A-Z_\xc0-\xd6\xd8-\xde][A-Z0-9_\xc0-\xd6\xd8-\xde]*)(\[(?!]">)(?:.*?)])?">(?!"</set>)(.+?)</set>`'] = '<?php $__tpl_vars__$1$2 = \'$3\'; ?>';
+      $not_recursives['`<' . $nspace . 'set ' . $nspace . 'var="(' . self::REGEX_PHP_ID . ')(\[(?!]">)(?:.*?)])?">(?!"</set>)(.+?)</set>`'] = '<?php $__tpl_vars__$1$2 = \'$3\'; ?>';
     }
-    
+
     // -- Constants
     if ($this->parameter('parse') & self::CONSTANTS) {
       //[a-zA-Z_\xe0-\xf6\xf8-\xff\xc0-\xd6\xd8-\xde][a-zA-Z0-9_\xe0-\xf6\xf8-\xff\xc0-\xd6\xd8-\xde]*
-      $not_recursives['`\{__([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)__}`i'] = '<?php echo $1; ?>';
-      $not_recursives['`\{__$([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)__}`i'] = '$1';
+      $not_recursives['`\{__(' . self::REGEX_PHP_ID . ')__}`i'] = '<?php echo $1; ?>';
+      $not_recursives['`\{__$(' . self::REGEX_PHP_ID . ')__}`i'] = '$1';
     }
-    
+
     // -- Conditions tags (<if>, <elseif />, <else />)
     if ($this->parameter('parse') & self::CONDITIONS) {
       $not_recursives = array_merge($not_recursives, array(
         '`<' . $nspace . 'if ' . $nspace . 'cond(?:ition)?="(.+?)">`' => '<?php if ($1) : ?>',
         '`<' . $nspace . 'el(?:se)?if ' . $nspace . 'cond(?:ition)?="(.+?)" />`' => '<?php elseif ($1) : ?>'
        ));
-       
+
       $noRegex["<{$nspace}else />"] = '<?php else : ?>';
       $noRegex["</{$nspace}if>"] = '<?php endif; ?>';
     }
-    
-    // -- <foreach> tag
-    if ($this->parameter('parse') & self::FOREACHS) {
-      $not_recursives = array_merge($not_recursives, array(      
-        // -- Foreachs
-        '`<' . $nspace . 'foreach ' . $nspace . 'ar(?:ra)?y="\{\$([A-Z_\xc0-\xd6\xd8-\xde][A-Z0-9_\xc0-\xd6\xd8-\xde]*)}">`i' => '<?php foreach ({$$1} as $__tpl_foreach_key[\'$1\'] => &$__tpl_foreach_value[\'$1\']) : ?>',
-        '`<' . $nspace . 'foreach ' . $nspace . 'ar(?:ra)?y="\{((?:(?:VALUE,)?\$[A-Z_\xc0-\xd6\xd8-\xde][A-Z0-9_\xc0-\xd6\xd8-\xde]*)(?:\[(?!]})(?:.*?)])?)}" ' . $nspace . 'as="\{\$([A-Z_\x7f-\xff][A-Z0-9_\x7f-\xff]*)}">`i' => '<?php foreach ({$1} as $__tpl_foreach_key[\'$2\'] => &$__tpl_foreach_value[\'$2\']) : ?>', 
-        
-        // -- Foreach keys
-        '`\{KEY,([A-Z_\xc0-\xd6\xd8-\xde][A-Z0-9_\xc0-\xd6\xd8-\xde]*)}`i' => '<?php echo $__tpl_foreach_key[\'$1\']; ?>',
-        '`\{KEY,\$([A-Z_\xc0-\xd6\xd8-\xde][A-Z0-9_\xc0-\xd6\xd8-\xde]*)}`i' => '$__tpl_foreach_key[\'$1\']'
-       ));
-       
-      $recursives = array_merge($recursives, array(
-        // -- Foreach values
-        '`\{VALUE,([A-Z_\xc0-\xd6\xd8-\xde][A-Z0-9_\xc0-\xd6\xd8-\xde]*)(\[(?!]})(?:.*?)])?}`' => '<?php echo $__tpl_foreach_value[\'$1\']$2; ?>',
-        '`\{VALUE,\$([A-Z_\xc0-\xd6\xd8-\xde][A-Z0-9_\xc0-\xd6\xd8-\xde]*)(\[(?!]})(?:.*?)])?}`' => '$__tpl_foreach_value[\'$1\']$2'
-       ));
-       
-       $noRegex["</{$nspace}foreach>"] = '<?php endforeach; ?>';
-    }
-    
+
     $script = preg_replace(array_keys($not_recursives), array_values($not_recursives), $script);
-    
+
     foreach ($recursives as $regex => $replace) {
       while(preg_match($regex, $script)) {
         $script = preg_replace($regex, $replace, $script);
       }
     }
-    
+
     $script = str_replace(array_keys($noRegex), array_values($noRegex), $script);
 
     /*
@@ -202,7 +215,7 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
 
     return $script;
   }
-  
+
   /**
    * Parse a TPL script
    * Implementation of the magic method __invoke() for PHP >= 5.3
@@ -214,55 +227,35 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
   public function __invoke($script) {
     return $this->parse($script);
   }
-    
+
   /**
-   * Blocks interpretations
+   * Foreach interpretor
    *
-   * @param array $match Regex matches
+   * @param array $matches REGEX's matches
    * @return string
-   * @see self::compile()
-   * @see 97
    */
-  protected function _block(array $match){
-    /*
-     * If there are no parent block, it means it is a root block ; We just need
-     * to fetch it thanks to the getter. It can be used as the loop condition and
-     * for the block's name. This is the default behaviour.
-     * 
-     * If not, we have to fetch the parent block, get the current iteration, and
-     * associate it with the current block. For the loop condition, we just need
-     * to check if the block is defined within the parent block.
-     */
-    $cond = sprintf('$tpl->block(\'%s\', null)', $match[1]);
+  protected function _foreach($matches) {
+    $varName = $match[1];
 
-    // -- Referencing variable for this block.
-    $block = '$__tpl_' . sha1(uniqid(mt_rand(), true));
-    $ref = sprintf('%1$s = %2$s;', $block, $cond);
-
-    if (!empty($match[2])) {
-      $block = sprintf('$__tplBlock[\'%2$s\'][\'%1$s\']', $match[1], $match[2]);
-      $cond = sprintf('isset(%s)', $block);
-      $ref = '';
+    // -- Is the attribute "as" set ?
+    if (isset($matches[2])) {
+      $varName = $matches[2];
     }
-    
-    
-    /*
-     * In order to make a foreach with referenced values, which wants a variable
-     * (and not a function), we have to create a temporary variable to get the
-     * reference given by $tpl->getBlock (or the parent block)...
-     *
-     * To avoid a conflict between two references (e.g the block is called two
-     * times in a row), which is a acknowledged bug in PHP (#29992), we have to
-     * set a kind of stack for the block's name, insert the current block's name
-     * at the top and removing it at the end of the loop, deleting the reference
-     * made by the foreach (phew).
-     */
-    return sprintf('<?php if (%1$s) : 
-                            %2$s $__tpl_block_stack[] = \'%4$s\';
-                            foreach (%3$s as &$__tplBlock[\'%4$s\']){ ?>',
-                   $cond, $ref, $block, $match[1]);
+
+    return sprintf('
+      $__tpl_foreach_ref[] = \'%1$s\';
+      $__tpl_foreach[\'%1$s\'] = array(
+        \'value\' => null,
+        \'key\' => null,
+        \'size\' => count({$%2$s}),
+        \'current\' => 0
+       );
+
+      if ($__tpl_foreach[\'%1$s\'][\'count\'] > 0) :
+        foreach ({$%2$s} as {$%1$s.key} => &{$%1$s.value}) {
+          ++{$%1$s.current};', $varName, $matches[1]);
   }
-  
+
   /**
    * Filters implementation
    *
@@ -273,12 +266,12 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
    * @param string $type Variable's type (for {TYPE,VAR})
    * @return string filtered var
    */
-  protected function _filters($var = '', $filters = '', $type = null){
+  protected function _filters($var = '', $filters = ''){
     $brackets = 0;
     $toPrint = false;
     $return = sprintf('{%s}', $var);
     $filters = array_reverse(array_filter(explode('|', $filters)));
-    
+
     /*
      * If we wish to print the variable (the significative $ is missing), we have
      * to set up the variable to have a $... Being printed and not returned.
@@ -290,15 +283,7 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
       $return = '{$' . mb_substr($return, 1);
       $toPrint = true;
     }
-    
-    /*
-     * If it is a typed variable ({TYPE,VAR}), we have to replace the first opening
-     * { by {TYPE,
-     */
-    if (!empty($type)) {
-      $return = sprintf('{%1$s,%2$s', $type, mb_substr($return, 1));
-    }
-    
+
     foreach ($filters as &$filter) {
       $params = explode(':', $filter);
       $fct = array_shift($params);
@@ -320,18 +305,18 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
       } else {
         $params = '';
       }
-      
+
       $return = sprintf('Talus_TPL_Filters::%1$s(%2$s%3$s)', $fct, $return, $params);
     }
-    
+
     // -- Printing the return rather than returning it
     if ($toPrint === true){
       $return = sprintf('<?php echo %s; ?>', $return);
     }
-    
+
     return $return;
   }
-  
+
   /**
    * Inclusions' Parser
    *
@@ -353,7 +338,7 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
                    isset($match[3]) && $match[3] == 'true' ? 'true' : 'false',
                    mb_strtoupper($match[1]));
   }
-  
+
   /**
    * Escape a given value
    *
@@ -365,13 +350,42 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
    */
   protected function _escape($arg, $delim = '\'') {
     if (($arg[0] != $delim || $arg[mb_strlen($arg) - 1] != $delim)
-     && ($arg[0] != '{' || $arg[mb_strlen($arg) - 1] != '}') 
+     && ($arg[0] != '{' || $arg[mb_strlen($arg) - 1] != '}')
      && !filter_var($arg, FILTER_VALIDATE_INT)) {
       $arg = sprintf('%1$s%2$s%1$s', $delim, addcslashes($arg, $delim));
     }
-    
+
     return $arg;
   }
+
+  /**
+   * Blocks interpretations
+   *
+   * This method is now acting as a stub for <block> tags ; it replaces them by
+   * a foreach. If there is a parent block, we need to alter a little the block's
+   * name.
+   *
+   * @param array $match Regex matches
+   * @return string
+   * @see self::compile()
+   * @see 97
+   * @deprecated Upwards 1.9.0
+   */
+  protected function _block(array $match){
+    $blockName = $match[1];
+    $as = '';
+
+    if (!empty($match[2])) {
+      $blockName = sprintf('%1$s_%2$s', $match[2], $match[1]);
+      $as = sprintf(' as="%1$s"', $match[1]);
+    }
+
+    // -- Little warning...
+    trigger_error('Blocks are now deprecated. Please refrain from using them, and use <foreach> instead...', E_USER_DEPRECATED);
+    return sprintf('<foreach array="%1$s"%2$s>', $blockName, $as);
+  }
+
+
 }
 
 /** EOF /**/

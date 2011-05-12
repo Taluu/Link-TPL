@@ -22,6 +22,7 @@
  * @copyright ©Talus, Talus' Works 2006+
  * @link http://www.talus-works.net Talus' Works
  * @license http://www.gnu.org/licenses/lgpl.html LGNU Public License 2+
+ * @version $Id$
  */
 
 if (!defined('PHP_EXT')) {
@@ -39,7 +40,6 @@ class Talus_TPL {
     $_last = array(),
     $_included = array(),
 
-    $_blocks = array(),
     $_vars = array(),
     $_references = array(),
 
@@ -83,8 +83,7 @@ class Talus_TPL {
     // -- Parameters' initialisation
     $this->_last = array();
     $this->_included = array();
-    $this->_blocks['.'] = array(array());
-    $this->_vars = &$this->_blocks['.'][0];
+    $this->_vars = array();
 
     // -- Dependency Injection
     $this->dependencies($dependencies);
@@ -170,9 +169,11 @@ class Talus_TPL {
   /**
    * Setter (and getter) for the templates variables.
    *
-   * @param array|string $vars Var(s)
+   * @param array|string $vars Var(s)' name (tpl side)
    * @param mixed $value Var's value if $vars is not an array
    * @return array
+   *
+   * @todo Check the variable's name
    *
    * @since 1.3.0
    */
@@ -200,7 +201,7 @@ class Talus_TPL {
    * @throws Talus_TPL_Filter_Exception
    * @return array
    *
-   * @since 1.9.0 (?)
+   * @since 1.9.0
    */
   public function autoFilters($name = null) {
     if ($name !== null) {
@@ -216,8 +217,7 @@ class Talus_TPL {
         throw new Talus_TPL_Filter_Exception(array('The filter %s doesn\'t exist...', $name), 404);
       }
 
-      // -- Applying this filter to all previously declared vars.
-      // @todo Implements for blocks ?
+      // -- Applying this filter to all previously declared vars... Except references
       foreach ($this->_vars as $var => &$value) {
         if (in_array($var, $this->_references)) {
           continue;
@@ -258,101 +258,37 @@ class Talus_TPL {
    * If $vars is not an array (lets say... a string), $value will be the value
    * of the only variable for this iteration.
    *
+   * Upwards 1.9.0, blocks are now deprecated. This method acts
+   * now as a stub for {@see Talus_TPL::set()}.
+   *
    * @param string $block Block's name.
    * @param array|string $vars Variable(s) to be used in this iteration
    * @param string $value $vars value if $vars is a string
+   * @throws Talus_TPL_Var_Exception
    * @return mixed
    *
    * @since 1.5.1
+   * @deprecated DEV
    */
-  public function block($block, $vars, $value = null) {
+  public function block($block, $vars = null, $value = null) {
     /*
-     * If $block is a root block (no parents), and $vars is null, this method acts
-     * as a getter for this block, without allowing any extra iteration or variables
-     * assigned to this block.
+     * Taking the last two blocks names, et imploding them with a _, validating
+     * this block name as a full qualified variable
      */
-    if ($vars === null) {
-      if (strpos($block, '.') === false) {
-        $return = array();
+    if (strpos($block, '.') !== false) {
+      $block = array_reverse(explode('.', $block));
+      $block = implode('_', array($block[1], $block[0]));
+    }
 
-        if (isset($this->_blocks[$block])) {
-          $return = &$this->_blocks[$block];
-        }
-
-        return $return;
-      }
-
-      throw new Talus_TPL_Block_Exception('Variable\'s name not valid.');
+    if (!isset($this->_vars[$block])) {
+      $this->_vars[$block] = array();
     }
 
     if (!is_array($vars)) {
       $vars = array($vars => $value);
     }
 
-    /*
-     * Fetching all the blocks (from top parent to bottom child).
-     *
-     * The purpose is to browse all the descendant tree of the root block, and
-     * then access the block which we need to work on, adding a new iteration.
-     * A reference will be made in order to simplify everything.
-     */
-    $blocks = explode('.', $block);
-    $curBlock = array_pop($blocks); // Block needed
-    $current = &$this->_blocks;
-    $cur = array();
-    $nbRows = 0;
-
-    foreach ($blocks as &$cur) {
-      if (!isset($current[$cur])) {
-        throw new Talus_TPL_Block_Exception(array('The <b>%s</b> block is not defined.', $cur), 4);
-      }
-
-      $current = &$current[$cur];
-      $current = &$current[count($current) -  1];
-    }
-
-    if (!isset($current[$curBlock])) {
-      $current[$curBlock] = array();
-      $nbRows = 0;
-    } else {
-      $nbRows = count($current[$curBlock]);
-    }
-
-    /*
-     * Special block variables
-     *
-     * FIRST : Is this the first iteration (true / false) ?
-     * LAST : Is this the last iteration (true/false) ?
-     * CURRENT : Current iteration.
-     * SIZE_OF : Block's size
-     *
-     * We could be on the first iteration ; But we are surely on the last
-     * iteration.
-     *
-     * If the number of rows in this block is greater than zero, the new iteration
-     * we're creating is NOT the first iteration (it already exists !), and
-     * the previous iteration is not the last anymore.
-     *
-     * Regarding {$block.SIZE_OF}, evrything we need is just to reference it to
-     * the first {$block.SIZE_OF} we made with the first iteration, and then
-     * increment that value.
-     */
-    $vars['FIRST'] = true;
-    $vars['LAST'] = true;
-    $vars['CURRENT'] = $nbRows + 1;
-    $vars['SIZE_OF'] = 0;
-
-    if ($nbRows > 0) {
-      $vars['FIRST'] = false;
-      $current[$curBlock][$nbRows - 1]['LAST'] = false;
-
-      $vars['SIZE_OF'] = &$current[$curBlock][0]['SIZE_OF'];
-    }
-
-    ++$vars['SIZE_OF'];
-    $current[$curBlock][] = $vars;
-
-    return;
+    $this->_vars[$block][] = $vars;
   }
 
   /**
@@ -566,15 +502,6 @@ class Talus_TPL {
    */
   public function parser() {
     return $this->_parser;
-  }
-
-  /**
-   * @deprecated 1.9.0
-   */
-  public function compiler() {
-    trigger_error('Talus_TPL::compiler() is deprecated. Please use Talus_TPL::parser() instead.', E_USER_DEPRECATED);
-
-    return $this->parser();
   }
 
   /**
