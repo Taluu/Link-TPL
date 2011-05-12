@@ -22,6 +22,7 @@
  * @copyright ©Talus, Talus' Works 2006+
  * @link http://www.talus-works.net Talus' Works
  * @license http://www.gnu.org/licenses/lgpl.html LGNU Public License 2+
+ * @version $Id$
  */
 
 if (!defined('PHP_EXT')) {

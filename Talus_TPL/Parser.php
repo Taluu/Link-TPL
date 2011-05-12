@@ -22,6 +22,7 @@
  * @copyright ©Talus, Talus' Works 2008+
  * @link http://www.talus-works.net Talus' Works
  * @license http://www.gnu.org/licenses/gpl.html GNU Public License 2+
+ * @version $Id$
  */
 
 // -- If PHP < 5.3, emulating E_USER_DEPRECATED
