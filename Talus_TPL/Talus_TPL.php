@@ -274,13 +274,10 @@ class Talus_TPL {
      * Taking the last two blocks names, et imploding them with a _, validating
      * this block name as a full qualified variable
      */
-    $block = array_reverse(explode('.', $block));
-
-    if (count($block) >= 2) {
-      $block = array($block[0], $block[1]);
+    if (strpos($block, '.') !== false) {
+      $block = array_reverse(explode('.', $block));
+      $block = implode('_', array($block[1], $block[0]));
     }
-
-    $block = implode('_', array_reverse($block));
 
     if (!isset($this->_vars[$block])) {
       $this->_vars[$block] = array();
