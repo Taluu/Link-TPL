@@ -427,7 +427,7 @@ class Talus_TPL {
      * If it was, we're not treating it ; If not, we add it to the stack.
      */
     if ($once){
-      $toInclude = sprintf('%1$s/%2$s', $this->root(), $file);
+      $toInclude = sprintf('%1$s/%2$s', $this->_root, $file);
 
       if (in_array($toInclude, $this->_included)) {
         return;
@@ -485,15 +485,6 @@ class Talus_TPL {
   /**#@+
    * Getters / Setters
    */
-
-  /**
-   * Root
-   *
-   * @return string
-   */
-  public function root() {
-    return $this->_root;
-  }
 
   /**
    * Parser
