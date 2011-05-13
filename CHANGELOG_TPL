@@ -27,10 +27,12 @@
   #WAR : Compatibily Broken
 
   #CHG : Behaviour of Talus_TPL::set() when $var is an array
+  #CHG : The Readme file is now in markdown
   #CHG : Foreaches can not be disabled
 
   #DEL : Attribute Talus_TPL::$_tpl
-  #DEL : Blocks behaviour (replaced by advanced foreaches)
+
+  #OBS : Blocks behaviour (replaced by advanced foreaches)
 
 ## 1.8.0 ==> 1.9.0 (Release : 19/04/11)
   #ADD : Possibility of setting default filters
