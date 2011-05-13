@@ -1,16 +1,16 @@
 Important Tags
 ==============
 
-- **1.9.0.1  :** b831b12f9bfbe0936c815f12156d174d77cf04fd
-- **1.9.0    :** 891156118765c8e9996be69a41fd4a8d11b7f517
-- **1.8.0.1  :** 4323d7e40728b4a626f3da151902df50f0a841d7
-- **1.8.0    :** 982fd61826653d8a4cb1605b0854913523d609df
-- **1.7.0    :** 1218f0e88e2d60b0287df00ffd6afdcf3e298fe2
+- **1.9.0.1  :** [b831b12f9bfbe0936c815f12156d174d77cf04fd](https://github.com/Taluu/Talus-TPL/tree/1.9.0.1)
+- **1.9.0    :** [891156118765c8e9996be69a41fd4a8d11b7f517](https://github.com/Taluu/Talus-TPL/tree/1.9.0)
+- **1.8.0.1  :** [4323d7e40728b4a626f3da151902df50f0a841d7](https://github.com/Taluu/Talus-TPL/tree/1.8.0.1)
+- **1.8.0    :** [982fd61826653d8a4cb1605b0854913523d609df](https://github.com/Taluu/Talus-TPL/tree/1.8.0)
+- **1.7.0    :** [1218f0e88e2d60b0287df00ffd6afdcf3e298fe2](https://github.com/Taluu/Talus-TPL/tree/1.7.0)
 
 Branches
 ========
 
-*Master : Lastest
+- Master : Lastest
 
 Other Stuff
 ===========
