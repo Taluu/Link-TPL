@@ -97,8 +97,8 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
     }
 
     // -- Stubs for blocks
-    $script = str_replace(array('<blockelse />', '</block>'), array('<foreachelse />', '</foreach>'), $script);
-    $script = preg_replace_callback('`<' . $nspace . 'block ' . $nspace . 'name="(' . self::REGEX_PHP_ID . ')"(?: ' . $nspace . 'parent="(' . self::REGEX_PHP_ID . ')")?>`', array($this, '_block'), $script);
+    $script = str_replace(array('<' . $nspace . 'blockelse />', '</' . $nspace . 'block>'), array('<' . $nspace . 'foreachelse />', '</' . $nspace . 'foreach>'), $script);
+    $script = preg_replace_callback('`<' . $nspace . 'block name="(' . self::REGEX_PHP_ID . ')"(?: parent="(' . self::REGEX_PHP_ID . ')")?>`', array($this, '_block'), $script);
 
     $recursives = array(
       // -- Block variables ({block.VAR1}, ...)
@@ -116,13 +116,14 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
     }
 
     // -- Inclusions
+    // @todo optimize this stuff
     if ($this->parameter('parse') & self::INCLUDES) {
-      $script = preg_replace_callback('`<' . $nspace . '(include|require) ' . $nspace . 'tpl="((?:.+?\.html(?:\?[^\"]*)?)|(?:\{\$(?:' . self::REGEX_PHP_ID . '(?:' . self::REGEX_ARRAYS . ')?}))"(?: ' . $nspace . 'once="(true|false)")? />`', array($this, '_includes'), $script);
+      $script = preg_replace_callback('`<' . $nspace . '(include|require) tpl="((?:.+?\.html(?:\?[^\"]*)?)|(?:\{\$(?:' . self::REGEX_PHP_ID . '(?:' . self::REGEX_ARRAYS . ')?}))"(?: once="(true|false)")? />`', array($this, '_includes'), $script);
     }
 
     // -- <foreach> tags// -- <foreach> tag
-    $script = preg_replace_callback('`<' . $nspace . 'foreach ' . $nspace . 'ar(?:ra)?y="\{\$(' . self::REGEX_PHP_ID . ')}">`', array($this, '_foreach'), $script);
-    $script = preg_replace_callback('`<' . $nspace . 'foreach ' . $nspace . 'ar(?:ra)?y="\{\$(' . self::REGEX_PHP_ID . '(?:\.value(?:' . self::REGEX_ARRAYS . ')?)?)}" ' . $nspace . 'as="\{\$(' . self::REGEX_PHP_ID . ')}">`', array($this, '_foreach'), $script);
+    $script = preg_replace_callback('`<' . $nspace . 'foreach ar(?:ra)?y="\{\$(' . self::REGEX_PHP_ID . ')}">`', array($this, '_foreach'), $script);
+    $script = preg_replace_callback('`<' . $nspace . 'foreach ar(?:ra)?y="\{\$(' . self::REGEX_PHP_ID . '(?:\.value(?:' . self::REGEX_ARRAYS . ')?)?)}" as="\{\$(' . self::REGEX_PHP_ID . ')}">`', array($this, '_foreach'), $script);
 
     // -- Simple regex which doesn't need any recursive treatment.
     $not_recursives = array(
@@ -140,10 +141,10 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
        '`\{$(' . self::REGEX_PHP_ID . ').current}`' => '$__tpl_foreach[\'$1\'][\'current\']',
 
        // -- is_first : checks if this is the first iteration
-       '`\{$(' . self::REGEX_PHP_ID . ').is_first}`' => '$__tpl_foreach[\'$1\'][\'current\'] == 1',
+       '`\{$(' . self::REGEX_PHP_ID . ').is_first}`' => '($__tpl_foreach[\'$1\'][\'current\'] == 1)',
 
        // -- is_last : checks if this is the last iteration
-       '`\{$(' . self::REGEX_PHP_ID . ').is_last}`' => '$__tpl_foreach[\'$1\'][\'current\'] == $__tpl_foreach[\'$1\'][\'count\']'
+       '`\{$(' . self::REGEX_PHP_ID . ').is_last}`' => '($__tpl_foreach[\'$1\'][\'current\'] == $__tpl_foreach[\'$1\'][\'count\'])'
       );
 
     $recursives = array_merge($recursives, array(
@@ -166,7 +167,7 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
 
     // -- <set> Tag
     if ($this->parameter('parse') & self::SET) {
-      $not_recursives['`<' . $nspace . 'set ' . $nspace . 'var="(' . self::REGEX_PHP_ID . ')(\[(?!]">)(?:.*?)])?">(?!"</set>)(.+?)</set>`'] = '<?php $__tpl_vars__$1$2 = \'$3\'; ?>';
+      $not_recursives['`<' . $nspace . 'set var="(' . self::REGEX_PHP_ID . ')(\[(?!]">)(?:.*?)])?">(?!"</set>)(.+?)</set>`'] = '<?php $__tpl_vars__$1$2 = \'$3\'; ?>';
     }
 
     // -- Constants
@@ -179,8 +180,8 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
     // -- Conditions tags (<if>, <elseif />, <else />)
     if ($this->parameter('parse') & self::CONDITIONS) {
       $not_recursives = array_merge($not_recursives, array(
-        '`<' . $nspace . 'if ' . $nspace . 'cond(?:ition)?="(.+?)">`' => '<?php if ($1) : ?>',
-        '`<' . $nspace . 'el(?:se)?if ' . $nspace . 'cond(?:ition)?="(.+?)" />`' => '<?php elseif ($1) : ?>'
+        '`<' . $nspace . 'if cond(?:ition)?="(.+?)">`' => '<?php if ($1) : ?>',
+        '`<' . $nspace . 'el(?:se)?if cond(?:ition)?="(.+?)" />`' => '<?php elseif ($1) : ?>'
        ));
 
       $noRegex["<{$nspace}else />"] = '<?php else : ?>';
@@ -375,6 +376,12 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
     $blockName = $match[1];
     $as = '';
 
+    $nspace = $this->parameter('namespace');
+
+    if (!empty($nspace)) {
+      $nspace .= ':';
+    }
+
     if (!empty($match[2])) {
       $blockName = sprintf('%1$s_%2$s', $match[2], $match[1]);
       $as = sprintf(' as="%1$s"', $match[1]);
@@ -382,7 +389,7 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
 
     // -- Little warning...
     trigger_error('Blocks are now deprecated. Please refrain from using them, and use <foreach> instead...', E_USER_DEPRECATED);
-    return sprintf('<foreach array="%1$s"%2$s>', $blockName, $as);
+    return sprintf('<' . $nspace . 'foreach array="%1$s"%2$s>', $blockName, $as);
   }
 
 
