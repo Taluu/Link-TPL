@@ -118,7 +118,7 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
     // -- Inclusions
     // @todo optimize this stuff
     if ($this->parameter('parse') & self::INCLUDES) {
-      $script = preg_replace_callback('`<' . $nspace . '(include|require) tpl="((?:.+?\.html(?:\?[^\"]*)?)|(?:\{\$(?:' . self::REGEX_PHP_ID . '(?:' . self::REGEX_ARRAYS . ')?}))"(?: once="(true|false)")? />`', array($this, '_includes'), $script);
+      $script = preg_replace_callback('`<' . $nspace . '(include|require) tpl="((?:.+?\.html(?:\?[^\"]*)?)|(?:\{\$(?:' . self::REGEX_PHP_ID . '(?:' . self::REGEX_ARRAYS . ')?})))"(?: once="(true|false)")? />`', array($this, '_includes'), $script);
     }
 
     // -- <foreach> tags// -- <foreach> tag
