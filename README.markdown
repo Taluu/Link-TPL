@@ -12,9 +12,8 @@ Other Stuff
 ===========
 Documentation
 -------------
-For any pieces of documentation, check the official site (Talus' TPL > Documentation).
-It is still in french though ; the english version will "one day" be made
-(please don't ask when :D).
+For any pieces of documentation, check the [official site](http://www.talus-works.net) (Talus' TPL > Documentation).
+It is still in french though ; the english version will "one day" be made (please don't ask when :D).
 
 About this project...
 ---------------------
