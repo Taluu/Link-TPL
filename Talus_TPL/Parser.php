@@ -137,8 +137,8 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
        '`\{$(' . self::REGEX_PHP_ID . ').size}`' => '$__tpl_foreach[\'$1\'][\'size\']',
 
        // -- current : returns in which iteration we are
-       '`\{(' . self::REGEX_PHP_ID . ').current}`' => '<?php echo $__tpl_foreach[\'$1\'][\'current\']; ?>',
-       '`\{$(' . self::REGEX_PHP_ID . ').current}`' => '$__tpl_foreach[\'$1\'][\'current\']',
+       '`\{(' . self::REGEX_PHP_ID . ').cur(?:rent)}`' => '<?php echo $__tpl_foreach[\'$1\'][\'current\']; ?>',
+       '`\{$(' . self::REGEX_PHP_ID . ').cur(?:rent)}`' => '$__tpl_foreach[\'$1\'][\'current\']',
 
        // -- is_first : checks if this is the first iteration
        '`\{$(' . self::REGEX_PHP_ID . ').is_first}`' => '($__tpl_foreach[\'$1\'][\'current\'] == 1)',
