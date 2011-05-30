@@ -21,12 +21,15 @@
  * @copyright ©Talus, Talus' Works 2008+
  * @link http://www.talus-works.net Talus' Works
  * @license http://www.gnu.org/licenses/lgpl.html Lesser GNU Public License 3+
+ * @version $Id$
  */
 
 ## 1.9.0 ==> 1.?.? (Release : ??/??/??)
-  #WAR : Compatibily Broken
+  #WAR : Compatibily almost Broken !
 
   #CHG : Behaviour of Talus_TPL::set() when $var is an array
+  #CHG : Variables now doesn't have to be UPPER_CASE anymore
+  #CHG : Foreaches variables now have a new syntax
   #CHG : The Readme file is now in markdown
   #CHG : Foreaches can not be disabled
 
