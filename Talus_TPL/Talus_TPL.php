@@ -173,8 +173,6 @@ class Talus_TPL {
    * @param mixed $value Var's value if $vars is not an array
    * @return array
    *
-   * @todo Check the variable's name
-   *
    * @since 1.3.0
    */
   public function set($vars, $value = null){

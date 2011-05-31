@@ -121,7 +121,7 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
       $script = preg_replace_callback('`<' . $nspace . '(include|require) tpl="((?:.+?\.html(?:\?[^\"]*)?)|(?:\{\$(?:' . self::REGEX_PHP_ID . '(?:' . self::REGEX_ARRAYS . ')?})))"(?: once="(true|false)")? />`', array($this, '_includes'), $script);
     }
 
-    // -- <foreach> tags// -- <foreach> tag
+    // -- <foreach> tags
     $script = preg_replace_callback('`<' . $nspace . 'foreach ar(?:ra)?y="\{\$(' . self::REGEX_PHP_ID . ')}">`', array($this, '_foreach'), $script);
     $script = preg_replace_callback('`<' . $nspace . 'foreach ar(?:ra)?y="\{\$(' . self::REGEX_PHP_ID . '(?:\.value(?:' . self::REGEX_ARRAYS . ')?)?)}" as="\{\$(' . self::REGEX_PHP_ID . ')}">`', array($this, '_foreach'), $script);
 
@@ -203,7 +203,7 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
      *
      * Depending on the value of the "set_compact" parameter, if it is on, everything
      * considered as "emptyness" between two php tags (?><?php), meaning any spaces,
-     * newlines, tabs, or whatever will be cleaned, including the PHP tags in the
+     * newlines, tabs, or whatever will be cleansed, including the PHP tags in the
      * middle.
      *
      * If it is off (by default), only the ?><?php tags will be removed.
