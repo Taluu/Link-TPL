@@ -24,7 +24,7 @@
  * @version $Id$
  */
 
-## 1.9.0 ==> 1.10.0 (Release : ??/06/11)
+## 1.9.0 ==> 1.10.0 (Release : 16/06/11)
   #WAR : Compatibily (almost) Broken !
 
   #CHG : Behaviour of Talus_TPL::set() when $var is an array
