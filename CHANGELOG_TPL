@@ -24,8 +24,8 @@
  * @version $Id$
  */
 
-## 1.9.0 ==> 1.?.? (Release : ??/??/??)
-  #WAR : Compatibily almost Broken !
+## 1.9.0 ==> 1.10.0 (Release : ??/06/11)
+  #WAR : Compatibily (almost) Broken !
 
   #CHG : Behaviour of Talus_TPL::set() when $var is an array
   #CHG : Variables now doesn't have to be UPPER_CASE anymore
@@ -36,6 +36,7 @@
   #DEL : Attribute Talus_TPL::$_tpl
 
   #OBS : Blocks behaviour (replaced by advanced foreaches)
+  #OBS : The usage of the <set> tag is now deprecated
 
 ## 1.8.0 ==> 1.9.0 (Release : 19/04/11)
   #ADD : Possibility of setting default filters
