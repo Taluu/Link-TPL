@@ -47,7 +47,7 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
     CONSTANTS = 16,
 
     BASICS = 4,
-    DEFAULTS = 31,
+    DEFAULTS = 30,
     ALL = 31,
 
     // -- Regex used
