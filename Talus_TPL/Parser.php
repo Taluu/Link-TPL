@@ -110,8 +110,8 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
     // -- Filter's transformations
     if ($this->parameter('parse') & self::FILTERS) {
       $matches = array();
-      while (preg_match('`\{(\$?' . self::REGEX_PHP_ID . '(?:\.value(?:' . self::REGEX_ARRAYS . ')?|key|is_(?:first|last)|current|size)?)\|((?:' . self::REGEX_PHP_ID . '(?::.+?)*\|?)+)}`', $script, $matches)) {
-        $script = str_replace($matches[0], $this->_filters($matches[2], $matches[3], $matches[1]), $script);
+      while (preg_match('`\{(\$?' . self::REGEX_PHP_ID . '(?:\.value(?:' . self::REGEX_ARRAYS . ')?|key|current|size)?)\|((?:' . self::REGEX_PHP_ID . '(?::.+?)*\|?)+)}`', $script, $matches)) {
+        $script = str_replace($matches[0], $this->_filters($matches[1], $matches[2]), $script);
       }
     }
 
