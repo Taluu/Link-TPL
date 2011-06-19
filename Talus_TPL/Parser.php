@@ -103,8 +103,8 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
     $recursives = array(
       // -- Block variables ({block.VAR1}, ...)
       // -- EX REGEX ; [a-z_\xe0-\xf6\xf8-\xff][a-z0-9_\xe0-\xf6\xf8-\xff]*
-      '`\{(' . self::REGEX_PHP_ID . ')\.(' . self::REGEX_PHP_ID . ')(' . self::REGEX_ARRAYS . ')?}`' => '{$1.value[\'$2\']$3}',
-      '`\{\$(' . self::REGEX_PHP_ID . ')\.(' . self::REGEX_PHP_ID . ')(' . self::REGEX_ARRAYS . ')?}`' => '{$$1.value[\'$2\']$3}'
+      '`\{(' . self::REGEX_PHP_ID . ')\.((?!val(?:ue)?)' . self::REGEX_PHP_ID . ')(' . self::REGEX_ARRAYS . ')?}`' => '{$1.value[\'$2\']$3}',
+      '`\{\$(' . self::REGEX_PHP_ID . ')\.((?!val(?:ue)?)' . self::REGEX_PHP_ID . ')(' . self::REGEX_ARRAYS . ')?}`' => '{$$1.value[\'$2\']$3}'
      );
 
     // -- Filter's transformations
@@ -134,17 +134,17 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
 
        // -- size : shows the size of the array
        '`\{(' . self::REGEX_PHP_ID . ').size}`' => '<?php echo $__tpl_foreach[\'$1\'][\'size\']; ?>',
-       '`\{$(' . self::REGEX_PHP_ID . ').size}`' => '$__tpl_foreach[\'$1\'][\'size\']',
+       '`\{\$(' . self::REGEX_PHP_ID . ').size}`' => '$__tpl_foreach[\'$1\'][\'size\']',
 
        // -- current : returns in which iteration we are
-       '`\{(' . self::REGEX_PHP_ID . ').cur(?:rent)}`' => '<?php echo $__tpl_foreach[\'$1\'][\'current\']; ?>',
-       '`\{$(' . self::REGEX_PHP_ID . ').cur(?:rent)}`' => '$__tpl_foreach[\'$1\'][\'current\']',
+       '`\{(' . self::REGEX_PHP_ID . ').cur(?:rent)?}`' => '<?php echo $__tpl_foreach[\'$1\'][\'current\']; ?>',
+       '`\{\$(' . self::REGEX_PHP_ID . ').cur(?:rent)?}`' => '$__tpl_foreach[\'$1\'][\'current\']',
 
        // -- is_first : checks if this is the first iteration
-       '`\{$(' . self::REGEX_PHP_ID . ').is_first}`' => '($__tpl_foreach[\'$1\'][\'current\'] == 1)',
+       '`\{\$(' . self::REGEX_PHP_ID . ').is_first}`' => '($__tpl_foreach[\'$1\'][\'current\'] == 1)',
 
        // -- is_last : checks if this is the last iteration
-       '`\{$(' . self::REGEX_PHP_ID . ').is_last}`' => '($__tpl_foreach[\'$1\'][\'current\'] == $__tpl_foreach[\'$1\'][\'count\'])'
+       '`\{\$(' . self::REGEX_PHP_ID . ').is_last}`' => '($__tpl_foreach[\'$1\'][\'current\'] == $__tpl_foreach[\'$1\'][\'count\'])'
       );
 
     $recursives = array_merge($recursives, array(
@@ -187,15 +187,15 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
       $noRegex["<{$nspace}else />"] = '<?php else : ?>';
       $noRegex["</{$nspace}if>"] = '<?php endif; ?>';
     }
-
+    
     $script = preg_replace(array_keys($not_recursives), array_values($not_recursives), $script);
-
+    
     foreach ($recursives as $regex => $replace) {
       while(preg_match($regex, $script)) {
         $script = preg_replace($regex, $replace, $script);
       }
     }
-
+    
     $script = str_replace(array_keys($noRegex), array_values($noRegex), $script);
 
     /*
@@ -236,14 +236,14 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
    * @return string
    */
   protected function _foreach($matches) {
-    $varName = $match[1];
+    $varName = $matches[1];
 
     // -- Is the attribute "as" set ?
     if (isset($matches[2])) {
       $varName = $matches[2];
     }
-
-    return sprintf('
+    
+    return sprintf('<?php
       $__tpl_foreach_ref[] = \'%1$s\';
       $__tpl_foreach[\'%1$s\'] = array(
         \'value\' => null,
@@ -252,9 +252,9 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
         \'current\' => 0
        );
 
-      if ($__tpl_foreach[\'%1$s\'][\'count\'] > 0) :
+      if ($__tpl_foreach[\'%1$s\'][\'size\'] > 0) :
         foreach ({$%2$s} as {$%1$s.key} => &{$%1$s.value}) {
-          ++{$%1$s.current};', $varName, $matches[1]);
+          ++{$%1$s.current}; ?>', $varName, $matches[1]);
   }
 
   /**
