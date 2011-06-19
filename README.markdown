@@ -7,7 +7,7 @@ Important Tags
 
 Branches
 ========
-- Master : Lastest
+- Master : Latest
 
 Other Stuff
 ===========
