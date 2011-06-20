@@ -52,7 +52,7 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
 
     // -- Regex used
     REGEX_PHP_ID = '[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*', // PHP Identifier
-    REGEX_ARRAYS = '\[(?!]})(?:.*?)]'; // PHP Arrays
+    REGEX_ARRAYS = '\[[^]]+?]'; // PHP Arrays
 
   /**
    * Initialisation
@@ -103,8 +103,8 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
     $recursives = array(
       // -- Block variables ({block.VAR1}, ...)
       // -- EX REGEX ; [a-z_\xe0-\xf6\xf8-\xff][a-z0-9_\xe0-\xf6\xf8-\xff]*
-      '`\{(' . self::REGEX_PHP_ID . ')\.((?!val(?:ue)?)' . self::REGEX_PHP_ID . ')(' . self::REGEX_ARRAYS . ')?}`' => '{$1.value[\'$2\']$3}',
-      '`\{\$(' . self::REGEX_PHP_ID . ')\.((?!val(?:ue)?)' . self::REGEX_PHP_ID . ')(' . self::REGEX_ARRAYS . ')?}`' => '{$$1.value[\'$2\']$3}'
+      '`\{(' . self::REGEX_PHP_ID . ')\.(?!val(?:ue)?)(' . self::REGEX_PHP_ID . ')(' . self::REGEX_ARRAYS . ')?}`' => '{$1.value[\'$2\']$3}',
+      '`\{\$(' . self::REGEX_PHP_ID . ')\.(?!val(?:ue)?)(' . self::REGEX_PHP_ID . ')(' . self::REGEX_ARRAYS . ')?}`' => '{$$1.value[\'$2\']$3}'
      );
 
     // -- Filter's transformations

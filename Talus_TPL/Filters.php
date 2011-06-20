@@ -131,6 +131,10 @@ final class Talus_TPL_Filters {
    *                way specified by $mode.
    */
   public static function convertCase($arg, $mode, $encoding = null){
+    if ($encoding === null) {
+      $encoding = mb_internal_encoding();
+    }
+    
     return mb_convert_case($arg, $mode, $encoding);
   }
 
@@ -270,6 +274,16 @@ final class Talus_TPL_Filters {
    */
   public static function safe($arg, $quote_style = ENT_COMPAT) {
     return htmlspecialchars_decode($arg, $quote_style);
+  }
+  
+  /**
+   * Just do... Nothing.
+   * 
+   * @param string $arg Variable
+   * @return string the variable's value
+   */
+  public static function void($arg) {
+    return $arg;
   }
 }
 
