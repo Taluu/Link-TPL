@@ -52,7 +52,7 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
 
     // -- Regex used
     REGEX_PHP_ID = '[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*', // PHP Identifier
-    REGEX_ARRAYS = '\[[^]]+?]'; // PHP Arrays
+    REGEX_ARRAYS = '(?:\[[^]]+?])+'; // PHP Arrays
 
   /**
    * Initialisation
