@@ -248,7 +248,7 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
       $__tpl_foreach[\'%1$s\'] = array(
         \'value\' => null,
         \'key\' => null,
-        \'size\' => count({$%2$s}),
+        \'size\' => isset({$%2$s}) ? count({$%2$s}) : 0,
         \'current\' => 0
        );
 
