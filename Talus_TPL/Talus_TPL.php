@@ -60,7 +60,7 @@ class Talus_TPL {
   const
     INCLUDE_TPL = 0,
     REQUIRE_TPL = 1,
-    VERSION = '1.10.5';
+    VERSION = '1.10.6';
 
   /**
    * Initialisation.
@@ -278,12 +278,21 @@ class Talus_TPL {
       $block = implode('_', array($block[1], $block[0]));
     }
 
-    if (!isset($this->_vars[$block])) {
-      $this->_vars[$block] = array();
-    }
-
     if (!is_array($vars)) {
       $vars = array($vars => $value);
+    }
+
+    $vars['FIRST'] = true;
+    $vars['LAST'] = true;
+    $vars['SIZE'] = 1;
+    $vars['CURRENT'] = 1;
+
+    if (!isset($this->_vars[$block])) {
+      $this->_vars[$block] = array();
+    } else {
+      $vars['SIZE'] = &$this->_vars[$block][0]['SIZE'];
+      $vars['CURRENT'] = $vars['SIZE'];
+      $vars['SIZE']++;
     }
 
     $this->_vars[$block][] = $vars;

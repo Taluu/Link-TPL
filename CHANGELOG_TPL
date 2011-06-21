@@ -29,6 +29,7 @@
   #FIX : Filters on the arrays are now properly recognized (#18)
   #FIX : The stub for the blocks was not working properly (#20)
   #FIX : Bad comparision for a foreach value on is_last (#20)
+  #FIX : Missing compat for the special block variables (#23)
   #FIX : Bad filters interpretation (#15)
   #FIX : Multi dimensional array (#19)
 
