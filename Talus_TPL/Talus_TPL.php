@@ -282,19 +282,26 @@ class Talus_TPL {
       $vars = array($vars => $value);
     }
 
-    $vars['FIRST'] = true;
-    $vars['LAST'] = true;
-    $vars['SIZE'] = 1;
-    $vars['CURRENT'] = 1;
-
     if (!isset($this->_vars[$block])) {
       $this->_vars[$block] = array();
+      $nbRows = 0;
     } else {
-      $vars['SIZE'] = &$this->_vars[$block][0]['SIZE'];
-      $vars['CURRENT'] = $vars['SIZE'];
-      $vars['SIZE']++;
+      $nbRows = count($this->_var[$block]);
     }
 
+    $vars['FIRST'] = true;
+    $vars['LAST'] = true;
+    $vars['SIZE_OF'] = 0;
+    $vars['CURRENT'] = $nbBlock + 1;
+    
+    if ($nbRows > 0) {
+      $this->_vars[$block][$nbRows - 1]['LAST'] = false;
+      
+      $vars['FIRST'] = false;
+      $vars['SIZE_OF'] = &$this->_vars[$block][0]['SIZE'];
+    }
+    
+    ++$vars['SIZE'];
     $this->_vars[$block][] = $vars;
   }
 
