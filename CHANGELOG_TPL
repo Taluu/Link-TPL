@@ -24,19 +24,16 @@
  * @version $Id$
  */
 
-## 1.10.2 ==> 1.10.3 (Release : 21/06/11)
-  #OPT : Array interpretation are now much faster
-  
-  #FIX : Multi dimensional array (#19)
-  #FIX : Filters on the arrays are now properly recognized (#18)
-
-## 1.10.1 ==> 1.10.2 (Release 19/06/11)
-  #FIX : Bad filters interpretation (#15)
-
-## 1.10.0 ==> 1.10.1 (Release 19/06/11)
+## 1.10 ==> 1.?? (Release ??/??/??)
   #FIX : The old block syntax was making the foreach loop undefinitely (#14)
+  #FIX : Filters on the arrays are now properly recognized (#18)
+  #FIX : Bad comparision for a foreach value on is_last (#20)
+  #FIX : Bad filters interpretation (#15)
+  #FIX : Multi dimensional array (#19)
 
-## 1.9.0 ==> 1.10.0 (Release : 16/06/11)
+  #OPT : Array interpretation are now much faster
+
+## 1.9.0 ==> 1.10 (Release : 16/06/11)
   #WAR : Compatibily (almost) Broken !
 
   #CHG : Behaviour of Talus_TPL::set() when $var is an array
