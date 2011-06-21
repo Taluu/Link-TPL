@@ -144,7 +144,7 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
        '`\{\$(' . self::REGEX_PHP_ID . ').is_first}`' => '($__tpl_foreach[\'$1\'][\'current\'] == 1)',
 
        // -- is_last : checks if this is the last iteration
-       '`\{\$(' . self::REGEX_PHP_ID . ').is_last}`' => '($__tpl_foreach[\'$1\'][\'current\'] == $__tpl_foreach[\'$1\'][\'count\'])'
+       '`\{\$(' . self::REGEX_PHP_ID . ').is_last}`' => '($__tpl_foreach[\'$1\'][\'current\'] == $__tpl_foreach[\'$1\'][\'size\'])'
       );
 
     $recursives = array_merge($recursives, array(
@@ -187,15 +187,15 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
       $noRegex["<{$nspace}else />"] = '<?php else : ?>';
       $noRegex["</{$nspace}if>"] = '<?php endif; ?>';
     }
-    
+
     $script = preg_replace(array_keys($not_recursives), array_values($not_recursives), $script);
-    
+
     foreach ($recursives as $regex => $replace) {
       while(preg_match($regex, $script)) {
         $script = preg_replace($regex, $replace, $script);
       }
     }
-    
+
     $script = str_replace(array_keys($noRegex), array_values($noRegex), $script);
 
     /*
@@ -242,7 +242,7 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
     if (isset($matches[2])) {
       $varName = $matches[2];
     }
-    
+
     return sprintf('<?php
       $__tpl_foreach_ref[] = \'%1$s\';
       $__tpl_foreach[\'%1$s\'] = array(
