@@ -370,7 +370,7 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
    * @return string
    * @see self::compile()
    * @see 97
-   * @deprecated Upwards 1.9.0
+   * @deprecated 1.10
    */
   protected function _block(array $match){
     $blockName = $match[1];
@@ -384,12 +384,12 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
 
     if (!empty($match[2])) {
       $blockName = sprintf('%1$s_%2$s', $match[2], $match[1]);
-      $as = sprintf(' as="%1$s"', $match[1]);
+      $as = sprintf(' as="{$%1$s}"', $match[1]);
     }
 
     // -- Little warning...
     trigger_error('Blocks are now deprecated. Please refrain from using them, and use <foreach> instead...', E_USER_DEPRECATED);
-    return sprintf('<' . $nspace . 'foreach array="%1$s"%2$s>', $blockName, $as);
+    return sprintf('<' . $nspace . 'foreach array="{$%1$s}"%2$s>', $blockName, $as);
   }
 
 
