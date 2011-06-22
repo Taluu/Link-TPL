@@ -26,6 +26,7 @@
 
 ## 1.10 ==> 1.?? (Release ??/??/??)
   #FIX : The old block syntax was making the foreach loop undefinitely (#14)
+  #FIX : Notice if an array traversed by a foreach is not set (#24)
   #FIX : Filters on the arrays are now properly recognized (#18)
   #FIX : The stub for the blocks was not working properly (#20)
   #FIX : Bad comparision for a foreach value on is_last (#20)
