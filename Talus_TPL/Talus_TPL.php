@@ -292,15 +292,15 @@ class Talus_TPL {
     $vars['FIRST'] = true;
     $vars['LAST'] = true;
     $vars['SIZE_OF'] = 0;
-    
+
     if ($nbRows > 0) {
       $this->_vars[$block][$nbRows - 1]['LAST'] = false;
-      
+
       $vars['FIRST'] = false;
       $vars['SIZE_OF'] = &$this->_vars[$block][0]['SIZE_OF'];
     }
-    
-    $vars['CURRENT'] = ++$vars['SIZE'];
+
+    $vars['CURRENT'] = ++$vars['SIZE_OF'];
     $this->_vars[$block][] = $vars;
   }
 
