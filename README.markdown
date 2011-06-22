@@ -1,9 +1,17 @@
+Talus' TPL
+==========
+A templating engine in PHP, using a XML syntax like, and a parser based on PCREs. The name is temporary.
+
+Requirements
+============
+- PHP 5.1+ (5.2 is recommanded... if not PHP 5.3)
+
 Important Tags
 ==============
-- **1.10.0 :** [aaaf0a4cda4d5a889bb354953eec8b15918e5313](https://github.com/Taluu/Talus-TPL/tree/1.10.0)
-- **1.9.0  :** [891156118765c8e9996be69a41fd4a8d11b7f517](https://github.com/Taluu/Talus-TPL/tree/1.9.0)
-- **1.8.0  :** [982fd61826653d8a4cb1605b0854913523d609df](https://github.com/Taluu/Talus-TPL/tree/1.8.0)
-- **1.7.0  :** [1218f0e88e2d60b0287df00ffd6afdcf3e298fe2](https://github.com/Taluu/Talus-TPL/tree/1.7.0)
+- **1.10 :** [aaaf0a4cda4d5a889bb354953eec8b15918e5313](https://github.com/Taluu/Talus-TPL/tree/1.10.0)
+- **1.9 :** [891156118765c8e9996be69a41fd4a8d11b7f517](https://github.com/Taluu/Talus-TPL/tree/1.9.0)
+- **1.8 :** [982fd61826653d8a4cb1605b0854913523d609df](https://github.com/Taluu/Talus-TPL/tree/1.8.0)
+- **1.7 :** [1218f0e88e2d60b0287df00ffd6afdcf3e298fe2](https://github.com/Taluu/Talus-TPL/tree/1.7.0)
 
 Branches
 ========
@@ -18,6 +26,4 @@ It is still in french though ; the english version will "one day" be made (pleas
 
 About this project...
 ---------------------
-This project was initiated as a fork "from scratch" from the templating engine of
-the [Fire Soft Board](http://www.fire-soft-board.com) project. It has also some
-stuff inspired from the PHPBB3 templating engine, and Django.
+This project was initiated as a fork "from scratch" from the templating engine of the [Fire Soft Board](http://www.fire-soft-board.com) project. It also has some stuff inspired from the PHPBB3 ans Django's templating engines.
