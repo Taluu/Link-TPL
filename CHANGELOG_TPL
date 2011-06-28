@@ -24,7 +24,7 @@
  * @version $Id$
  */
 
-## 1.10 ==> 1.?? (Release ??/??/??)
+## 1.10 ==> 1.11 (Release ??/??/??)
   #FIX : The old block syntax was making the foreach loop undefinitely (#14)
   #FIX : Notice if an array traversed by a foreach is not set (#24)
   #FIX : Filters on the arrays are now properly recognized (#18)
@@ -33,6 +33,15 @@
   #FIX : Missing compat for the special block variables (#23)
   #FIX : Bad filters interpretation (#15)
   #FIX : Multi dimensional array (#19)
+
+  #ADD : Possibility to use a property of an object in a TPL
+
+  #CHG : The parameter behaviour has completely changed
+  #CHG : Talus_TPL::dependencies() does not accept arrays anymore
+
+  #DEL : <set> tag is now no more
+  #DEL : namspaces behaviour (was not really used and was pretty useless)
+  #DEL : The autoloading does not throw any exception if file not found
 
   #OPT : Array interpretation are now much faster
 

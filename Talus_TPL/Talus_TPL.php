@@ -35,42 +35,57 @@ if (!defined('E_USER_DEPRECATED')) {
 
 class Talus_TPL {
   protected
-    $_root = './',
+    $_root,
 
-    $_last = array(),
-    $_included = array(),
+    $_last,
+    $_included,
 
-    $_vars = array(),
-    $_references = array(),
+    $_vars,
+    $_references,
 
-     $_autoFilters = array(),
+     $_autoFilters,
 
     /**
      * @var Talus_TPL_Parser_Interface
      */
-    $_parser = null,
+    $_parser,
 
     /**
      * @var Talus_TPL_Cache_Interface
      */
-    $_cache = null;
+    $_cache;
 
   protected static $_autoloadSet = false;
 
   const
     INCLUDE_TPL = 0,
     REQUIRE_TPL = 1,
-    VERSION = '1.10.7';
+    VERSION = '1.11.0-ALPHA';
 
   /**
    * Initialisation.
    *
    * @param string $root Directory where the templates files are.
    * @param string $cache Directory where the php version of the templates will be stored.
-   * @param array $dependencies Dependency Injection
+   * @param array $options Options for the templating engine
    * @return void
    */
-  public function __construct($root, $cache, array $dependencies = array()){
+  public function __construct($root, $cache, array $_options = array()){
+    // -- Options
+    $options = array_merge_recursive(array(
+      'dependencies' => array(
+        'parser' => array(
+          'class' => 'Talus_TPL_Parser',
+          'options' => array()
+         ),
+        
+        'cache' => array(
+          'class' => 'Talus_TPL_Cache',
+          'options' => array()
+         )
+       )
+     ), $_options);
+    
     // -- Resetting the PHP cache concerning the files' information.
     clearstatcache();
 
@@ -86,7 +101,10 @@ class Talus_TPL {
     $this->_vars = array();
 
     // -- Dependency Injection
-    $this->dependencies($dependencies);
+    $this->dependencies(
+      new $options['dependencies']['parser']['class']($options['dependencies']['parser']['options']), 
+      new $options['dependencies']['cache']['class']($options['dependencies']['cache']['options'])
+     );
 
     // -- Default behaviour if no dependency injection
     if ($this->_parser === null) {
@@ -133,7 +151,6 @@ class Talus_TPL {
     $file = sprintf('%1$s/%2$s.%3$s', $dir, implode('_', $className), PHP_EXT);
 
     if (!file_exists($file)) {
-      throw new Talus_TPL_Autoload_Exception(array('Class %s not found', $class), 8);
       return false;
     }
 
@@ -526,13 +543,7 @@ class Talus_TPL {
    * @throws Talus_TPL_Dependency_Exception
    */
   public function dependencies($dependencies = array()) {
-    if (func_num_args() > 1) {
-      $dependencies = func_get_args();
-    } elseif (!is_array($dependencies)) {
-      $dependencies = array($dependencies);
-    }
-
-    foreach ($dependencies as &$dependency) {
+    foreach (func_get_args() as $dependency) {
       if ($dependency instanceof Talus_TPL_Parser_Interface) {
         $this->_parser = $dependency;
       } elseif ($dependency instanceof Talus_TPL_Cache_Interface) {

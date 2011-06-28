@@ -37,47 +37,76 @@ if (!defined('E_USER_DEPRECATED')) {
  * PHP code, which can be used by PHP.
  */
 class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
-  protected $_parameters = array();
-
   const
-    SET = 1,
-    FILTERS = 2,
-    INCLUDES = 4,
-    CONDITIONS = 8,
-    CONSTANTS = 16,
+    FILTERS = 1,
+    INCLUDES = 2,
+    CONDITIONS = 4,
+    CONSTANTS = 8,
 
     BASICS = 4,
-    DEFAULTS = 30,
-    ALL = 31,
+    DEFAULTS = 15,
+    ALL = 15,
 
     // -- Regex used
     REGEX_PHP_ID = '[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*', // PHP Identifier
-    REGEX_ARRAYS = '(?:\[[^]]+?])*'; // PHP Arrays
+    REGEX_PHP_SUFFIX = '(?:\[[^]]+?]|->[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)*'; // PHP Suffixes (arrays, objects)
+  
+  protected 
+    $_compact,
+    $_filters,
+    $_parse;
 
   /**
    * Initialisation
+   * 
+   * Options to be given to the parser :
+   *  - compact : Compact the resulting php source code (deleting any blanks
+   *              between a closing and an opening php tag, ...) ? true / false
+   * 
+   *  - parse : Defines what are the objects to be parsed (inclusions, filters, 
+   *            conditions, ...). Can be a combination of the class' constants.
    *
+   * @params array $options options to be given to the parser (see above)
    * @return void
    */
-  public function __construct(){
-    $this->parameter('parse', self::DEFAULTS);
-    $this->parameter('set_compact', false);
-    $this->parameter('namespace', '');
+  public function __construct(array $_options = array()){
+    $options = array_merge(array(
+      'compact' => false,
+      'filters' => 'Talus_TPL_Filters',
+      'parse' => self::DEFAULTS
+     ), $_options);
+    
+    $this->_compact = $options['compact'];
+    $this->_filters = $options['filters'];
+    $this->_parse = $options['parse'];
   }
 
   /**
    * Accessor for a given parameter
+   * 
+   * (Not valid since 1.11 : acts as a stub for compatibilty)
    *
    * @param string $param Parameter's name
    * @param mixed $value Parameter's value (if setter)
    * @return mixed Parameter's value
    */
   public function parameter($param, $value = null) {
+    static $params = array(
+      'parse' => 'parse',
+      'set_compact' => 'compact'
+     );
+    
+    if (!isset($params[$param])) {
+      return null;
+    }
+    
+    $param = &$this->{'_' . $params[$param]};
+    
     if ($value !== null) {
-      $this->_parameters[$param] = $value;
+      $param = $value;
     }
 
-    return $this->_parameters[$param];
+    return $param;
   }
 
   /**
@@ -90,40 +119,34 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
     $script = str_replace('<?' ,'<?php echo \'<?\'; ?>', $script);
     $script = preg_replace('`/\*.*?\*/`s', '', $script);
 
-    $nspace = $this->parameter('namespace');
-
-    if (!empty($nspace)) {
-      $nspace .= ':';
-    }
-
     // -- Stubs for blocks
-    $script = str_replace(array('<' . $nspace . 'blockelse />', '</' . $nspace . 'block>'), array('<' . $nspace . 'foreachelse />', '</' . $nspace . 'foreach>'), $script);
-    $script = preg_replace_callback('`<' . $nspace . 'block name="(' . self::REGEX_PHP_ID . ')"(?: parent="(' . self::REGEX_PHP_ID . ')")?>`', array($this, '_block'), $script);
+    $script = str_replace(array('<blockelse />', '</block>'), array('<foreachelse />', '</foreach>'), $script);
+    $script = preg_replace_callback('`<block name="(' . self::REGEX_PHP_ID . ')"(?: parent="(' . self::REGEX_PHP_ID . ')")?>`', array($this, '_block'), $script);
 
     $recursives = array(
       // -- Block variables ({block.VAR1}, ...)
       // -- EX REGEX ; [a-z_\xe0-\xf6\xf8-\xff][a-z0-9_\xe0-\xf6\xf8-\xff]*
-      '`\{(' . self::REGEX_PHP_ID . ')\.(?!val(?:ue)?)(' . self::REGEX_PHP_ID . ')(' . self::REGEX_ARRAYS . ')}`' => '{$1.value[\'$2\']$3}',
-      '`\{\$(' . self::REGEX_PHP_ID . ')\.(?!val(?:ue)?)(' . self::REGEX_PHP_ID . ')(' . self::REGEX_ARRAYS . ')}`' => '{$$1.value[\'$2\']$3}'
+      '`\{(' . self::REGEX_PHP_ID . ')\.(?!val(?:ue)?)(' . self::REGEX_PHP_ID . ')(' . self::REGEX_PHP_SUFFIX . ')}`' => '{$1.value[\'$2\']$3}',
+      '`\{\$(' . self::REGEX_PHP_ID . ')\.(?!val(?:ue)?)(' . self::REGEX_PHP_ID . ')(' . self::REGEX_PHP_SUFFIX . ')}`' => '{$$1.value[\'$2\']$3}'
      );
 
     // -- Filter's transformations
-    if ($this->parameter('parse') & self::FILTERS) {
+    if ($this->_parse & self::FILTERS) {
       $matches = array();
-      while (preg_match('`\{(\$?' . self::REGEX_PHP_ID . '(?:\.value' . self::REGEX_ARRAYS . '|key|current|size|' . self::REGEX_ARRAYS . ')?)\|((?:' . self::REGEX_PHP_ID . '(?::.+?)*\|?)+)}`', $script, $matches)) {
+      while (preg_match('`\{(\$?' . self::REGEX_PHP_ID . '(?:\.value' . self::REGEX_PHP_SUFFIX . '|key|current|size|' . self::REGEX_PHP_SUFFIX . ')?)\|((?:' . self::REGEX_PHP_ID . '(?::.+?)*\|?)+)}`', $script, $matches)) {
         $script = str_replace($matches[0], $this->_filters($matches[1], $matches[2]), $script);
       }
     }
 
     // -- Inclusions
     // @todo optimize this stuff
-    if ($this->parameter('parse') & self::INCLUDES) {
-      $script = preg_replace_callback('`<' . $nspace . '(include|require) tpl="((?:.+?\.html(?:\?[^\"]*)?)|(?:\{\$(?:' . self::REGEX_PHP_ID . '(?:' . self::REGEX_ARRAYS . ')?})))"(?: once="(true|false)")? />`', array($this, '_includes'), $script);
+    if ($this->_parse & self::INCLUDES) {
+      $script = preg_replace_callback('`<(include|require) tpl="((?:.+?\.html(?:\?[^\"]*)?)|(?:\{\$(?:' . self::REGEX_PHP_ID . '(?:' . self::REGEX_PHP_SUFFIX . ')?})))"(?: once="(true|false)")? />`', array($this, '_includes'), $script);
     }
 
     // -- <foreach> tags
-    $script = preg_replace_callback('`<' . $nspace . 'foreach ar(?:ra)?y="\{\$(' . self::REGEX_PHP_ID . ')}">`', array($this, '_foreach'), $script);
-    $script = preg_replace_callback('`<' . $nspace . 'foreach ar(?:ra)?y="\{\$(' . self::REGEX_PHP_ID . '(?:\.value' . self::REGEX_ARRAYS . ')?)}" as="\{\$(' . self::REGEX_PHP_ID . ')}">`', array($this, '_foreach'), $script);
+    $script = preg_replace_callback('`<foreach ar(?:ra)?y="\{\$(' . self::REGEX_PHP_ID . ')}">`', array($this, '_foreach'), $script);
+    $script = preg_replace_callback('`<foreach ar(?:ra)?y="\{\$(' . self::REGEX_PHP_ID . '(?:\.value' . self::REGEX_PHP_SUFFIX . ')?)}" as="\{\$(' . self::REGEX_PHP_ID . ')}">`', array($this, '_foreach'), $script);
 
     // -- Simple regex which doesn't need any recursive treatment.
     $not_recursives = array(
@@ -149,43 +172,38 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
 
     $recursives = array_merge($recursives, array(
       // -- Foreach values
-      '`\{(' . self::REGEX_PHP_ID . ').val(?:ue)?(' . self::REGEX_ARRAYS . ')}`' => '<?php echo $__tpl_foreach[\'$1\'][\'value\']$2; ?>',
-      '`\{\$(' . self::REGEX_PHP_ID . ').val(?:ue)?(' . self::REGEX_ARRAYS . ')}`' => '$__tpl_foreach[\'$1\'][\'value\']$2',
+      '`\{(' . self::REGEX_PHP_ID . ').val(?:ue)?(' . self::REGEX_PHP_SUFFIX . ')}`' => '<?php echo $__tpl_foreach[\'$1\'][\'value\']$2; ?>',
+      '`\{\$(' . self::REGEX_PHP_ID . ').val(?:ue)?(' . self::REGEX_PHP_SUFFIX . ')}`' => '$__tpl_foreach[\'$1\'][\'value\']$2',
 
       // -- Simple variables ({VAR1}, {VAR2[with][a][set][of][keys]}, ...)
-      '`\{(' . self::REGEX_PHP_ID . self::REGEX_ARRAYS . ')}`' => '<?php echo $__tpl_vars__$1; ?>',
-      '`\{\$(' . self::REGEX_PHP_ID . self::REGEX_ARRAYS . ')}`' => '$__tpl_vars__$1'
+      '`\{(' . self::REGEX_PHP_ID . self::REGEX_PHP_SUFFIX . ')}`' => '<?php echo $__tpl_vars__$1; ?>',
+      '`\{\$(' . self::REGEX_PHP_ID . self::REGEX_PHP_SUFFIX . ')}`' => '$__tpl_vars__$1'
      ));
 
     // -- No Regex (faster !)
     $noRegex = array(
-      "</{$nspace}foreach>" => '<?php } endif; $__tpl_refering_var = array_pop($__tpl_foreach_ref); if (isset($__tpl_foreach[$__tpl_refering_var])) unset($__tpl_foreach[$__tpl_refering_var]); ?>',
-      "<{$nspace}foreachelse />" => '<?php } else : if (true) { ?>',
+      '</foreach>' => '<?php } endif; $__tpl_refering_var = array_pop($__tpl_foreach_ref); if (isset($__tpl_foreach[$__tpl_refering_var])) unset($__tpl_foreach[$__tpl_refering_var]); ?>',
+      '<foreachelse />' => '<?php } else : if (true) { ?>',
 
       '{\\' =>  '{'
      );
 
-    // -- <set> Tag
-    if ($this->parameter('parse') & self::SET) {
-      $not_recursives['`<' . $nspace . 'set var="(' . self::REGEX_PHP_ID . ')(\[(?!]">)(?:.*?)])?">(?!"</set>)(.+?)</set>`'] = '<?php $__tpl_vars__$1$2 = \'$3\'; ?>';
-    }
-
     // -- Constants
-    if ($this->parameter('parse') & self::CONSTANTS) {
+    if ($this->_parse & self::CONSTANTS) {
       //[a-zA-Z_\xe0-\xf6\xf8-\xff\xc0-\xd6\xd8-\xde][a-zA-Z0-9_\xe0-\xf6\xf8-\xff\xc0-\xd6\xd8-\xde]*
       $not_recursives['`\{__(' . self::REGEX_PHP_ID . ')__}`i'] = '<?php echo $1; ?>';
       $not_recursives['`\{__$(' . self::REGEX_PHP_ID . ')__}`i'] = '$1';
     }
 
     // -- Conditions tags (<if>, <elseif />, <else />)
-    if ($this->parameter('parse') & self::CONDITIONS) {
+    if ($this->_parse & self::CONDITIONS) {
       $not_recursives = array_merge($not_recursives, array(
-        '`<' . $nspace . 'if cond(?:ition)?="(.+?)">`' => '<?php if ($1) : ?>',
-        '`<' . $nspace . 'el(?:se)?if cond(?:ition)?="(.+?)" />`' => '<?php elseif ($1) : ?>'
+        '`<if cond(?:ition)?="(.+?)">`' => '<?php if ($1) : ?>',
+        '`<el(?:se)?if cond(?:ition)?="(.+?)" />`' => '<?php elseif ($1) : ?>'
        ));
 
-      $noRegex["<{$nspace}else />"] = '<?php else : ?>';
-      $noRegex["</{$nspace}if>"] = '<?php endif; ?>';
+      $noRegex['<else />'] = '<?php else : ?>';
+      $noRegex['</if>'] = '<?php endif; ?>';
     }
 
     $script = preg_replace(array_keys($not_recursives), array_values($not_recursives), $script);
@@ -208,7 +226,7 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
      *
      * If it is off (by default), only the ?><?php tags will be removed.
      */
-    if ($this->parameter('set_compact')) {
+    if ($this->_compact === true) {
       $script = preg_replace('`\?>\s*<\?php`', '', $script);
     } else {
       $script = str_replace('?><?php', '', $script);
@@ -277,7 +295,7 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
      * If we wish to print the variable (the significative $ is missing), we have
      * to set up the variable to have a $... Being printed and not returned.
      *
-     * Weh just have to add the $ in front of the name of the variable, and clearly
+     * We just have to add the $ in front of the name of the variable, and clearly
      * say we have to print the result.
      */
     if ($return[1] != '$') {
@@ -290,7 +308,7 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
       $fct = array_shift($params);
 
       // -- unimplemented filter ?
-      if (!method_exists('Talus_TPL_Filters', $fct)){
+      if (!method_exists($this->_filters, $fct)){
         trigger_error("The filter \"$fct\" does not exist, and thus shall be ignored.\n\n",
                       E_USER_NOTICE);
         continue;
@@ -307,7 +325,7 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
         $params = '';
       }
 
-      $return = sprintf('Talus_TPL_Filters::%1$s(%2$s%3$s)', $fct, $return, $params);
+      $return = sprintf('%1$s::%2$s(%3$s%4$s)', $this->_filters, $fct, $return, $params);
     }
 
     // -- Printing the return rather than returning it
@@ -376,12 +394,6 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
     $blockName = $match[1];
     $as = '';
 
-    $nspace = $this->parameter('namespace');
-
-    if (!empty($nspace)) {
-      $nspace .= ':';
-    }
-
     if (!empty($match[2])) {
       $blockName = sprintf('%1$s_%2$s', $match[2], $match[1]);
       $as = sprintf(' as="{$%1$s}"', $match[1]);
@@ -389,10 +401,8 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
 
     // -- Little warning...
     trigger_error('Blocks are now deprecated. Please refrain from using them, and use <foreach> instead...', E_USER_DEPRECATED);
-    return sprintf('<' . $nspace . 'foreach array="{$%1$s}"%2$s>', $blockName, $as);
+    return sprintf('<foreach array="{$%1$s}"%2$s>', $blockName, $as);
   }
-
-
 }
 
 /** EOF /**/
