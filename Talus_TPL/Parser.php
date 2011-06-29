@@ -30,6 +30,13 @@ if (!defined('E_USER_DEPRECATED')) {
   define('E_USER_DEPRECATED', E_USER_NOTICE);
 }
 
+// -- If PHP < 5.2.7, emulate PHP_VERSION_ID
+if (!defined('PHP_VERSION_ID')) {
+  $v = explode('.', PHP_VERSION);
+  
+  define('PHP_VERSION_ID', $v[0] * 10000 + $v[1] * 100 + $v[2]);
+}
+
 /**
  * Template's Parser
  *
@@ -217,17 +224,24 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
     $script = str_replace(array_keys($noRegex), array_values($noRegex), $script);
 
     /*
-     * Cleaning the newly made script...
+     * Cleaning the newly made script... depending on the value of the `$compact`
+     * parameter.
      *
-     * Depending on the value of the "set_compact" parameter, if it is on, everything
-     * considered as "emptyness" between two php tags (?><?php), meaning any spaces,
-     * newlines, tabs, or whatever will be cleansed, including the PHP tags in the
-     * middle.
+     * If it is on, everything considered as "emptyness" between two php tags 
+     * (?><?php), meaning any spaces, newlines, tabs, or whatever will be
+     * cleansed, including the PHP tags in the middle. 
+     * Also, if `PHP_VERSION_ID >= 5040`, then we can use the small syntax
+     * `<?=` instead of `<?php echo`, as it is not dependant of the value of
+     * the parameter "short_syntax" of php.ini.
      *
-     * If it is off (by default), only the ?><?php tags will be removed.
+     * ... But if it is off (by default), only the ?><?php tags will be removed.
      */
     if ($this->_compact === true) {
       $script = preg_replace('`\?>\s*<\?php`', '', $script);
+      
+      if (PHP_VERSION_ID >= 50400) {
+        $script = str_replace('<?php echo', '<?=', $script);
+      }
     } else {
       $script = str_replace('?><?php', '', $script);
     }
