@@ -1,27 +1,13 @@
 <?php
 /**
- * Template Engine
+ * This file is part of Talus' TPL.
+ * 
+ * For the full copyright and license information, please view the LICENSE file
+ * that was distributed with this source code.
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
- * MA 02110-1301, USA.
- *
- * @package Talus' TPL
- * @author Baptiste "Talus" Clavié <clavie.b@gmail.com>
- * @copyright ©Talus, Talus' Works 2006+
+ * @copyright Copyleft (c) 2007+, Baptiste Clavié, Talus' Works
  * @link http://www.talus-works.net Talus' Works
- * @license http://www.gnu.org/licenses/lgpl.html LGNU Public License 2+
+ * @license http://creativecommons.org/licenses/by-sa/3.0/ CC-BY-SA 3.0+
  * @version $Id$
  */
 
@@ -33,6 +19,12 @@ if (!defined('E_USER_DEPRECATED')) {
   define('E_USER_DEPRECATED', E_USER_NOTICE);
 }
 
+/**
+ * The templating engine itself
+ * 
+ * @package Talus_TPL
+ * @author Baptiste "Talus" Clavié <clavie.b@gmail.com>
+ */
 class Talus_TPL {
   protected
     $_root,
@@ -490,9 +482,9 @@ class Talus_TPL {
       $data = $this->pparse($file);
     } catch (Talus_TPL_Parse_Exception $e) {
       /*
-       * If we encounter error n°6 AND it is a require tag, throws an exception
+       * If we encounter error nÂ°6 AND it is a require tag, throws an exception
        * Talus_TPL_Runtime_Exception instead of Talus_TPL_Parse_Exception. If not,
-       * and still a n°6 error, printing the error message, or else throwing this
+       * and still a nÂ°6 error, printing the error message, or else throwing this
        * error back.
        */
       if ($e->getCode() === 6) {

@@ -1,27 +1,13 @@
 <?php
 /**
- * Filecache engine for Talus' TPL.
+ * This file is part of Talus' TPL.
+ * 
+ * For the full copyright and license information, please view the LICENSE file
+ * that was distributed with this source code.
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
- * MA 02110-1301, USA.
- *
- * @package Talus' TPL
- * @author Baptiste "Talus" Clavié <clavie.b@gmail.com>
- * @copyright ©Talus, Talus' Works 2006+
+ * @copyright Copyleft (c) 2007+, Baptiste Clavié, Talus' Works
  * @link http://www.talus-works.net Talus' Works
- * @license http://www.gnu.org/licenses/lgpl.html LGNU Public License 2+
+ * @license http://creativecommons.org/licenses/by-sa/3.0/ CC-BY-SA 3.0+
  * @version $Id$
  */
 
@@ -31,9 +17,9 @@ if (!defined('PHP_EXT')) {
 }
 
 /**
- * Cache Handler (file)
+ * Filecache engine for Talus' TPL.
  *
- * @package Talus' TPL
+ * @package Talus_TPL
  * @author Baptiste "Talus" Clavié <clavie.b@gmail.com>
  * @since 1.4.0
  */
@@ -175,7 +161,7 @@ class Talus_TPL_Cache implements Talus_TPL_Cache_Interface {
    * Executes the file's content
    * Implementation of the magic method __invoke() for PHP >= 5.3
    *
-   * @param Talus_TPL $tpl Objet TPL à utiliser lors de la lecture du cache
+   * @param Talus_TPL $tpl Objet TPL Ã  utiliser lors de la lecture du cache
    * @return bool
    *
    * @see self::exec()

@@ -36,8 +36,12 @@
 
   #ADD : Possibility to use a property of an object in a TPL
 
-  #CHG : The parameter behaviour has completely changed
+  #CHG : License is not LGPL anymore ; it became CC-BY-SA, which is equivalent
   #CHG : Talus_TPL::dependencies() does not accept arrays anymore
+  #CHG : The parameter behaviour has completely changed
+  #CHG : Moved Talus_TPL directory into a lib directory
+  #CHG : Renamed Talus_TPL.php to Main.php
+  #CHG : Sources headers have changed.
 
   #DEL : <set> tag is now no more
   #DEL : namspaces behaviour (was not really used and was pretty useless)
