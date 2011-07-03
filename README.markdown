@@ -1,29 +1,14 @@
 Talus' TPL
 ==========
-A templating engine in PHP, using a XML syntax like, and a parser based on PCREs. The name is temporary.
+A templating engine in PHP, using a XML syntax like, and a parser based on PCREs. The name is temporary. 
 
-Requirements
-============
-- PHP 5.1+ (5.2 is recommanded... if not PHP 5.3)
+**Requires** at least *PHP 5.1*, because of the utilisation of the Standard PHP Library and several object specifications available only since 5.1. Compatible PHP 5.2 and PHP 5.3.
 
-Important Tags
-==============
-- **1.10 :** [aaaf0](https://github.com/Taluu/Talus-TPL/tree/1.10.0)
-- **1.9 :** [89115](https://github.com/Taluu/Talus-TPL/tree/1.9.0)
-- **1.8 :** [982fd](https://github.com/Taluu/Talus-TPL/tree/1.8.0)
-- **1.7 :** [1218f](https://github.com/Taluu/Talus-TPL/tree/1.7.0)
-
-Branches
-========
-- Master : Latest
-
-Other Stuff
-===========
 Documentation
 -------------
-For any pieces of documentation, check the [official site](http://www.talus-works.net) (Talus' TPL > Documentation).
-It is still in french though ; the english version will "one day" be made (please don't ask when :D).
+For any pieces of documentation, check the [official site](http://www.talus-works.net) ([Talus' TPL > Documentation](http://www.talus-works.net/forum-6-p1-rapports-de-bugs.html)).
+It is still in french though ; the english version should "one day" be made (please don't ask when :D).
 
 About this project...
 ---------------------
-This project was initiated as a fork "from scratch" from the templating engine of the [Fire Soft Board](http://www.fire-soft-board.com) project. It also has some stuff inspired from the PHPBB3 ans Django's templating engines.
+This project was initiated as a fork "from scratch" from the templating engine of the [Fire Soft Board](http://www.fire-soft-board.com) project. It also has some stuff inspired from the PHPBB3 and Django's templating engines.
