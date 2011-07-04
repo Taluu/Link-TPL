@@ -36,6 +36,7 @@ class Talus_TPL {
     $_references,
 
      $_autoFilters,
+     $_filters,
 
     /**
      * @var Talus_TPL_Parser_Interface
@@ -52,10 +53,15 @@ class Talus_TPL {
   const
     INCLUDE_TPL = 0,
     REQUIRE_TPL = 1,
-    VERSION = '1.11.0-ALPHA';
+    VERSION = '1.11.0-ALPHA-2';
 
   /**
    * Initialisation.
+   * 
+   * Available options :
+   *  - Dependencies : Handle the dependencies (parser, cache, ...) with their
+   *                   options. Each of these must have a parameter 'class' and
+   *                   a parameter 'options' (which can be empty).
    *
    * @param string $root Directory where the templates files are.
    * @param string $cache Directory where the php version of the templates will be stored.
@@ -68,7 +74,7 @@ class Talus_TPL {
       'dependencies' => array(
         'parser' => array(
           'class' => 'Talus_TPL_Parser',
-          'options' => array()
+          'options' => array('filters' => 'Talus_TPL_Filters')
          ),
         
         'cache' => array(
@@ -88,8 +94,10 @@ class Talus_TPL {
     }
 
     // -- Parameters' initialisation
-    $this->_last = array();
+    $this->_filters = $options['dependencies']['parser']['options']['filters'];
+    $this->_autoFilters = array();
     $this->_included = array();
+    $this->_last = array();
     $this->_vars = array();
 
     // -- Dependency Injection
@@ -98,15 +106,6 @@ class Talus_TPL {
       new $options['dependencies']['cache']['class']($options['dependencies']['cache']['options'])
      );
 
-    // -- Default behaviour if no dependency injection
-    if ($this->_parser === null) {
-      $this->_parser = new Talus_TPL_Parser;
-    }
-
-    if ($this->_cache === null) {
-      $this->_cache = new Talus_TPL_Cache;
-    }
-
     $this->dir($root, $cache);
   }
 
@@ -114,12 +113,10 @@ class Talus_TPL {
    * Autoloader
    *
    * If the class to load is from this current library, tries a smart load of the
-   * file from this directory.If it fails, throws an Talus_TPL_Autoload_Exception
-   * exception.
+   * file from this directory.
    *
    * @param string $class Class' name
-   * @throws Talus_TPL_Autoload_Exception Class declaration not found
-   * @return bool False if not a class from this library or file not found, true
+   * @return bool false if not a class from this library or file not found, true
    *              if everything went smoothly
    */
   private static function _autoload($class) {
@@ -191,7 +188,7 @@ class Talus_TPL {
       }
     } elseif ($vars !== null) {
       foreach ($this->autoFilters(null) as $filter) {
-        $value = $this->_mapRecursive($value, array('Talus_TPL_Filters', $filter));
+        $value = $this->_mapRecursive($value, array($this->_filters, $filter));
       }
 
       $this->_vars[$vars] = $value;
@@ -531,8 +528,10 @@ class Talus_TPL {
    *
    * @contributor Jordane Vaspard
    * @param mixed $dependencies,.. Dependencies
-   * @return void
    * @throws Talus_TPL_Dependency_Exception
+   * @return void
+   * 
+   * @todo Review the mechanism, instead of having too many conditions...
    */
   public function dependencies($dependencies = array()) {
     foreach (func_get_args() as $dependency) {

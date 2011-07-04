@@ -61,6 +61,8 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
    * 
    *  - parse : Defines what are the objects to be parsed (inclusions, filters, 
    *            conditions, ...). Can be a combination of the class' constants.
+   * 
+   *  - filters : Defines which class handles the filters.
    *
    * @params array $options options to be given to the parser (see above)
    * @return void

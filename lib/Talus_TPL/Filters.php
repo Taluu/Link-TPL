@@ -34,7 +34,17 @@
  * @author Baptiste "Talus" Clavié <clavie.b@gmail.com>
  * @since 1.5.0
  */
-final class Talus_TPL_Filters {
+class Talus_TPL_Filters {
+  /**
+   * @ignore
+   */
+  final private function __construct() {}
+  
+  /**
+   * @ignore
+   */
+  final private function __clone() {}
+  
   /**
    * Round fractions up
    *
