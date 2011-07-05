@@ -59,9 +59,8 @@ class Talus_TPL {
    * Initialisation.
    * 
    * Available options :
-   *  - Dependencies : Handle the dependencies (parser, cache, ...) with their
-   *                   options. Each of these must have a parameter 'class' and
-   *                   a parameter 'options' (which can be empty).
+   *  - dependencies : Handle the dependencies (parser, cache, ...). Each of 
+   *                   these must be an object.
    *
    * @param string $root Directory where the templates files are.
    * @param string $cache Directory where the php version of the templates will be stored.
@@ -70,19 +69,14 @@ class Talus_TPL {
    */
   public function __construct($root, $cache, array $_options = array()){
     // -- Options
-    $options = array_merge_recursive(array(
+    $defaults = array(
       'dependencies' => array(
-        'parser' => array(
-          'class' => 'Talus_TPL_Parser',
-          'options' => array('filters' => 'Talus_TPL_Filters')
-         ),
-        
-        'cache' => array(
-          'class' => 'Talus_TPL_Cache',
-          'options' => array()
-         )
+        'parser' => new Talus_TPL_Parser,
+        'cache' => new Talus_TPL_Cache,
        )
-     ), $_options);
+     );
+    
+    $_options = array_replace_recursive($defaults, $_options);
     
     // -- Resetting the PHP cache concerning the files' information.
     clearstatcache();
@@ -94,17 +88,15 @@ class Talus_TPL {
     }
 
     // -- Parameters' initialisation
-    $this->_filters = $options['dependencies']['parser']['options']['filters'];
+    $this->_filters = $_options['dependencies']['parser']->parameter('filters');
     $this->_autoFilters = array();
     $this->_included = array();
     $this->_last = array();
     $this->_vars = array();
 
     // -- Dependency Injection
-    $this->dependencies(
-      new $options['dependencies']['parser']['class']($options['dependencies']['parser']['options']), 
-      new $options['dependencies']['cache']['class']($options['dependencies']['cache']['options'])
-     );
+    $this->dependencies($_options['dependencies']['parser'], 
+                        $_options['dependencies']['cache']);
 
     $this->dir($root, $cache);
   }
@@ -173,7 +165,7 @@ class Talus_TPL {
   }
 
   /**
-   * Setter (and getter) for the templates variables.
+   * Accessor for the templates variables.
    *
    * @param array|string $vars Var(s)' name (tpl side)
    * @param mixed $value Var's value if $vars is not an array
@@ -188,7 +180,7 @@ class Talus_TPL {
       }
     } elseif ($vars !== null) {
       foreach ($this->autoFilters(null) as $filter) {
-        $value = $this->_mapRecursive($value, array($this->_filters, $filter));
+        $value = array_map_recursive(array($this->_filters, $filter), $value);
       }
 
       $this->_vars[$vars] = $value;
@@ -227,7 +219,7 @@ class Talus_TPL {
           continue;
         }
 
-        $value = $this->_mapRecursive($value, array('Talus_TPL_Filters', $name));
+        $value = array_map_recursive(array($this->_filters, $name), $value);
       }
     }
 
@@ -545,18 +537,70 @@ class Talus_TPL {
       }
     }
   }
+  
+  /**#@-*/
+}
 
+/*
+ * Functions dependencies
+ */
+if (!function_exists('array_replace_recursive')) {
   /**
-   * Apply a function on a multidimentionnal array.
-   *
-   * @param mixed $ary concerned array
-   * @param string $fct function
-   * @return array
+   * **array_replace_recursive()** replaces the values of the first array with 
+   * the same values from all the following arrays. If a key from the first
+   * array exists in the second array, its value will be replaced by the value
+   * from the second array. If the key exists in the second array, and not the
+   * first, it will be created in the first array. If a key only exists in the
+   * first array, it will be left as is. If several arrays are passed for
+   * replacement, they will be processed in order, the later array overwriting
+   * the previous values.
+   * 
+   * **array_replace_recursive()** is recursive : it will recurse into arrays
+   * and apply the same process to the inner value.
+   * 
+   * When the value in array is scalar, it will be replaced by the value in
+   * array1, may it be scalar or array. When the value in array and array1 are
+   * both arrays, **array_replace_recursive()** will replace their respective
+   * value recursively.
+   * 
+   * @param array &$original The array in which elements are replaced.
+   * @param array $array,... The arrays from which elements will be extracted.
+   * @link http://www.php.net/manual/en/function.array-replace-recursive.php#92224
+   * @return array Joined array
    */
-  protected function _mapRecursive($ary, $fct) {
+  function array_replace_recursive(array &$original, array $array) {
+    $arrays = func_get_args();
+    array_shift($arrays);
+    
+    $return = $original;
+
+    foreach ($arrays as &$array) {
+      foreach ($array as $key => &$value) {
+        if (is_array($value)) {
+          $return[$key] = array_replace_recursive($return[$key], $value);
+        } else {
+          $return[$key] = $value;
+        }
+      }
+    }
+
+    return $return;
+  } 
+}
+
+if (!function_exists('array_map_recursive')) {
+  /**
+   * Applies a function on an array... recursively. Unlike it's sister
+   * `array_map`, it does not accept indefinite parameters, but only one array.
+   * 
+   * @param callback $callback A valid PHP callback.
+   * @param mixed $ary the value on which the callback must be applied
+   * @return mixed the transformed value
+   */
+  function array_map_recursive($callback, $ary) {
     // -- Is it a scalar ? Fine then, just have to execute $fct on $ary !
     if (is_scalar($ary)) {
-      return $fct($ary);
+      return $callback($ary);
     }
 
     // -- Not traversable (resource, object) ?
@@ -565,14 +609,11 @@ class Talus_TPL {
     }
 
     foreach ($ary as &$val) {
-      $val = $this->_mapRecursive($val, $fct);
+      $val = array_map_recursive($callback, $val);
     }
 
     return $ary;
   }
-
-
-  /**#@-*/
 }
 
 /*

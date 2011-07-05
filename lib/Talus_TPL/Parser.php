@@ -82,23 +82,21 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
   /**
    * Accessor for a given parameter
    * 
-   * (Not valid since 1.11 : acts as a stub for compatibilty)
-   *
    * @param string $param Parameter's name
    * @param mixed $value Parameter's value (if setter)
    * @return mixed Parameter's value
    */
   public function parameter($param, $value = null) {
-    static $params = array(
-      'parse' => 'parse',
-      'set_compact' => 'compact'
-     );
+    // -- Stub for Talus_TPL < 1.11.0
+    if ($param == 'set_compact') {
+      $param = 'compact';
+    }
     
-    if (!isset($params[$param])) {
+    if (!property_exists($this, '_' . $param)) {
       return null;
     }
     
-    $param = &$this->{'_' . $params[$param]};
+    $param = &$this->{'_' . $param};
     
     if ($value !== null) {
       $param = $value;
