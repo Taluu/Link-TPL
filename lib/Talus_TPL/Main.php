@@ -27,33 +27,33 @@ if (!defined('E_USER_DEPRECATED')) {
  */
 class Talus_TPL {
   protected
-    $_root,
+    $_root = null,
 
-    $_last,
-    $_included,
+    $_last = array(),
+    $_included = array(),
 
-    $_vars,
-    $_references,
+    $_vars = array(),
+    $_references = array(),
 
-     $_autoFilters,
-     $_filters,
+     $_autoFilters = array(),
+     $_filtersClass = 'Talus_TPL_Filters',
 
     /**
      * @var Talus_TPL_Parser_Interface
      */
-    $_parser,
+    $_parser = null,
 
     /**
      * @var Talus_TPL_Cache_Interface
      */
-    $_cache;
+    $_cache = null;
 
   protected static $_autoloadSet = false;
 
   const
     INCLUDE_TPL = 0,
     REQUIRE_TPL = 1,
-    VERSION = '1.11.0-ALPHA-2';
+    VERSION = '1.11.0-ALPHA-3';
 
   /**
    * Initialisation.
@@ -68,6 +68,15 @@ class Talus_TPL {
    * @return void
    */
   public function __construct($root, $cache, array $_options = array()){
+    // -- Resetting the PHP cache concerning the files' information.
+    clearstatcache();
+
+    // -- Setting the autoload for the whole library
+    if (self::$_autoloadSet === false) {
+      spl_autoload_register('self::_autoload');
+      self::$_autoloadSet = true;
+    }
+    
     // -- Options
     $defaults = array(
       'dependencies' => array(
@@ -77,26 +86,12 @@ class Talus_TPL {
      );
     
     $_options = array_replace_recursive($defaults, $_options);
-    
-    // -- Resetting the PHP cache concerning the files' information.
-    clearstatcache();
-
-    // -- Setting the autoload for the whole library
-    if (self::$_autoloadSet === false) {
-      spl_autoload_register('self::_autoload');
-      self::$_autoloadSet = true;
-    }
-
-    // -- Parameters' initialisation
-    $this->_filters = $_options['dependencies']['parser']->parameter('filters');
-    $this->_autoFilters = array();
-    $this->_included = array();
-    $this->_last = array();
-    $this->_vars = array();
 
     // -- Dependency Injection
     $this->dependencies($_options['dependencies']['parser'], 
                         $_options['dependencies']['cache']);
+
+    $this->_filtersClass = $this->parser()->parameter('filters');
 
     $this->dir($root, $cache);
   }
@@ -149,7 +144,11 @@ class Talus_TPL {
    *
    * @since 1.7.0
    */
-  public function dir($root = './', $cache = './cache/') {
+  public function dir($root = null, $cache = null) {
+    if ($root === null) {
+      $root = $this->_root;
+    }
+    
     // -- Removing the final "/", if it's there.
     $root = rtrim($root, '/');
 
@@ -180,7 +179,7 @@ class Talus_TPL {
       }
     } elseif ($vars !== null) {
       foreach ($this->autoFilters(null) as $filter) {
-        $value = array_map_recursive(array($this->_filters, $filter), $value);
+        $value = array_map_recursive(array($this->_filtersClass, $filter), $value);
       }
 
       $this->_vars[$vars] = $value;
@@ -209,7 +208,7 @@ class Talus_TPL {
         return $this->_autoFilters;
       }
 
-      if (!method_exists('Talus_TPL_Filters', $name)) {
+      if (!method_exists($this->_filtersClass, $name)) {
         throw new Talus_TPL_Filter_Exception(array('The filter %s doesn\'t exist...', $name), 404);
       }
 
@@ -219,7 +218,7 @@ class Talus_TPL {
           continue;
         }
 
-        $value = array_map_recursive(array($this->_filters, $name), $value);
+        $value = array_map_recursive(array($this->_filtersClass, $name), $value);
       }
     }
 
@@ -547,13 +546,14 @@ class Talus_TPL {
 if (!function_exists('array_replace_recursive')) {
   /**
    * **array_replace_recursive()** replaces the values of the first array with 
-   * the same values from all the following arrays. If a key from the first
-   * array exists in the second array, its value will be replaced by the value
-   * from the second array. If the key exists in the second array, and not the
-   * first, it will be created in the first array. If a key only exists in the
-   * first array, it will be left as is. If several arrays are passed for
-   * replacement, they will be processed in order, the later array overwriting
-   * the previous values.
+   * the same values from all the following arrays. 
+   * 
+   * If a key from the first array exists in the second array, its value will be
+   * replaced by the value from the second array. If the key exists in the 
+   * second array, and not the first, it will be created in the first array. If
+   * a key only exists in the first array, it will be left as is. If several
+   * arrays are passed for replacement, they will be processed in order, the
+   * later array overwriting the previous values.
    * 
    * **array_replace_recursive()** is recursive : it will recurse into arrays
    * and apply the same process to the inner value.
@@ -590,29 +590,43 @@ if (!function_exists('array_replace_recursive')) {
 
 if (!function_exists('array_map_recursive')) {
   /**
-   * Applies a function on an array... recursively. Unlike it's sister
-   * `array_map`, it does not accept indefinite parameters, but only one array.
+   * Applies a function on an item recursively. 
+   * 
+   * Unlike it's sister `array_map`, it doesn't accept more than two parameters.
+   * Works a bit like  `array_walk_recursive`, but returns an array modified by
+   * the callback `$callback`.
+   * 
+   * If the `$item` is a scalar, the function will be directly applied on it. If
+   * it is not an object implementing Traversable, or a resource, it will
+   * directly be returned.
    * 
    * @param callback $callback A valid PHP callback.
-   * @param mixed $ary the value on which the callback must be applied
+   * @param mixed $item the item on which the callback must be applied
    * @return mixed the transformed value
    */
-  function array_map_recursive($callback, $ary) {
+  function array_map_recursive($callback, $item, $userdata = array()) {
+    // -- verification that $callback is callable
+    if (!is_callable($callback)) {
+      trigger_error('recursive_call : not a valid callback', E_USER_WARNING);
+      return $item;
+    }
+    
     // -- Is it a scalar ? Fine then, just have to execute $fct on $ary !
-    if (is_scalar($ary)) {
-      return $callback($ary);
+    if (is_scalar($item)) {
+      array_unshift($userdata, $item);
+      return call_user_func_array($callback, $userdata);
     }
 
     // -- Not traversable (resource, object) ?
-    if ((is_object($ary) && !($ary instanceof Traversable)) || is_resource($ary)) {
-      return $ary;
+    if ((is_object($item) && !($item instanceof Traversable)) || is_resource($item)) {
+      return $item;
+    }
+    
+    foreach ($item as &$val) {
+      $val = array_map_recursive($callback, $val, $userdata);
     }
 
-    foreach ($ary as &$val) {
-      $val = array_map_recursive($callback, $val);
-    }
-
-    return $ary;
+    return $item;
   }
 }
 
