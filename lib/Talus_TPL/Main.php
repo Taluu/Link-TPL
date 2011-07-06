@@ -517,7 +517,6 @@ class Talus_TPL {
   /**
    * Dependency Injection handler.
    *
-   * @contributor Jordane Vaspard
    * @param mixed $dependencies,.. Dependencies
    * @throws Talus_TPL_Dependency_Exception
    * @return void

@@ -274,7 +274,7 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
        );
 
       if ($__tpl_foreach[\'%1$s\'][\'size\'] > 0) :
-        foreach ({$%2$s} as {$%1$s.key} => &{$%1$s.value}) {
+        foreach ({$%2$s} as {$%1$s.key} => {$%1$s.value}) {
           ++{$%1$s.current}; ?>', $varName, $matches[1]);
   }
 
