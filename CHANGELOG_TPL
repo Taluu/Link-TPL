@@ -25,6 +25,8 @@
  */
 
 ## 1.10 ==> 1.11 (Release ??/??/??)
+  #WAR : Please reload your cache (delete it, ...) !
+
   #FIX : The old block syntax was making the foreach loop undefinitely (#14)
   #FIX : Notice if an array traversed by a foreach is not set (#24)
   #FIX : Filters on the arrays are now properly recognized (#18)
@@ -34,6 +36,7 @@
   #FIX : Bad filters interpretation (#15)
   #FIX : Multi dimensional array (#19)
 
+  #ADD : Possibility to change the templates' extension (#30)
   #ADD : Possibility to use a property of an object in a TPL
 
   #CHG : License is not LGPL anymore ; it became CC-BY-SA, which is equivalent
@@ -44,6 +47,7 @@
   #CHG : Talus_TPL_Filters is not final anymore
   #CHG : Renamed Talus_TPL.php to Main.php
   #CHG : Dependency Injection mechanism
+  #CHG : PHP Interpration for foreaches
   #CHG : Sources headers have changed
 
   #DEL : <set> tag is now no more
