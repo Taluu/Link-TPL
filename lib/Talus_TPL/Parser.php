@@ -178,7 +178,7 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
 
     // -- No Regex (faster !)
     $noRegex = array(
-      '</foreach>' => '<?php } endif; $__tpl_refering_var = array_pop($__tpl_foreach_ref); if (isset($__tpl_foreach[$__tpl_refering_var])) unset($__tpl_foreach[$__tpl_refering_var]); ?>',
+      '</foreach>' => '<?php } endif; ?>', // with ref : $__tpl_refering_var = array_pop($__tpl_foreach_ref); if (isset($__tpl_foreach[$__tpl_refering_var])) unset($__tpl_foreach[$__tpl_refering_var]);
       '<foreachelse />' => '<?php } else : if (true) { ?>',
 
       '{\\' =>  '{'
@@ -264,8 +264,8 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
       $varName = $matches[2];
     }
 
+    // with ref : $__tpl_foreach_ref[] = \'%1$s\';
     return sprintf('<?php
-      $__tpl_foreach_ref[] = \'%1$s\';
       $__tpl_foreach[\'%1$s\'] = array(
         \'value\' => null,
         \'key\' => null,
