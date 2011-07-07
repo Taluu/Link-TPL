@@ -48,9 +48,10 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
     REGEX_PHP_SUFFIX = '(?:\[[^]]+?]|->[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)*'; // PHP Suffixes (arrays, objects)
   
   protected 
-    $_compact,
-    $_filters,
-    $_parse;
+    $_compact = false,
+    $_filters = 'Talus_TPL_Filters',
+    $_extension = '\.html',
+    $_parse = self::DEFAULTS;
 
   /**
    * Initialisation
@@ -63,20 +64,26 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
    *            conditions, ...). Can be a combination of the class' constants.
    * 
    *  - filters : Defines which class handles the filters.
+   * 
+   *  - extension : defines the extension of the templates files.
    *
    * @params array $options options to be given to the parser (see above)
    * @return void
    */
   public function __construct(array $_options = array()){
-    $options = array_merge(array(
+    $defaults = array(
       'compact' => false,
       'filters' => 'Talus_TPL_Filters',
-      'parse' => self::DEFAULTS
-     ), $_options);
+      'parse' => self::DEFAULTS,
+      'extension' => '.html'
+     );
+    
+    $options = array_replace_recursive($defaults, $_options);
     
     $this->_compact = $options['compact'];
     $this->_filters = $options['filters'];
     $this->_parse = $options['parse'];
+    $this->_extension = preg_quote('.' . ltrim($options['extension'], '.'), '`');
   }
 
   /**
@@ -137,7 +144,7 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
     // -- Inclusions
     // @todo optimize this stuff
     if ($this->_parse & self::INCLUDES) {
-      $script = preg_replace_callback('`<(include|require) tpl="((?:.+?\.html(?:\?[^\"]*)?)|(?:\{\$(?:' . self::REGEX_PHP_ID . '(?:' . self::REGEX_PHP_SUFFIX . ')?})))"(?: once="(true|false)")? />`', array($this, '_includes'), $script);
+      $script = preg_replace_callback('`<(include|require) tpl="((?:.+?' . $this->_extension . '(?:\?[^\"]*)?)|(?:\{\$(?:' . self::REGEX_PHP_ID . '(?:' . self::REGEX_PHP_SUFFIX . ')?})))"(?: once="(true|false)")? />`', array($this, '_includes'), $script);
     }
 
     // -- <foreach> tags
@@ -148,28 +155,28 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
     $not_recursives = array(
        // -- Foreach special vars (key, size, is_last, is_first, current)
        // -- keys : key of this iteration
-       '`\{(' . self::REGEX_PHP_ID . ').key}`' => '<?php echo $__tpl_foreach[\'$1\'][\'key\']; ?>',
-       '`\{\$(' . self::REGEX_PHP_ID . ').key}`' => '$__tpl_foreach[\'$1\'][\'key\']',
+       '`\{(' . self::REGEX_PHP_ID . ').key}`' => '<?php echo $__tpl_foreach__$1[\'key\']; ?>',
+       '`\{\$(' . self::REGEX_PHP_ID . ').key}`' => '$__tpl_foreach__$1[\'key\']',
 
        // -- size : shows the size of the array
-       '`\{(' . self::REGEX_PHP_ID . ').size}`' => '<?php echo $__tpl_foreach[\'$1\'][\'size\']; ?>',
-       '`\{\$(' . self::REGEX_PHP_ID . ').size}`' => '$__tpl_foreach[\'$1\'][\'size\']',
+       '`\{(' . self::REGEX_PHP_ID . ').size}`' => '<?php echo $__tpl_foreach__$1[\'size\']; ?>',
+       '`\{\$(' . self::REGEX_PHP_ID . ').size}`' => '$__tpl_foreach__$1[\'size\']',
 
        // -- current : returns in which iteration we are
-       '`\{(' . self::REGEX_PHP_ID . ').cur(?:rent)?}`' => '<?php echo $__tpl_foreach[\'$1\'][\'current\']; ?>',
-       '`\{\$(' . self::REGEX_PHP_ID . ').cur(?:rent)?}`' => '$__tpl_foreach[\'$1\'][\'current\']',
+       '`\{(' . self::REGEX_PHP_ID . ').cur(?:rent)?}`' => '<?php echo $__tpl_foreach__$1[\'current\']; ?>',
+       '`\{\$(' . self::REGEX_PHP_ID . ').cur(?:rent)?}`' => '$__tpl_foreach__$1[\'current\']',
 
        // -- is_first : checks if this is the first iteration
-       '`\{\$(' . self::REGEX_PHP_ID . ').is_first}`' => '($__tpl_foreach[\'$1\'][\'current\'] == 1)',
+       '`\{\$(' . self::REGEX_PHP_ID . ').is_first}`' => '($__tpl_foreach__$1[\'current\'] == 1)',
 
        // -- is_last : checks if this is the last iteration
-       '`\{\$(' . self::REGEX_PHP_ID . ').is_last}`' => '($__tpl_foreach[\'$1\'][\'current\'] == $__tpl_foreach[\'$1\'][\'size\'])'
+       '`\{\$(' . self::REGEX_PHP_ID . ').is_last}`' => '($__tpl_foreach__$1[\'current\'] == $__tpl_foreach__$1[\'size\'])'
       );
 
     $recursives = array_merge($recursives, array(
       // -- Foreach values
-      '`\{(' . self::REGEX_PHP_ID . ').val(?:ue)?(' . self::REGEX_PHP_SUFFIX . ')}`' => '<?php echo $__tpl_foreach[\'$1\'][\'value\']$2; ?>',
-      '`\{\$(' . self::REGEX_PHP_ID . ').val(?:ue)?(' . self::REGEX_PHP_SUFFIX . ')}`' => '$__tpl_foreach[\'$1\'][\'value\']$2',
+      '`\{(' . self::REGEX_PHP_ID . ').val(?:ue)?(' . self::REGEX_PHP_SUFFIX . ')}`' => '<?php echo $__tpl_foreach__$1[\'value\']$2; ?>',
+      '`\{\$(' . self::REGEX_PHP_ID . ').val(?:ue)?(' . self::REGEX_PHP_SUFFIX . ')}`' => '$__tpl_foreach__$1[\'value\']$2',
 
       // -- Simple variables ({VAR1}, {VAR2[with][a][set][of][keys]}, ...)
       '`\{(' . self::REGEX_PHP_ID . self::REGEX_PHP_SUFFIX . ')}`' => '<?php echo $__tpl_vars__$1; ?>',
@@ -217,9 +224,9 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
      * parameter.
      *
      * If it is on, everything considered as "emptyness" between two php tags 
-     * (?><?php), meaning any spaces, newlines, tabs, or whatever will be
+     * (?`><?php`), meaning any spaces, newlines, tabs, or whatever will be
      * cleansed, including the PHP tags in the middle. 
-     * Also, if `PHP_VERSION_ID >= 5040`, then we can use the small syntax
+     * Also, if `PHP_VERSION_ID >= 50400`, then we can use the small syntax
      * `<?=` instead of `<?php echo`, as it is not dependant of the value of
      * the parameter "short_syntax" of php.ini.
      *
@@ -266,14 +273,14 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
 
     // with ref : $__tpl_foreach_ref[] = \'%1$s\';
     return sprintf('<?php
-      $__tpl_foreach[\'%1$s\'] = array(
+      $__tpl_foreach__%1$s = array(
         \'value\' => null,
         \'key\' => null,
         \'size\' => isset({$%2$s}) ? count({$%2$s}) : 0,
         \'current\' => 0
        );
 
-      if ($__tpl_foreach[\'%1$s\'][\'size\'] > 0) :
+      if ($__tpl_foreach__%1$s[\'size\'] > 0) :
         foreach ({$%2$s} as {$%1$s.key} => {$%1$s.value}) {
           ++{$%1$s.current}; ?>', $varName, $matches[1]);
   }
