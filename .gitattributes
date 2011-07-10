@@ -1,2 +1,7 @@
 #changelog
-CHANGELOG ident
+CHANGELOG_TPL ident
+
+#every php files
+lib/Talus_TPL/*.php ident
+lib/Talus_TPL/Exceptions/*.php ident
+lib/Talus_TPL/Interfaces/*.php ident
