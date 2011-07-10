@@ -378,9 +378,10 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
    * @return string Escaped value
    */
   protected function _escape($arg, $delim = '\'') {
-    if (($arg[0] != $delim || $arg[mb_strlen($arg) - 1] != $delim)
-     && ($arg[0] != '{' || $arg[mb_strlen($arg) - 1] != '}')
-     && !filter_var($arg, FILTER_VALIDATE_INT)) {
+    if (!filter_var($arg, FILTER_VALIDATE_INT)
+     && !empty($arg)
+     && ($arg[0] != $delim || $arg[mb_strlen($arg) - 1] != $delim)
+     && ($arg[0] != '{' || $arg[mb_strlen($arg) - 1] != '}')) {
       $arg = sprintf('%1$s%2$s%1$s', $delim, addcslashes($arg, $delim));
     }
 
