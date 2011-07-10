@@ -36,6 +36,7 @@
   #FIX : Bad filters interpretation (#15)
   #FIX : Multi dimensional array (#19)
 
+  #ADD : Filters can now accept a variable as an argument (#3)
   #ADD : Possibility to change the templates' extension (#30)
   #ADD : Possibility to use a property of an object in a TPL
 
