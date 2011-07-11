@@ -1,7 +1,7 @@
 <?php
 /**
  * This file is part of Talus' TPL.
- * 
+ *
  * For the full copyright and license information, please view the LICENSE file
  * that was distributed with this source code.
  *
@@ -21,7 +21,7 @@ if (!defined('E_USER_DEPRECATED')) {
 
 /**
  * The templating engine itself
- * 
+ *
  * @package Talus_TPL
  * @author Baptiste "Talus" Clavié <clavie.b@gmail.com>
  */
@@ -57,9 +57,9 @@ class Talus_TPL {
 
   /**
    * Initialisation.
-   * 
+   *
    * Available options :
-   *  - dependencies : Handle the dependencies (parser, cache, ...). Each of 
+   *  - dependencies : Handle the dependencies (parser, cache, ...). Each of
    *                   these must be an object.
    *
    * @param string $root Directory where the templates files are.
@@ -76,7 +76,7 @@ class Talus_TPL {
       spl_autoload_register('self::_autoload');
       self::$_autoloadSet = true;
     }
-    
+
     // -- Options
     $defaults = array(
       'dependencies' => array(
@@ -84,11 +84,11 @@ class Talus_TPL {
         'cache' => new Talus_TPL_Cache,
        )
      );
-    
+
     $_options = array_replace_recursive($defaults, $_options);
 
     // -- Dependency Injection
-    $this->dependencies($_options['dependencies']['parser'], 
+    $this->dependencies($_options['dependencies']['parser'],
                         $_options['dependencies']['cache']);
 
     $this->_filtersClass = $this->parser()->parameter('filters');
@@ -148,7 +148,7 @@ class Talus_TPL {
     if ($root === null) {
       $root = $this->_root;
     }
-    
+
     // -- Removing the final "/", if it's there.
     $root = rtrim($root, '/');
 
@@ -520,7 +520,7 @@ class Talus_TPL {
    * @param mixed $dependencies,.. Dependencies
    * @throws Talus_TPL_Dependency_Exception
    * @return void
-   * 
+   *
    * @todo Review the mechanism, instead of having too many conditions...
    */
   public function dependencies($dependencies = array()) {
@@ -535,7 +535,7 @@ class Talus_TPL {
       }
     }
   }
-  
+
   /**#@-*/
 }
 
@@ -544,61 +544,59 @@ class Talus_TPL {
  */
 if (!function_exists('array_replace_recursive')) {
   /**
-   * **array_replace_recursive()** replaces the values of the first array with 
-   * the same values from all the following arrays. 
-   * 
+   * **array_replace_recursive()** replaces the values of the first array with
+   * the same values from all the following arrays.
+   *
    * If a key from the first array exists in the second array, its value will be
-   * replaced by the value from the second array. If the key exists in the 
+   * replaced by the value from the second array. If the key exists in the
    * second array, and not the first, it will be created in the first array. If
    * a key only exists in the first array, it will be left as is. If several
    * arrays are passed for replacement, they will be processed in order, the
    * later array overwriting the previous values.
-   * 
+   *
    * **array_replace_recursive()** is recursive : it will recurse into arrays
    * and apply the same process to the inner value.
-   * 
+   *
    * When the value in array is scalar, it will be replaced by the value in
    * array1, may it be scalar or array. When the value in array and array1 are
    * both arrays, **array_replace_recursive()** will replace their respective
    * value recursively.
-   * 
-   * @param array &$original The array in which elements are replaced.
+   *
+   * @param array $original The array in which elements are replaced.
    * @param array $array,... The arrays from which elements will be extracted.
    * @link http://www.php.net/manual/en/function.array-replace-recursive.php#92224
    * @return array Joined array
    */
-  function array_replace_recursive(array &$original, array $array) {
+  function array_replace_recursive(array $original, array $array) {
     $arrays = func_get_args();
     array_shift($arrays);
-    
-    $return = $original;
 
     foreach ($arrays as &$array) {
       foreach ($array as $key => &$value) {
         if (is_array($value)) {
-          $return[$key] = array_replace_recursive($return[$key], $value);
+          $original[$key] = array_replace_recursive($original[$key], $value);
         } else {
-          $return[$key] = $value;
+          $original[$key] = $value;
         }
       }
     }
 
-    return $return;
-  } 
+    return $original;
+  }
 }
 
 if (!function_exists('array_map_recursive')) {
   /**
-   * Applies a function on an item recursively. 
-   * 
+   * Applies a function on an item recursively.
+   *
    * Unlike it's sister `array_map`, it doesn't accept more than two parameters.
    * Works a bit like  `array_walk_recursive`, but returns an array modified by
    * the callback `$callback`.
-   * 
+   *
    * If the `$item` is a scalar, the function will be directly applied on it. If
    * it is not an object implementing Traversable, or a resource, it will
    * directly be returned.
-   * 
+   *
    * @param callback $callback A valid PHP callback.
    * @param mixed $item the item on which the callback must be applied
    * @return mixed the transformed value
@@ -609,7 +607,7 @@ if (!function_exists('array_map_recursive')) {
       trigger_error('recursive_call : not a valid callback', E_USER_WARNING);
       return $item;
     }
-    
+
     // -- Is it a scalar ? Fine then, just have to execute $fct on $ary !
     if (is_scalar($item)) {
       array_unshift($userdata, $item);
@@ -620,7 +618,7 @@ if (!function_exists('array_map_recursive')) {
     if ((is_object($item) && !($item instanceof Traversable)) || is_resource($item)) {
       return $item;
     }
-    
+
     foreach ($item as &$val) {
       $val = array_map_recursive($callback, $val, $userdata);
     }
