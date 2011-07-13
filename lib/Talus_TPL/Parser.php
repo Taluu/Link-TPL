@@ -382,7 +382,21 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
      && !empty($arg)
      && ($arg[0] != $delim || $arg[mb_strlen($arg) - 1] != $delim)
      && ($arg[0] != '{' || $arg[mb_strlen($arg) - 1] != '}')) {
-      $arg = sprintf('%1$s%2$s%1$s', $delim, addcslashes($arg, $delim));
+      switch ($arg) {
+        case 'true':
+        case 'on':
+          $arg = 'true';
+          break;
+
+        case 'false':
+        case 'off':
+          $arg = 'false';
+          break;
+
+        default:
+          $arg = sprintf('%1$s%2$s%1$s', $delim, addcslashes($arg, $delim));
+          break;
+      }
     }
 
     return $arg;
