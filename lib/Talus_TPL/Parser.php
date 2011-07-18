@@ -1,7 +1,7 @@
 <?php
 /**
  * This file is part of Talus' TPL.
- * 
+ *
  * For the full copyright and license information, please view the LICENSE file
  * that was distributed with this source code.
  *
@@ -19,7 +19,7 @@ if (!defined('E_USER_DEPRECATED')) {
 // -- If PHP < 5.2.7, emulate PHP_VERSION_ID
 if (!defined('PHP_VERSION_ID')) {
   $v = explode('.', PHP_VERSION);
-  
+
   define('PHP_VERSION_ID', $v[0] * 10000 + $v[1] * 100 + $v[2]);
 }
 
@@ -28,7 +28,7 @@ if (!defined('PHP_VERSION_ID')) {
  *
  * This class handle the transformation from a Talus TPL code to an optimized
  * PHP code, which can be used by PHP.
- * 
+ *
  * @package Talus_TPL
  * @author Baptiste "Talus" Clavié <clavie.b@gmail.com>
  */
@@ -46,8 +46,8 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
     // -- Regex used
     REGEX_PHP_ID = '[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*', // PHP Identifier
     REGEX_PHP_SUFFIX = '(?:\[[^]]+?]|->[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)*'; // PHP Suffixes (arrays, objects)
-  
-  protected 
+
+  protected
     $_compact = false,
     $_filters = 'Talus_TPL_Filters',
     $_extension = '\.html',
@@ -55,16 +55,16 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
 
   /**
    * Initialisation
-   * 
+   *
    * Options to be given to the parser :
    *  - compact : Compact the resulting php source code (deleting any blanks
    *              between a closing and an opening php tag, ...) ? true / false
-   * 
-   *  - parse : Defines what are the objects to be parsed (inclusions, filters, 
+   *
+   *  - parse : Defines what are the objects to be parsed (inclusions, filters,
    *            conditions, ...). Can be a combination of the class' constants.
-   * 
+   *
    *  - filters : Defines which class handles the filters.
-   * 
+   *
    *  - extension : defines the extension of the templates files.
    *
    * @params array $options options to be given to the parser (see above)
@@ -77,9 +77,9 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
       'parse' => self::DEFAULTS,
       'extension' => '.html'
      );
-    
+
     $options = array_replace_recursive($defaults, $_options);
-    
+
     $this->_compact = $options['compact'];
     $this->_filters = $options['filters'];
     $this->_parse = $options['parse'];
@@ -88,7 +88,7 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
 
   /**
    * Accessor for a given parameter
-   * 
+   *
    * @param string $param Parameter's name
    * @param mixed $value Parameter's value (if setter)
    * @return mixed Parameter's value
@@ -98,13 +98,13 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
     if ($param == 'set_compact') {
       $param = 'compact';
     }
-    
+
     if (!property_exists($this, '_' . $param)) {
       return null;
     }
-    
+
     $param = &$this->{'_' . $param};
-    
+
     if ($value !== null) {
       $param = $value;
     }
@@ -136,7 +136,7 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
     // -- Filter's transformations
     if ($this->_parse & self::FILTERS) {
       $matches = array();
-      while (preg_match('`\{(\$?' . self::REGEX_PHP_ID . '(?:\.value' . self::REGEX_PHP_SUFFIX . '|key|current|size|' . self::REGEX_PHP_SUFFIX . ')?)\|((?:' . self::REGEX_PHP_ID . '(?::\{\$' . self::REGEX_PHP_ID . self::REGEX_PHP_SUFFIX . '}|.+?)*\|?)+)}`', $script, $matches)) {
+      while (preg_match('`\{(\$?' . self::REGEX_PHP_ID . '(?:\.value' . self::REGEX_PHP_SUFFIX . '|key|current|size|' . self::REGEX_PHP_SUFFIX . ')?)\|((?:' . self::REGEX_PHP_ID . '(?::\{\$' . self::REGEX_PHP_ID . self::REGEX_PHP_SUFFIX . '}|[^|}]+?)*\|?)+)}`', $script, $matches)) {
         $script = str_replace($matches[0], $this->_filters($matches[1], $matches[2]), $script);
       }
     }
@@ -223,9 +223,9 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
      * Cleaning the newly made script... depending on the value of the `$compact`
      * parameter.
      *
-     * If it is on, everything considered as "emptyness" between two php tags 
+     * If it is on, everything considered as "emptyness" between two php tags
      * (?`><?php`), meaning any spaces, newlines, tabs, or whatever will be
-     * cleansed, including the PHP tags in the middle. 
+     * cleansed, including the PHP tags in the middle.
      * Also, if `PHP_VERSION_ID >= 50400`, then we can use the small syntax
      * `<?=` instead of `<?php echo`, as it is not dependant of the value of
      * the parameter "short_syntax" of php.ini.
@@ -234,7 +234,7 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
      */
     if ($this->_compact === true) {
       $script = preg_replace('`\?>\s*<\?php`', '', $script);
-      
+
       if (PHP_VERSION_ID >= 50400) {
         $script = str_replace('<?php echo', '<?=', $script);
       }
@@ -382,7 +382,21 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
      && !empty($arg)
      && ($arg[0] != $delim || $arg[mb_strlen($arg) - 1] != $delim)
      && ($arg[0] != '{' || $arg[mb_strlen($arg) - 1] != '}')) {
-      $arg = sprintf('%1$s%2$s%1$s', $delim, addcslashes($arg, $delim));
+      switch ($arg) {
+        case 'true':
+        case 'on':
+          $arg = 'true';
+          break;
+
+        case 'false':
+        case 'off':
+          $arg = 'false';
+          break;
+
+        default:
+          $arg = sprintf('%1$s%2$s%1$s', $delim, addcslashes($arg, $delim));
+          break;
+      }
     }
 
     return $arg;
