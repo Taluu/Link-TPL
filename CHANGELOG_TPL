@@ -24,7 +24,7 @@
  * @version $Id$
  */
 
-## 1.10 ==> 1.11 (Release ??/??/??)
+## 1.10 ==> 1.11 (Release 18/07/11)
   #WAR : Please reload your cache (delete it, ...) !
 
   #FIX : The old block syntax was making the foreach loop undefinitely (#14)
