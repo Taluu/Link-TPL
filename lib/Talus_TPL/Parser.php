@@ -149,7 +149,7 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
 
     // -- <foreach> tags
     $script = preg_replace_callback('`<foreach ar(?:ra)?y="\{\$(' . self::REGEX_PHP_ID . ')}">`', array($this, '_foreach'), $script);
-    $script = preg_replace_callback('`<foreach ar(?:ra)?y="\{\$(' . self::REGEX_PHP_ID . '(?:\.value' . self::REGEX_PHP_SUFFIX . ')?)}" as="\{\$(' . self::REGEX_PHP_ID . ')}">`', array($this, '_foreach'), $script);
+    $script = preg_replace_callback('`<foreach ar(?:ra)?y="\{\$(' . self::REGEX_PHP_ID . '(?:\.val(?:ue)?' . self::REGEX_PHP_SUFFIX . ')?)}" as="\{\$(' . self::REGEX_PHP_ID . ')}">`', array($this, '_foreach'), $script);
 
     // -- Simple regex which doesn't need any recursive treatment.
     $not_recursives = array(
