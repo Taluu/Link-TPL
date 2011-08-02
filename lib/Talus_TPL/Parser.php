@@ -374,13 +374,12 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
    * Will act accordingly if it is a string, a variable, or numbers
    *
    * @param string $arg Value to escape
-   * @param string $delim String's delimiters
    * @return string Escaped value
    */
-  protected function _escape($arg, $delim = '\'') {
+  protected function _escape($arg) {
     if (!filter_var($arg, FILTER_VALIDATE_INT)
      && !empty($arg)
-     && ($arg[0] != $delim || $arg[mb_strlen($arg) - 1] != $delim)
+     && !preg_match('`^([\'"]).*?\1$`', $arg)
      && ($arg[0] != '{' || $arg[mb_strlen($arg) - 1] != '}')) {
       switch ($arg) {
         case 'true':
@@ -394,7 +393,7 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
           break;
 
         default:
-          $arg = sprintf('%1$s%2$s%1$s', $delim, addcslashes($arg, $delim));
+          $arg = sprintf('\'%1$s\'', addcslashes($arg, '\''));
           break;
       }
     }
