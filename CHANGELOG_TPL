@@ -24,6 +24,11 @@
  * @version $Id$
  */
 
+## 1.11 ==> 1.?? (Release: ??/??/??)
+  #FIX : Recursive foreaches with the val attribute (#35)
+
+  #CHG : Parser::_escape() behaviour
+
 ## 1.10 ==> 1.11 (Release 18/07/11)
   #WAR : Please reload your cache (delete it, ...) !
 
