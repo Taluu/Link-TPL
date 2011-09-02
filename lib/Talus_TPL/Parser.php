@@ -103,7 +103,8 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
       return null;
     }
 
-    $param = &$this->{'_' . $param};
+    $param = '_' . $param;
+    $param = &$this->$param;
 
     if ($value !== null) {
       $param = $value;
@@ -121,17 +122,6 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
   public function parse($script){
     $script = str_replace('<?' ,'<?php echo \'<?\'; ?>', $script);
     $script = preg_replace('`/\*.*?\*/`s', '', $script);
-
-    // -- Stubs for blocks
-    $script = str_replace(array('<blockelse />', '</block>'), array('<foreachelse />', '</foreach>'), $script);
-    $script = preg_replace_callback('`<block name="(' . self::REGEX_PHP_ID . ')"(?: parent="(' . self::REGEX_PHP_ID . ')")?>`', array($this, '_block'), $script);
-
-    $recursives = array(
-      // -- Block variables ({block.VAR1}, ...)
-      // -- EX REGEX ; [a-z_\xe0-\xf6\xf8-\xff][a-z0-9_\xe0-\xf6\xf8-\xff]*
-      '`\{(' . self::REGEX_PHP_ID . ')\.(?!val(?:ue)?)(' . self::REGEX_PHP_ID . ')(' . self::REGEX_PHP_SUFFIX . ')}`' => '{$1.value[\'$2\']$3}',
-      '`\{\$(' . self::REGEX_PHP_ID . ')\.(?!val(?:ue)?)(' . self::REGEX_PHP_ID . ')(' . self::REGEX_PHP_SUFFIX . ')}`' => '{$$1.value[\'$2\']$3}'
-     );
 
     // -- Filter's transformations
     if ($this->_parse & self::FILTERS) {
@@ -173,7 +163,7 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
        '`\{\$(' . self::REGEX_PHP_ID . ').is_last}`' => '($__tpl_foreach__$1[\'current\'] == $__tpl_foreach__$1[\'size\'])'
       );
 
-    $recursives = array_merge($recursives, array(
+    $recursives = array(
       // -- Foreach values
       '`\{(' . self::REGEX_PHP_ID . ').val(?:ue)?(' . self::REGEX_PHP_SUFFIX . ')}`' => '<?php echo $__tpl_foreach__$1[\'value\']$2; ?>',
       '`\{\$(' . self::REGEX_PHP_ID . ').val(?:ue)?(' . self::REGEX_PHP_SUFFIX . ')}`' => '$__tpl_foreach__$1[\'value\']$2',
@@ -181,11 +171,20 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
       // -- Simple variables ({VAR1}, {VAR2[with][a][set][of][keys]}, ...)
       '`\{(' . self::REGEX_PHP_ID . self::REGEX_PHP_SUFFIX . ')}`' => '<?php echo $__tpl_vars__$1; ?>',
       '`\{\$(' . self::REGEX_PHP_ID . self::REGEX_PHP_SUFFIX . ')}`' => '$__tpl_vars__$1'
-     ));
+     );
 
     // -- No Regex (faster !)
     $noRegex = array(
-      '</foreach>' => '<?php } endif; ?>', // with ref : $__tpl_refering_var = array_pop($__tpl_foreach_ref); if (isset($__tpl_foreach[$__tpl_refering_var])) unset($__tpl_foreach[$__tpl_refering_var]);
+      /*
+       * with ref :
+       * <code>
+       *  $__tpl_refering_var = array_pop($__tpl_foreach_ref);
+       *
+       *  if (isset($__tpl_foreach[$__tpl_refering_var]))
+       *    unset($__tpl_foreach[$__tpl_refering_var]);
+       * </code>
+       */
+      '</foreach>' => '<?php } endif; ?>',
       '<foreachelse />' => '<?php } else : if (true) { ?>',
 
       '{\\' =>  '{'
@@ -280,7 +279,7 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
         \'current\' => 0
        );
 
-      if ($__tpl_foreach__%1$s[\'size\'] > 0) :
+      if ({$%1$s.size} > 0) :
         foreach ({$%2$s} as {$%1$s.key} => {$%1$s.value}) {
           ++{$%1$s.current}; ?>', $varName, $matches[1]);
   }

@@ -53,7 +53,7 @@ class Talus_TPL {
   const
     INCLUDE_TPL = 0,
     REQUIRE_TPL = 1,
-    VERSION = '1.11.1';
+    VERSION = 'DEV';
 
   /**
    * Initialisation.
@@ -243,62 +243,6 @@ class Talus_TPL {
 
     $this->_vars[$var] = &$value;
     $this->_references[] = $var;
-  }
-
-  /**
-   * Adds an iteration to the block $block
-   *
-   * Can act as a getter for this block if $vars is null and $block is a
-   * root block. If $vars is not null, nothing will be returned ;
-   * If $vars is not an array (lets say... a string), $value will be the value
-   * of the only variable for this iteration.
-   *
-   * Upwards 1.9.0, blocks are now deprecated. This method acts
-   * now as a stub for {@see Talus_TPL::set()}.
-   *
-   * @param string $block Block's name.
-   * @param array|string $vars Variable(s) to be used in this iteration
-   * @param string $value $vars value if $vars is a string
-   * @throws Talus_TPL_Var_Exception
-   * @return mixed
-   *
-   * @since 1.5.1
-   * @deprecated DEV
-   */
-  public function block($block, $vars = null, $value = null) {
-    /*
-     * Taking the last two blocks names, et imploding them with a _, validating
-     * this block name as a full qualified variable
-     */
-    if (strpos($block, '.') !== false) {
-      $block = array_reverse(explode('.', $block));
-      $block = implode('_', array($block[1], $block[0]));
-    }
-
-    if (!is_array($vars)) {
-      $vars = array($vars => $value);
-    }
-
-    if (!isset($this->_vars[$block])) {
-      $this->_vars[$block] = array();
-      $nbRows = 0;
-    } else {
-      $nbRows = count($this->_vars[$block]);
-    }
-
-    $vars['FIRST'] = true;
-    $vars['LAST'] = true;
-    $vars['SIZE_OF'] = 0;
-
-    if ($nbRows > 0) {
-      $this->_vars[$block][$nbRows - 1]['LAST'] = false;
-
-      $vars['FIRST'] = false;
-      $vars['SIZE_OF'] = &$this->_vars[$block][0]['SIZE_OF'];
-    }
-
-    $vars['CURRENT'] = ++$vars['SIZE_OF'];
-    $this->_vars[$block][] = $vars;
   }
 
   /**

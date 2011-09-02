@@ -29,6 +29,8 @@
 
   #CHG : Parser::_escape() behaviour
 
+  #DEL : Removing the blocks
+
 ## 1.10 ==> 1.11 (Release 18/07/11)
   #WAR : Please reload your cache (delete it, ...) !
 
