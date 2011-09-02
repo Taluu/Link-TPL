@@ -399,33 +399,6 @@ class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
 
     return $arg;
   }
-
-  /**
-   * Blocks interpretations
-   *
-   * This method is now acting as a stub for <block> tags ; it replaces them by
-   * a foreach. If there is a parent block, we need to alter a little the block's
-   * name.
-   *
-   * @param array $match Regex matches
-   * @return string
-   * @see self::compile()
-   * @see 97
-   * @deprecated 1.10
-   */
-  protected function _block(array $match){
-    $blockName = $match[1];
-    $as = '';
-
-    if (!empty($match[2])) {
-      $blockName = sprintf('%1$s_%2$s', $match[2], $match[1]);
-      $as = sprintf(' as="{$%1$s}"', $match[1]);
-    }
-
-    // -- Little warning...
-    trigger_error('Blocks are now deprecated. Please refrain from using them, and use <foreach> instead...', E_USER_DEPRECATED);
-    return sprintf('<foreach array="{$%1$s}"%2$s>', $blockName, $as);
-  }
 }
 
 /** EOF /**/
