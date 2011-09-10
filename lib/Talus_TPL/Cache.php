@@ -23,7 +23,7 @@ if (!defined('PHP_EXT')) {
  * @author Baptiste "Talus" Clavié <clavie.b@gmail.com>
  * @since 1.4.0
  */
-class Talus_TPL_Cache implements Talus_TPL_Cache_Interface {
+class Talus_TPL_Cache implements Talus_TPL_Interfaces_Cache {
   protected
     $_dir = null,
     $_file = array();
@@ -39,7 +39,7 @@ class Talus_TPL_Cache implements Talus_TPL_Cache_Interface {
       $dir = rtrim($dir, '/');
 
       if (!is_dir($dir)){
-        throw new Talus_TPL_Dir_Exception(array('The directory <b>"%s"</b> doesn\'t exist.', $dir));
+        throw new Talus_TPL_Exceptions_Dir(array('The directory <b>"%s"</b> doesn\'t exist.', $dir));
         return false;
       }
 
@@ -104,7 +104,7 @@ class Talus_TPL_Cache implements Talus_TPL_Cache_Interface {
     $lock = @fclose(fopen($lockFile, 'x'));
 
     if (!$lock){
-      throw new Talus_TPL_Write_Exception('Writing in the cache not possible for now');
+      throw new Talus_TPL_Exceptions_Write('Writing in the cache not possible for now');
       return false;
     }
 
@@ -135,15 +135,15 @@ class Talus_TPL_Cache implements Talus_TPL_Cache_Interface {
   /**
    * Executes the file's content
    *
-   * @param Talus_TPL $tpl Templating object to be used in this file
+   * @param Talus_TPL_Engine $tpl Templating object to be used in this file
    * @return bool execution's status
    */
-  public function exec(Talus_TPL $tpl) {
+  public function exec(Talus_TPL_Engine $tpl) {
     $file = $this->file(null);
     $vars = $tpl->set(null);
 
     if ($file === array()) {
-      throw new Talus_TPL_Exec_Exception('Beware, this file is a ghost !');
+      throw new Talus_TPL_Exceptions_Exec('Beware, this file is a ghost !');
       return false;
     }
 
@@ -161,12 +161,12 @@ class Talus_TPL_Cache implements Talus_TPL_Cache_Interface {
    * Executes the file's content
    * Implementation of the magic method __invoke() for PHP >= 5.3
    *
-   * @param Talus_TPL $tpl Objet TPL Ã  utiliser lors de la lecture du cache
+   * @param Talus_TPL_Engine $tpl TPL Object to be used during cache reading
    * @return bool
    *
    * @see self::exec()
    */
-  public function __invoke(Talus_TPL $tpl) {
+  public function __invoke(Talus_TPL_Engine $tpl) {
     return $this->exec($tpl);
   }
 }

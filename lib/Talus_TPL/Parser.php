@@ -32,7 +32,7 @@ if (!defined('PHP_VERSION_ID')) {
  * @package Talus_TPL
  * @author Baptiste "Talus" Clavié <clavie.b@gmail.com>
  */
-class Talus_TPL_Parser implements Talus_TPL_Parser_Interface {
+class Talus_TPL_Parser implements Talus_TPL_Interfaces_Parser {
   const
     FILTERS = 1,
     INCLUDES = 2,

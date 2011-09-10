@@ -17,7 +17,7 @@
  * @package Talus_TPL
  * @author Baptiste "Talus" Clavié <clavie.b@gmail.com>
  */
-class Talus_TPL_Var_Exception extends Talus_TPL_Exception {}
+class Talus_TPL_Exceptions_Var extends Talus_TPL_Exception {}
 
 /*
  * EOF

@@ -17,7 +17,7 @@
  * @package Talus_TPL
  * @author Baptiste "Talus" Clavié <clavie.b@gmail.com>
  */
-interface Talus_TPL_Cache_Interface extends Talus_TPL_Dependency_Interface {
+interface Talus_TPL_Interfaces_Cache extends Talus_TPL_Interfaces_Dependency {
   /**
    * Accessor for $this->_dir
    *
@@ -62,9 +62,9 @@ interface Talus_TPL_Cache_Interface extends Talus_TPL_Dependency_Interface {
   /**
    * Execute le contenu du cache
    *
-   * @param Talus_TPL $tpl TPL Ã  executer
+   * @param Talus_TPL_Engine $tpl TPL Object to be given to the TPL File
    */
-  public function exec(Talus_TPL $tpl);
+  public function exec(Talus_TPL_Engine $tpl);
 }
 
 /*

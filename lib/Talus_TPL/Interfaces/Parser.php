@@ -17,7 +17,7 @@
  * @package Talus_TPL
  * @author Baptiste "Talus" Clavié <clavie.b@gmail.com>
  */
-interface Talus_TPL_Parser_Interface extends Talus_TPL_Dependency_Interface {
+interface Talus_TPL_Interfaces_Parser extends Talus_TPL_Interfaces_Dependency {
   /**
    * Accessor for a given parameter
    *
