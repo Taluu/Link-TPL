@@ -1,7 +1,7 @@
 <?php
 /**
  * This file is part of Talus' TPL.
- * 
+ *
  * For the full copyright and license information, please view the LICENSE file
  * that was distributed with this source code.
  *
@@ -13,8 +13,8 @@
 
 /**
  * Dependencies Exceptions
- * 
- * @package Talus' TPL
+ *
+ * @package Talus_TPL
  * @author Baptiste "Talus" Clavié <clavie.b@gmail.com>
  */
 class Talus_TPL_Exceptions_Dependency extends Talus_TPL_Exception {}
