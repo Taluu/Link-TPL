@@ -64,7 +64,7 @@ class Talus_TPL_Engine {
    *
    * @param string $root Directory where the templates files are.
    * @param string $cache Directory where the php version of the templates will be stored.
-   * @param array $options Options for the templating engine
+   * @param array $_options Options for the templating engine
    * @return void
    */
   public function __construct($root, $cache, array $_options = array()){
@@ -101,7 +101,7 @@ class Talus_TPL_Engine {
    *
    * If the class to load is from this current library, tries a smart load of the
    * file from this directory.
-   * 
+   *
    * This autoloader is PSR-0 compliant
    *
    * @param string $class Class' name
@@ -116,12 +116,12 @@ class Talus_TPL_Engine {
 
     $file = dirname(__FILE__) . DIRECTORY_SEPARATOR;
     $className = mb_substr($class, mb_strlen('Talus_TPL_'));
-    
+
     // -- checking for namespaces (only for php > 5.3)
     if (($last = mb_strripos($className, '\\')) !== false) {
       $namespace = mb_substr($className, 0, $last);
       $className = mb_substr($className, $last + 1);
-      
+
       $file .= str_replace('\\', DIRECTORY_SEPARATOR, $namespace) . DIRECTORY_SEPARATOR;
     }
 
@@ -462,7 +462,7 @@ class Talus_TPL_Engine {
   /**
    * Dependency Injection handler.
    *
-   * @param mixed $dependencies,.. Dependencies
+   * @param mixed $dependencies,... Dependencies
    * @throws Talus_TPL_Exceptions_Dependency
    * @return void
    *
@@ -544,6 +544,7 @@ if (!function_exists('array_map_recursive')) {
    *
    * @param callback $callback A valid PHP callback.
    * @param mixed $item the item on which the callback must be applied
+   * @param array $userdata Data to be passed on as the third parameter of the callback
    * @return mixed the transformed value
    */
   function array_map_recursive($callback, $item, $userdata = array()) {

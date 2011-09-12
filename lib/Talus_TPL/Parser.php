@@ -67,7 +67,7 @@ class Talus_TPL_Parser implements Talus_TPL_Interfaces_Parser {
    *
    *  - extension : defines the extension of the templates files.
    *
-   * @params array $options options to be given to the parser (see above)
+   * @param array $_options options to be given to the parser (see above)
    * @return void
    */
   public function __construct(array $_options = array()){

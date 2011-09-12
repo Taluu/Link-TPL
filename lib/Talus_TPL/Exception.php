@@ -1,7 +1,7 @@
 <?php
 /**
  * This file is part of Talus' TPL.
- * 
+ *
  * For the full copyright and license information, please view the LICENSE file
  * that was distributed with this source code.
  *
@@ -13,11 +13,17 @@
 
 /**
  * Top Exception for the whole library
- * 
+ *
  * @package Talus_TPL
  * @author Baptiste "Talus" Clavié <clavie.b@gmail.com>
  */
 class Talus_TPL_Exception extends Exception {
+  /**
+   * constructor
+   *
+   * @param array|string $message if an array, will be formatted by vsprintf
+   * @param int $code error code
+   */
   public function __construct($message = '', $code = 0) {
     if (is_array($message)) {
       $str = array_shift($message);
