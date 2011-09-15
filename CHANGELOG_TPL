@@ -1,6 +1,6 @@
 /**
  * This file is part of Talus' TPL.
- * 
+ *
  * For the full copyright and license information, please view the LICENSE file
  * that was distributed with this source code.
  *
@@ -10,13 +10,15 @@
  * @version $Id$
  */
 
-## 1.11 ==> 1.?? (Release: ??/??/??)
+## 1.11 ==> 1.12 (Release: ??/09/11)
   #WAR : Almost every class had its name changed !
 
   #FIX : Recursive foreaches with the val attribute (#35)
 
   #ADD : PSR-0 Compliance (#37)
- 
+  #ADD : Class constant tag ({__A::B__}) (#38)
+  #ADD : Special keywords for query string etc
+
   #CHG : Parser::_escape() behaviour
 
   #DEL : Removing the blocks
