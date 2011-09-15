@@ -193,8 +193,8 @@ class Talus_TPL_Parser implements Talus_TPL_Interfaces_Parser {
     // -- Constants
     if ($this->_parse & self::CONSTANTS) {
       //[a-zA-Z_\xe0-\xf6\xf8-\xff\xc0-\xd6\xd8-\xde][a-zA-Z0-9_\xe0-\xf6\xf8-\xff\xc0-\xd6\xd8-\xde]*
-      $not_recursives['`\{__(' . self::REGEX_PHP_ID . ')__}`i'] = '<?php echo $1; ?>';
-      $not_recursives['`\{__$(' . self::REGEX_PHP_ID . ')__}`i'] = '$1';
+      $not_recursives['`\{__((?:' . self::REGEX_PHP_ID . '::)?' . self::REGEX_PHP_ID . ')__}`i'] = '<?php echo $1; ?>';
+      $not_recursives['`\{__$((?:' . self::REGEX_PHP_ID . '::)?' . self::REGEX_PHP_ID . ')__}`i'] = '$1';
     }
 
     // -- Conditions tags (<if>, <elseif />, <else />)
