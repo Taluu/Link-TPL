@@ -10,7 +10,7 @@
  * @version $Id$
  */
 
-## 1.11 ==> 1.12 (Release: ??/09/11)
+## 1.11 ==> 1.12 (Release: 15/09/11)
   #WAR : Almost every class had its name changed !
 
   #FIX : Recursive foreaches with the val attribute (#35)
@@ -20,6 +20,7 @@
   #ADD : Special keywords for query string etc
 
   #CHG : Parser::_escape() behaviour
+  #CHG : Using Modified BSD license now
 
   #DEL : Removing the blocks
 
