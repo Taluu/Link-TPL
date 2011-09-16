@@ -10,6 +10,9 @@
  * @version $Id$
  */
 
+## 1.12 ==> 1.?? (Release: ??/??/??)
+  #DEL : Useless condition when binding a variable
+
 ## 1.11 ==> 1.12 (Release: 15/09/11)
   #WAR : Almost every class had its name changed !
 

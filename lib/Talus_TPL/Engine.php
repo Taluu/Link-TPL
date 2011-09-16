@@ -237,11 +237,6 @@ class Talus_TPL_Engine {
    * @since 1.7.0
    */
   public function bind($var, &$value) {
-    if (mb_strtolower(gettype($var)) != 'string') {
-      throw new Talus_TPL_Exceptions_Var('Reference\'s name not valid.', 3);
-      return;
-    }
-
     $this->_vars[$var] = &$value;
     $this->_references[] = $var;
   }
