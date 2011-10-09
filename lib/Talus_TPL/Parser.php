@@ -361,7 +361,7 @@ class Talus_TPL_Parser implements Talus_TPL_Interfaces_Parser {
       $qs = sprintf(' . "?%s"', str_replace(array('{', '}'), array('{{', '}}'), $qs));
     }
 
-    return sprintf('<?php $tpl->includeTpl(%1$s%2$s, %3$s, Talus_TPL::%4$s_TPL); ?>',
+    return sprintf('<?php $tpl->includeTpl(%1$s%2$s, %3$s, Talus_TPL_Engine::%4$s_TPL); ?>',
                    $this->_escape($match[2]), $qs,
                    isset($match[3]) && $match[3] == 'true' ? 'true' : 'false',
                    mb_strtoupper($match[1]));
