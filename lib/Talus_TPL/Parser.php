@@ -48,7 +48,6 @@ class Talus_TPL_Parser implements Talus_TPL_Interfaces_Parser {
   protected
     $_compact = false,
     $_filters = 'Talus_TPL_Filters',
-    $_extension = '\.html',
     $_parse = self::DEFAULTS;
 
   /**
@@ -63,8 +62,6 @@ class Talus_TPL_Parser implements Talus_TPL_Interfaces_Parser {
    *
    *  - filters : Defines which class handles the filters.
    *
-   *  - extension : defines the extension of the templates files.
-   *
    * @param array $_options options to be given to the parser (see above)
    * @return void
    */
@@ -72,8 +69,7 @@ class Talus_TPL_Parser implements Talus_TPL_Interfaces_Parser {
     $defaults = array(
       'compact' => false,
       'filters' => 'Talus_TPL_Filters',
-      'parse' => self::DEFAULTS,
-      'extension' => '.html'
+      'parse' => self::DEFAULTS
      );
 
     $options = array_replace_recursive($defaults, $_options);
@@ -81,7 +77,6 @@ class Talus_TPL_Parser implements Talus_TPL_Interfaces_Parser {
     $this->_compact = $options['compact'];
     $this->_filters = $options['filters'];
     $this->_parse = $options['parse'];
-    $this->_extension = preg_quote('.' . ltrim($options['extension'], '.'), '`');
   }
 
   /**
@@ -132,7 +127,7 @@ class Talus_TPL_Parser implements Talus_TPL_Interfaces_Parser {
     // -- Inclusions
     // @todo optimize this stuff
     if ($this->_parse & self::INCLUDES) {
-      $script = preg_replace_callback('`<(include|require) tpl="((?:.+?' . $this->_extension . '(?:\?[^\"]*)?)|(?:\{\$(?:' . self::REGEX_PHP_ID . '(?:' . self::REGEX_PHP_SUFFIX . ')?})))"(?: once="(true|false)")? />`', array($this, '_includes'), $script);
+      $script = preg_replace_callback('`<(include|require) tpl="((?:\{\$(?:' . self::REGEX_PHP_ID . '(?:' . self::REGEX_PHP_SUFFIX . ')?}))|(?:.+?(?:\?[^\"]*)?))"(?: once="(true|false)")? />`', array($this, '_includes'), $script);
     }
 
     // -- <foreach> tags
