@@ -400,7 +400,7 @@ class Talus_TPL_Engine {
         }
 
         // -- Adding the new variables to this template
-        $this->set(array_change_key_case($vars, CASE_UPPER));
+        $this->set($vars);
       }
 
       $data = $this->pparse($file);
