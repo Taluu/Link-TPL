@@ -11,13 +11,9 @@
  * @version $Id$
  */
 
-if (!defined('PHP_EXT')) {
-  define('PHP_EXT', pathinfo(__FILE__, PATHINFO_EXTENSION));
-}
-
-if (!defined('E_USER_DEPRECATED')) {
-  define('E_USER_DEPRECATED', E_USER_NOTICE);
-}
+defined('PHP_EXT') || define('PHP_EXT', pathinfo(__FILE__, PATHINFO_EXTENSION));
+defined('E_USER_DEPRECATED') || define('E_USER_DEPRECATED', E_USER_NOTICE);
+defined('__DIR__') || define('__DIR__', dirname(__FILE__));
 
 /**
  * The templating engine itself
@@ -53,7 +49,7 @@ class Talus_TPL_Engine {
   const
     INCLUDE_TPL = 0,
     REQUIRE_TPL = 1,
-    VERSION = '1.12.2';
+    VERSION = 'DEV';
 
   /**
    * Initialisation.

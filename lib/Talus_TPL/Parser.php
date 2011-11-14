@@ -11,10 +11,8 @@
  * @version $Id$
  */
 
-// -- If PHP < 5.3, emulating E_USER_DEPRECATED
-if (!defined('E_USER_DEPRECATED')) {
-  define('E_USER_DEPRECATED', E_USER_NOTICE);
-}
+// -- emulating E_USER_DEPRECATED if php < 5.3
+defined('E_USER_DEPRECATED') || define('E_USER_DEPRECATED', E_USER_NOTICE);
 
 // -- If PHP < 5.2.7, emulate PHP_VERSION_ID
 if (!defined('PHP_VERSION_ID')) {

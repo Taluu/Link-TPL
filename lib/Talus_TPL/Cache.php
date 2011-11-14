@@ -11,10 +11,7 @@
  * @version $Id$
  */
 
-// -- File constants
-if (!defined('PHP_EXT')) {
-  define('PHP_EXT', pathinfo(__FILE__, PATHINFO_EXTENSION));
-}
+defined('PHP_EXT') || define('PHP_EXT', pathinfo(__FILE__, PATHINFO_EXTENSION));
 
 /**
  * Filecache engine for Talus' TPL.
