@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of Talus' TPL.
+ * This file is part of Link TPL.
  *
  * For the full copyright and license information, please view the LICENSE file
  * that was distributed with this source code.
@@ -24,13 +24,13 @@ if (!defined('PHP_VERSION_ID')) {
 /**
  * Templates' Parser
  *
- * This class handle the transformation from a Talus TPL code to an optimized
+ * This class handle the transformation from a Link TPL code to an optimized
  * PHP code, which can be used by PHP.
  *
- * @package Talus_TPL
+ * @package Link
  * @author Baptiste "Talus" Clavié <clavie.b@gmail.com>
  */
-class Talus_TPL_Parser implements Talus_TPL_Interfaces_Parser {
+class Link_Parser implements Link_Interfaces_Parser {
   const
     FILTERS = 1,
     INCLUDES = 2,
@@ -47,7 +47,7 @@ class Talus_TPL_Parser implements Talus_TPL_Interfaces_Parser {
 
   protected
     $_compact = false,
-    $_filters = 'Talus_TPL_Filters',
+    $_filters = 'Link_Filters',
     $_parse = self::DEFAULTS;
 
   /**
@@ -68,7 +68,7 @@ class Talus_TPL_Parser implements Talus_TPL_Interfaces_Parser {
   public function __construct(array $_options = array()){
     $defaults = array(
       'compact' => false,
-      'filters' => 'Talus_TPL_Filters',
+      'filters' => 'Link_Filters',
       'parse' => self::DEFAULTS
      );
 
@@ -87,11 +87,6 @@ class Talus_TPL_Parser implements Talus_TPL_Interfaces_Parser {
    * @return mixed Parameter's value
    */
   public function parameter($param, $value = null) {
-    // -- Stub for Talus_TPL < 1.11.0
-    if ($param == 'set_compact') {
-      $param = 'compact';
-    }
-
     if (!property_exists($this, '_' . $param)) {
       return null;
     }
@@ -354,7 +349,7 @@ class Talus_TPL_Parser implements Talus_TPL_Interfaces_Parser {
       $qs = sprintf(' . "?%s"', str_replace(array('{', '}'), array('{{', '}}'), $qs));
     }
 
-    return sprintf('<?php $tpl->includeTpl(%1$s%2$s, %3$s, Talus_TPL_Engine::%4$s_TPL); ?>',
+    return sprintf('<?php $tpl->includeTpl(%1$s%2$s, %3$s, Link::%4$s_TPL); ?>',
                    $this->_escape($match[2]), $qs,
                    isset($match[3]) && $match[3] == 'true' ? 'true' : 'false',
                    mb_strtoupper($match[1]));

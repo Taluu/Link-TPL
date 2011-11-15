@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of Talus' TPL.
+ * This file is part of Link TPL.
  * 
  * For the full copyright and license information, please view the LICENSE file
  * that was distributed with this source code.
@@ -12,12 +12,14 @@
  */
 
 /**
- * Top Interface used to implement the engines for the Dependency Injection
+ * Parser's exception
  * 
- * @package Talus_TPL
+ * Thrown when the parser encounter an error.
+ * 
+ * @package Link
  * @author Baptiste "Talus" Clavié <clavie.b@gmail.com>
  */
-interface Talus_TPL_Interfaces_Dependency {}
+class Link_Exceptions_Parse extends Link_Exception {}
 
 /*
  * EOF

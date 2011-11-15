@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of Talus' TPL.
+ * This file is part of Link TPL.
  *
  * For the full copyright and license information, please view the LICENSE file
  * that was distributed with this source code.
@@ -14,10 +14,10 @@
 /**
  * Top Exception for the whole library
  *
- * @package Talus_TPL
+ * @package Link
  * @author Baptiste "Talus" Clavié <clavie.b@gmail.com>
  */
-class Talus_TPL_Exception extends Exception {
+class Link_Exception extends Exception {
   /**
    * constructor
    *

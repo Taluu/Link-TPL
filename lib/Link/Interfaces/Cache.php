@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of Talus' TPL.
+ * This file is part of Link TPL.
  * 
  * For the full copyright and license information, please view the LICENSE file
  * that was distributed with this source code.
@@ -14,10 +14,10 @@
 /**
  * Interface to implement a new Cache engine for the templates
  * 
- * @package Talus_TPL
+ * @package Link
  * @author Baptiste "Talus" Clavié <clavie.b@gmail.com>
  */
-interface Talus_TPL_Interfaces_Cache extends Talus_TPL_Interfaces_Dependency {
+interface Link_Interfaces_Cache extends Link_Interfaces_Dependency {
   /**
    * Accessor for $this->_dir
    *
@@ -62,9 +62,9 @@ interface Talus_TPL_Interfaces_Cache extends Talus_TPL_Interfaces_Dependency {
   /**
    * Execute le contenu du cache
    *
-   * @param Talus_TPL_Engine $tpl TPL Object to be given to the TPL File
+   * @param Link $tpl TPL Object to be given to the TPL File
    */
-  public function exec(Talus_TPL_Engine $tpl);
+  public function exec(Link $tpl);
 }
 
 /*

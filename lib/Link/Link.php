@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of Talus' TPL.
+ * This file is part of Link TPL
  *
  * For the full copyright and license information, please view the LICENSE file
  * that was distributed with this source code.
@@ -18,10 +18,10 @@ defined('__DIR__') || define('__DIR__', dirname(__FILE__));
 /**
  * The templating engine itself
  *
- * @package Talus_TPL
+ * @package Link
  * @author Baptiste "Talus" Clavié <clavie.b@gmail.com>
  */
-class Talus_TPL_Engine {
+class Link {
   protected
     $_root = null,
 
@@ -32,15 +32,15 @@ class Talus_TPL_Engine {
     $_references = array(),
 
      $_autoFilters = array(),
-     $_filtersClass = 'Talus_TPL_Filters',
+     $_filtersClass = 'Link_Filters',
 
     /**
-     * @var Talus_TPL_Interfaces_Parser
+     * @var Link_Interfaces_Parser
      */
     $_parser = null,
 
     /**
-     * @var Talus_TPL_Interfaces_Cache
+     * @var Link_Interfaces_Cache
      */
     $_cache = null;
 
@@ -76,8 +76,8 @@ class Talus_TPL_Engine {
     // -- Options
     $defaults = array(
       'dependencies' => array(
-        'parser' => new Talus_TPL_Parser,
-        'cache' => new Talus_TPL_Cache,
+        'parser' => new Link_Parser,
+        'cache' => new Link_Cache,
        )
      );
 
@@ -106,22 +106,22 @@ class Talus_TPL_Engine {
    *              if everything went smoothly
    */
   private static function _autoload($class) {
-    if (mb_strpos($class, 'Talus_TPL_') !== 0) {
+    if (strpos($class, __CLASS__) !== 0) {
       return false;
     }
 
-    $file = dirname(__FILE__) . DIRECTORY_SEPARATOR;
-    $className = mb_substr($class, mb_strlen('Talus_TPL_'));
+    $file = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR;
+    $className = $class;
 
     // -- checking for namespaces (only for php > 5.3)
-    if (($last = mb_strripos($className, '\\')) !== false) {
-      $namespace = mb_substr($className, 0, $last);
-      $className = mb_substr($className, $last + 1);
+    if (($last = strripos($className, '\\')) !== false) {
+      $namespace = substr($className, 0, $last);
+      $className = substr($className, $last + 1);
 
       $file .= str_replace('\\', DIRECTORY_SEPARATOR, $namespace) . DIRECTORY_SEPARATOR;
     }
 
-    $file .= str_replace('_', DIRECTORY_SEPARATOR, $className) . '.' . PHP_EXT;
+    $file .= str_replace(array('_', "\0"), array(DIRECTORY_SEPARATOR, ''), $className) . '.' . PHP_EXT;
 
     if (!file_exists($file)) {
       return false;
@@ -150,7 +150,7 @@ class Talus_TPL_Engine {
     $root = rtrim($root, '/');
 
     if (!is_dir($root)) {
-      throw new Talus_TPL_Exceptions_Dir(array('%s is not a directory.', $root), 1);
+      throw new Link_Exceptions_Dir(array('%s is not a directory.', $root), 1);
       return;
     }
 
@@ -190,7 +190,7 @@ class Talus_TPL_Engine {
    * WARNING : BEWARE of the order of declaration !
    *
    * @param array|string $name Filters' names ; if null, gets all the filters and do nothing
-   * @throws Talus_TPL_Exceptions_Filter
+   * @throws Link_Exceptions_Filter
    * @return array
    *
    * @since 1.9.0
@@ -206,7 +206,7 @@ class Talus_TPL_Engine {
       }
 
       if (!method_exists($this->_filtersClass, $name)) {
-        throw new Talus_TPL_Exceptions_Filter(array('The filter %s doesn\'t exist...', $name), 404);
+        throw new Link_Exceptions_Filter(array('The filter %s doesn\'t exist...', $name), 404);
       }
 
       // -- Applying this filter to all previously declared vars... Except references
@@ -227,7 +227,7 @@ class Talus_TPL_Engine {
    *
    * @param mixed $var Var's name
    * @param mixed &$value Variable to be referenced by $var
-   * @throws Talus_TPL_Exceptions_Var
+   * @throws Link_Exceptions_Var
    * @return void
    *
    * @since 1.7.0
@@ -244,7 +244,7 @@ class Talus_TPL_Engine {
    *
    * @param mixed $tpl TPL to be parsed & executed
    * @param mixed $cache If the cache exists, use it
-   * @throws Talus_TPL_Exceptions_Parse
+   * @throws Link_Exceptions_Parse
    * @return bool
    */
   public function parse($tpl, $cache = true){
@@ -264,7 +264,7 @@ class Talus_TPL_Engine {
 
     // -- Critical error if the argument $tpl is empty
     if (strlen((string) $tpl) === 0) {
-      throw new Talus_TPL_Exceptions_Parse('No template to be parsed.', 5);
+      throw new Link_Exceptions_Parse('No template to be parsed.', 5);
       return false;
     }
 
@@ -272,7 +272,7 @@ class Talus_TPL_Engine {
 
     if (!isset($this->_last[$file])) {
       if (!is_file($file)) {
-        throw new Talus_TPL_Exceptions_Parse(array('The template <b>%s</b> doesn\'t exist.', $tpl), 6);
+        throw new Link_Exceptions_Parse(array('The template <b>%s</b> doesn\'t exist.', $tpl), 6);
         return false;
       }
 
@@ -294,7 +294,7 @@ class Talus_TPL_Engine {
    *
    * @param string $str String to parse
    * @param bool $exec Execute the result ?
-   * @throws Talus_TPL_Exceptions_Parse
+   * @throws Link_Exceptions_Parse
    * @return string PHP Code generated
    */
   public function str($str, $exec = true) {
@@ -321,7 +321,7 @@ class Talus_TPL_Engine {
    * Implemention of magic method __invoke() for PHP >= 5.3
    *
    * @param mixed $tpl TPL to be parsed & executed
-   * @see Talus_TPL::parse()
+   * @see Link::parse()
    * @return void
    */
   public function __invoke($tpl) {
@@ -331,7 +331,7 @@ class Talus_TPL_Engine {
   /**
    * Parse and execute a template
    *
-   * Do the exact same thing as Talus_TPL::parse(), but instead of just executing
+   * Do the exact same thing as Link::parse(), but instead of just executing
    * the template, returns the final result (already executed by PHP).
    *
    * @param string $tpl Template's name.
@@ -354,9 +354,9 @@ class Talus_TPL_Engine {
    * @param integer $type Inclusion or requirement ?
    * @return void
    *
-   * @see Talus_TPL_Parser::parse()
-   * @throws Talus_TPL_Exceptions_Runtime
-   * @throws Talus_TPL_Exceptions_Parse
+   * @see Link_Parser::parse()
+   * @throws Link_Exceptions_Runtime
+   * @throws Link_Exceptions_Parse
    */
   public function includeTpl($file, $once = false, $type = self::INCLUDE_TPL){
     // -- Parameters extraction
@@ -404,16 +404,16 @@ class Talus_TPL_Engine {
       }
 
       $data = $this->pparse($file);
-    } catch (Talus_TPL_Exceptions_Parse $e) {
+    } catch (Link_Exceptions_Parse $e) {
       /*
        * If we encounter error nÂ°6 AND it is a require tag, throws an exception
-       * Talus_TPL_Exceptions_Runtime instead of Talus_TPL_Exceptions_Parse. If not,
+       * Link_Exceptions_Runtime instead of Link_Exceptions_Parse. If not,
        * and still a nÂ°6 error, printing the error message, or else throwing this
        * error back.
        */
       if ($e->getCode() === 6) {
         if ($type == self::REQUIRE_TPL) {
-          throw new Talus_TPL_Exceptions_Runtime(array('That was a "require" tag ; The template <b>%s</b> not existing,  the script shall then be interrupted.', $file), 7);
+          throw new Link_Exceptions_Runtime(array('That was a "require" tag ; The template <b>%s</b> not existing,  the script shall then be interrupted.', $file), 7);
           exit;
         }
 
@@ -435,7 +435,7 @@ class Talus_TPL_Engine {
   /**
    * Parser
    *
-   * @return Talus_TPL_Interfaces_Parser
+   * @return Link_Interfaces_Parser
    */
   public function parser() {
     return $this->_parser;
@@ -444,7 +444,7 @@ class Talus_TPL_Engine {
   /**
    * Cache
    *
-   * @return Talus_TPL_Interfaces_Cache
+   * @return Link_Interfaces_Cache
    */
   public function cache() {
     return $this->_cache;
@@ -454,19 +454,19 @@ class Talus_TPL_Engine {
    * Dependency Injection handler.
    *
    * @param mixed $dependencies,... Dependencies
-   * @throws Talus_TPL_Exceptions_Dependency
+   * @throws Link_Exceptions_Dependency
    * @return void
    *
    * @todo Review the mechanism, instead of having too many conditions...
    */
   public function dependencies($dependencies = array()) {
     foreach (func_get_args() as $dependency) {
-      if ($dependency instanceof Talus_TPL_Interfaces_Parser) {
+      if ($dependency instanceof Link_Interfaces_Parser) {
         $this->_parser = $dependency;
-      } elseif ($dependency instanceof Talus_TPL_Interfaces_Cache) {
+      } elseif ($dependency instanceof Link_Interfaces_Cache) {
         $this->_cache = $dependency;
       } else {
-        throw new Talus_TPL_Exceptions_Dependency(
+        throw new Link_Exceptions_Dependency(
                 array('%s is not an acknowledged dependency.', get_class($dependency)));
       }
     }

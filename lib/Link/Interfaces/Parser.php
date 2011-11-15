@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of Talus' TPL.
+ * This file is part of Link TPL.
  *
  * For the full copyright and license information, please view the LICENSE file
  * that was distributed with this source code.
@@ -14,10 +14,10 @@
 /**
  * Interface to implement a new Parser for the templates.
  *
- * @package Talus_TPL
+ * @package Link
  * @author Baptiste "Talus" Clavié <clavie.b@gmail.com>
  */
-interface Talus_TPL_Interfaces_Parser extends Talus_TPL_Interfaces_Dependency {
+interface Link_Interfaces_Parser extends Link_Interfaces_Dependency {
   /**
    * Accessor for a given parameter
    *

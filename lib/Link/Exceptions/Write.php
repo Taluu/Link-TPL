@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of Talus' TPL.
+ * This file is part of Link TPL.
  * 
  * For the full copyright and license information, please view the LICENSE file
  * that was distributed with this source code.
@@ -14,10 +14,10 @@
 /**
  * Writing in cache exception
  * 
- * @package Talus_TPL
+ * @package Link
  * @author Baptiste "Talus" Clavié <clavie.b@gmail.com>
  */
-class Talus_TPL_Exceptions_Write extends Talus_TPL_Exception {}
+class Link_Exceptions_Write extends Link_Exception {}
 
 /*
  * EOF

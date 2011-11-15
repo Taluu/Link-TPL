@@ -1,6 +1,6 @@
-Talus' TPL
+Link TPL
 ==========
-A templating engine in PHP, using a XML syntax like, and a parser based on PCREs. The name is temporary. 
+A templating engine in PHP, using a XML syntax like, and a parser based on PCREs.
 
 **Requires** at least *PHP 5.1*, because of the utilisation of the Standard PHP Library and several object specifications available only since 5.1. Compatible PHP 5.2 and PHP 5.3.
 

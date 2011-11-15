@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of Talus' TPL.
+ * This file is part of Link TPL.
  * 
  * For the full copyright and license information, please view the LICENSE file
  * that was distributed with this source code.
@@ -12,14 +12,14 @@
  */
 
 /**
- * Directory's exceptions
+ * Runtime executions exceptions
  * 
- * These exceptions are sent when there is an error with the directorys accessors.
+ * Thrown when there is an error during the execution of a PHP compiled script.
  * 
- * @package Talus_TPL
+ * @package Link
  * @author Baptiste "Talus" Clavié <clavie.b@gmail.com>
  */
-class Talus_TPL_Exceptions_Dir extends Talus_TPL_Exception {}
+class Link_Exceptions_Runtime extends Link_Exception {}
 
 /*
  * EOF

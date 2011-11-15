@@ -1,5 +1,5 @@
 /**
- * This file is part of Talus' TPL.
+ * This file is part of Link TPL.
  *
  * For the full copyright and license information, please view the LICENSE file
  * that was distributed with this source code.
@@ -11,7 +11,12 @@
  */
 
 ## 1.12 ==> 1.?? (Release: ??/??/??)
+  #WAR : COMPATIBILITY BROKEN
+  #WAR : All classes were renamed... again !
+
   #DEL : Useless condition when binding a variable
+
+  #CHG : Renaming the library into Link TPL
 
 ## 1.11 ==> 1.12 (Release: 15/09/11)
   #WAR : Almost every class had its name changed !

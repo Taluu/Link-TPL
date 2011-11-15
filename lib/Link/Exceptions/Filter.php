@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of Talus' TPL.
+ * This file is part of Link TPL.
  * 
  * For the full copyright and license information, please view the LICENSE file
  * that was distributed with this source code.
@@ -12,12 +12,14 @@
  */
 
 /**
- * Cache's execution exception
+ * Filters' exception
  * 
- * @package Talus_TPL
+ * Thrown when there is an error with the filters.
+ * 
+ * @package Link
  * @author Baptiste "Talus" Clavié <clavie.b@gmail.com>
  */
-class Talus_TPL_Exceptions_Exec extends Talus_TPL_Exception {}
+class Link_Exceptions_Filter extends Link_Exception {}
 
 /*
  * EOF

@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of Talus' TPL.
+ * This file is part of Link TPL.
  * 
  * For the full copyright and license information, please view the LICENSE file
  * that was distributed with this source code.
@@ -14,13 +14,13 @@
 defined('PHP_EXT') || define('PHP_EXT', pathinfo(__FILE__, PATHINFO_EXTENSION));
 
 /**
- * Filecache engine for Talus' TPL.
+ * Filecache engine for Link TPL.
  *
- * @package Talus_TPL
+ * @package Link
  * @author Baptiste "Talus" Clavié <clavie.b@gmail.com>
  * @since 1.4.0
  */
-class Talus_TPL_Cache implements Talus_TPL_Interfaces_Cache {
+class Link_Cache implements Link_Interfaces_Cache {
   protected
     $_dir = null,
     $_file = array();
@@ -36,7 +36,7 @@ class Talus_TPL_Cache implements Talus_TPL_Interfaces_Cache {
       $dir = rtrim($dir, '/');
 
       if (!is_dir($dir)){
-        throw new Talus_TPL_Exceptions_Dir(array('The directory <b>"%s"</b> doesn\'t exist.', $dir));
+        throw new Link_Exceptions_Dir(array('The directory <b>"%s"</b> doesn\'t exist.', $dir));
         return false;
       }
 
@@ -101,7 +101,7 @@ class Talus_TPL_Cache implements Talus_TPL_Interfaces_Cache {
     $lock = @fclose(fopen($lockFile, 'x'));
 
     if (!$lock){
-      throw new Talus_TPL_Exceptions_Write('Writing in the cache not possible for now');
+      throw new Link_Exceptions_Write('Writing in the cache not possible for now');
       return false;
     }
 
@@ -132,15 +132,15 @@ class Talus_TPL_Cache implements Talus_TPL_Interfaces_Cache {
   /**
    * Executes the file's content
    *
-   * @param Talus_TPL_Engine $tpl Templating object to be used in this file
+   * @param Link $tpl Templating object to be used in this file
    * @return bool execution's status
    */
-  public function exec(Talus_TPL_Engine $tpl) {
+  public function exec(Link $tpl) {
     $file = $this->file(null);
     $vars = $tpl->set(null);
 
     if ($file === array()) {
-      throw new Talus_TPL_Exceptions_Exec('Beware, this file is a ghost !');
+      throw new Link_Exceptions_Exec('Beware, this file is a ghost !');
       return false;
     }
 
@@ -158,12 +158,12 @@ class Talus_TPL_Cache implements Talus_TPL_Interfaces_Cache {
    * Executes the file's content
    * Implementation of the magic method __invoke() for PHP >= 5.3
    *
-   * @param Talus_TPL_Engine $tpl TPL Object to be used during cache reading
+   * @param Link $tpl TPL Object to be used during cache reading
    * @return bool
    *
    * @see self::exec()
    */
-  public function __invoke(Talus_TPL_Engine $tpl) {
+  public function __invoke(Link $tpl) {
     return $this->exec($tpl);
   }
 }
