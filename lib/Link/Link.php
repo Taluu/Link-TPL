@@ -11,9 +11,7 @@
  * @version $Id$
  */
 
-defined('PHP_EXT') || define('PHP_EXT', pathinfo(__FILE__, PATHINFO_EXTENSION));
 defined('E_USER_DEPRECATED') || define('E_USER_DEPRECATED', E_USER_NOTICE);
-defined('__DIR__') || define('__DIR__', dirname(__FILE__));
 
 /**
  * The templating engine itself
@@ -44,8 +42,6 @@ class Link {
      */
     $_cache = null;
 
-  protected static $_autoloadSet = false;
-
   const
     INCLUDE_TPL = 0,
     REQUIRE_TPL = 1,
@@ -67,12 +63,6 @@ class Link {
     // -- Resetting the PHP cache concerning the files' information.
     clearstatcache();
 
-    // -- Setting the autoload for the whole library
-    if (self::$_autoloadSet === false) {
-      spl_autoload_register('self::_autoload');
-      self::$_autoloadSet = true;
-    }
-
     // -- Options
     $defaults = array(
       'dependencies' => array(
@@ -90,45 +80,6 @@ class Link {
     $this->_filtersClass = $this->parser()->parameter('filters');
 
     $this->dir($root, $cache);
-  }
-
-  /**
-   * Autoloader
-   *
-   * If the class to load is from this current library, tries a smart load of the
-   * file from this directory.
-   *
-   * This autoloader is PSR-0 compliant
-   *
-   * @param string $class Class' name
-   * @link http://groups.google.com/group/php-standards/web/psr-0-final-proposal
-   * @return bool false if not a class from this library or file not found, true
-   *              if everything went smoothly
-   */
-  private static function _autoload($class) {
-    if (strpos($class, __CLASS__) !== 0) {
-      return false;
-    }
-
-    $file = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR;
-    $className = $class;
-
-    // -- checking for namespaces (only for php > 5.3)
-    if (($last = strripos($className, '\\')) !== false) {
-      $namespace = substr($className, 0, $last);
-      $className = substr($className, $last + 1);
-
-      $file .= str_replace('\\', DIRECTORY_SEPARATOR, $namespace) . DIRECTORY_SEPARATOR;
-    }
-
-    $file .= str_replace(array('_', "\0"), array(DIRECTORY_SEPARATOR, ''), $className) . '.' . PHP_EXT;
-
-    if (!file_exists($file)) {
-      return false;
-    }
-
-    require $file;
-    return true;
   }
 
   /**

@@ -17,6 +17,7 @@
   #DEL : Useless condition when binding a variable
 
   #CHG : Renaming the library into Link TPL
+  #CHG : Externalizing the autoload mechanism into a brand new class (Autoloader)
 
 ## 1.11 ==> 1.12 (Release: 15/09/11)
   #WAR : Almost every class had its name changed !
