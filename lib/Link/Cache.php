@@ -132,11 +132,11 @@ class Link_Cache implements Link_Interfaces_Cache {
   /**
    * Executes the file's content
    *
-   * @param Link $_env Templating environnement to be used in this file
+   * @param Link_Environnement $_env Templating environnement to be used in this file
    * @param array $_context Variables to be given to the template
    * @return bool execution's status
    */
-  public function exec(Link $_env, array $_context = array()) {
+  public function exec(Link_Environnement $_env, array $_context = array()) {
     $file = $this->file(null);
 
     if ($file === array()) {
@@ -157,13 +157,13 @@ class Link_Cache implements Link_Interfaces_Cache {
    * Executes the file's content
    * Implementation of the magic method __invoke() for PHP >= 5.3
    *
-   * @param Link $tpl TPL environnement to be used during cache reading
+   * @param Link_Environnement $tpl TPL environnement to be used during cache reading
    * @param array $_context Variables to be given to the template
    * @return bool
    *
    * @see self::exec()
    */
-  public function __invoke(Link $_env, array $_context = array()) {
+  public function __invoke(Link_Environnement $_env, array $_context = array()) {
     return $this->exec($tpl);
   }
 }

@@ -62,10 +62,10 @@ interface Link_Interfaces_Cache extends Link_Interfaces_Dependency {
   /**
    * Fetches & executes the cache content
    *
-   * @param Link $_env TPL environnement to be given to the template
+   * @param Link_Environnement $_env TPL environnement to be given to the template
    * @param array $_context Local variables to the template
    */
-  public function exec(Link $_env, array $_context = array());
+  public function exec(Link_Environnement $_env, array $_context = array());
 }
 
 /*

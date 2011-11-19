@@ -19,7 +19,7 @@ defined('E_USER_DEPRECATED') || define('E_USER_DEPRECATED', E_USER_NOTICE);
  * @package Link
  * @author Baptiste "Talus" Clavié <clavie.b@gmail.com>
  */
-class Link {
+class Link_Environnement {
   protected
     $_root = null,
 
@@ -255,7 +255,7 @@ class Link {
    *
    * @param string $tpl TPL to be parsed & executed
    * @param array $_context Local variables to be given to the template
-   * @see Link::parse()
+   * @see Link_Environnement::parse()
    * @return void
    */
   public function __invoke($tpl, array $_context = array()) {
@@ -265,7 +265,7 @@ class Link {
   /**
    * Parse and execute a template
    *
-   * Do the exact same thing as Link::parse(), but instead of just executing
+   * Do the exact same thing as Link_Environnement::parse(), but instead of just executing
    * the template, returns the final result (already executed by PHP).
    *
    * @param string $tpl Template's name.
