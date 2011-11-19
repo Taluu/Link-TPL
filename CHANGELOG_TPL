@@ -15,6 +15,8 @@
   #WAR : All classes were renamed... again !
 
   #DEL : Useless condition when binding a variable
+  #DEL : Possibility of parsing several files in one go
+  #DEL : Possibility of definings several auto filters in one go
 
   #CHG : Renaming the library into Link TPL
   #CHG : Externalizing the autoload mechanism into a brand new class (Autoloader)

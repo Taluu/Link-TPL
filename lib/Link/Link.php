@@ -148,14 +148,6 @@ class Link {
    */
   public function autoFilters($name = null) {
     if ($name !== null) {
-      if (is_array($name)) {
-        foreach ($name as $filter) {
-          $this->autoFilters($filter);
-        }
-
-        return $this->_autoFilters;
-      }
-
       if (!method_exists($this->_filtersClass, $name)) {
         throw new Link_Exceptions_Filter(array('The filter %s doesn\'t exist...', $name), 404);
       }
@@ -199,20 +191,6 @@ class Link {
    * @return bool
    */
   public function parse($tpl, $cache = true){
-    if (func_num_args() > 2 || is_array($tpl)) {
-      // -- Removing the second arg ($cache)
-      if (func_num_args() > 2) {
-        $tpl = func_get_args();
-        array_shift($tpl); array_shift($tpl); array_unshift($tpl, func_get_arg(0));
-      }
-
-      foreach ($tpl as &$file) {
-        $this->parse($file);
-      }
-
-      return true;
-    }
-
     // -- Critical error if the argument $tpl is empty
     if (strlen((string) $tpl) === 0) {
       throw new Link_Exceptions_Parse('No template to be parsed.', 5);
