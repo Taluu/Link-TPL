@@ -186,11 +186,12 @@ class Link {
    * If $tpl is an array of files, all the files will be parsed.
    *
    * @param mixed $tpl TPL to be parsed & executed
-   * @param mixed $cache If the cache exists, use it
+   * @param array $_context Local variables to be given to the template
+   * @param mixed $cache If the cache exists, erase it only if not fresh
    * @throws Link_Exceptions_Parse
    * @return bool
    */
-  public function parse($tpl, $cache = true){
+  public function parse($tpl, array $_context = array(), $cache = true){
     // -- Critical error if the argument $tpl is empty
     if (strlen((string) $tpl) === 0) {
       throw new Link_Exceptions_Parse('No template to be parsed.', 5);
@@ -213,8 +214,10 @@ class Link {
     if (!$this->_cache->isValid($this->_last[$file]) || !$cache) {
       $this->_cache->put($this->str(file_get_contents($file), false));
     }
+    
+    $context = array_replace_recursive($this->_vars, $_context);
 
-    $this->_cache->exec($this);
+    $this->_cache->exec($this, $context);
     return true;
   }
 
@@ -222,11 +225,12 @@ class Link {
    * Parse & execute a string
    *
    * @param string $str String to parse
+   * @param array $_context Local variables to be given to the template
    * @param bool $exec Execute the result ?
    * @throws Link_Exceptions_Parse
    * @return string PHP Code generated
    */
-  public function str($str, $exec = true) {
+  public function str($str, array $_context = array(), $exec = true) {
     if (empty($str)) {
       return '';
     }
@@ -238,7 +242,7 @@ class Link {
     if ($exec === true) {
       $this->_cache->file(sprintf('tmp_%s.html', sha1($str)), 0);
       $this->_cache->put($compiled);
-      $this->_cache->exec($this);
+      $this->_cache->exec($this, $_context);
       $this->_cache->destroy();
     }
 
@@ -249,12 +253,13 @@ class Link {
    * Parse a TPL
    * Implemention of magic method __invoke() for PHP >= 5.3
    *
-   * @param mixed $tpl TPL to be parsed & executed
+   * @param string $tpl TPL to be parsed & executed
+   * @param array $_context Local variables to be given to the template
    * @see Link::parse()
    * @return void
    */
-  public function __invoke($tpl) {
-    return $this->parse($tpl);
+  public function __invoke($tpl, array $_context = array()) {
+    return $this->parse($tpl, $_context);
   }
 
   /**
@@ -264,14 +269,15 @@ class Link {
    * the template, returns the final result (already executed by PHP).
    *
    * @param string $tpl Template's name.
+   * @param array $_context Local variables to be given to the template
    * @param integer $ttl Time to live for the cache 2. Not implemented yet
    * @return string
    *
    * @todo Cache 2 ?
    */
-  public function pparse($tpl = '', $ttl = 0){
+  public function pparse($tpl = '', array $_context = array(), $ttl = 0){
     ob_start();
-    $this->parse($tpl);
+    $this->parse($tpl, $_context);
     return ob_get_clean();
   }
 
@@ -310,32 +316,24 @@ class Link {
 
       $this->_included[] = $toInclude;
     }
-
-    $data = '';
-    $save = array(
-      'vars' => $this->_vars
-     );
+    
+    $vars = array();
 
     try {
-      // -- Changing the variables only if there is a QS
+      // -- Adding new variables only if there is a QS
       if (!empty($qString)) {
-        // -- Parameters recuperation
-        $vars = array();
         parse_str($qString, $vars);
 
         // -- If MAGIC_QUOTES is ON (grmph), Removing the \s...
         if (function_exists('get_magic_quotes_gpc') && get_magic_quotes_gpc()) {
           $vars = array_map('stripslashes', $vars);
         }
-
-        // -- Adding the new variables to this template
-        $this->set($vars);
       }
 
-      $data = $this->pparse($file);
+      $data = $this->pparse($file, $vars);
     } catch (Link_Exceptions_Parse $e) {
       /*
-       * If we encounter error nÂ°6 AND it is a require tag, throws an exception
+       * If we encounter error n°6 AND it is a require tag, throws an exception
        * Link_Exceptions_Runtime instead of Link_Exceptions_Parse. If not,
        * and still a nÂ°6 error, printing the error message, or else throwing this
        * error back.
@@ -351,8 +349,6 @@ class Link {
         throw $e;
       }
     }
-
-    $this->_vars = $save['vars'];
 
     echo $data;
   }
@@ -422,10 +418,10 @@ if (!function_exists('array_replace_recursive')) {
    * **array_replace_recursive()** is recursive : it will recurse into arrays
    * and apply the same process to the inner value.
    *
-   * When the value in array is scalar, it will be replaced by the value in
-   * array1, may it be scalar or array. When the value in array and array1 are
-   * both arrays, **array_replace_recursive()** will replace their respective
-   * value recursively.
+   * When the value in `$original` is not an array, it will be replaced by the
+   * value in `$array`, whatever may its value be. When the value in `$original`
+   * and `$array` are both arrays, **array_replace_recursive()** will replace 
+   * their respective value recursively.
    *
    * @param array &$original The array in which elements are replaced.
    * @param array &$array,... The arrays from which elements will be extracted.

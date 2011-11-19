@@ -132,22 +132,21 @@ class Link_Cache implements Link_Interfaces_Cache {
   /**
    * Executes the file's content
    *
-   * @param Link $tpl Templating object to be used in this file
+   * @param Link $_env Templating environnement to be used in this file
+   * @param array $_context Variables to be given to the template
    * @return bool execution's status
    */
-  public function exec(Link $tpl) {
+  public function exec(Link $_env, array $_context = array()) {
     $file = $this->file(null);
-    $vars = $tpl->set(null);
 
     if ($file === array()) {
       throw new Link_Exceptions_Exec('Beware, this file is a ghost !');
-      return false;
     }
 
-    $varCount = extract($vars, EXTR_PREFIX_ALL | EXTR_REFS, '__tpl_vars_');
+    $varCount = extract($_context, EXTR_PREFIX_ALL | EXTR_REFS, '__tpl_vars_');
 
-    if ($varCount < count($vars)) {
-      trigger_error('Some variables couldn\'t be extracted (invalid name maybe ?)...', E_USER_NOTICE);
+    if ($varCount < count($_context)) {
+      trigger_error('Some variables couldn\'t be extracted...', E_USER_NOTICE);
     }
 
     include $file['url'];
@@ -158,12 +157,13 @@ class Link_Cache implements Link_Interfaces_Cache {
    * Executes the file's content
    * Implementation of the magic method __invoke() for PHP >= 5.3
    *
-   * @param Link $tpl TPL Object to be used during cache reading
+   * @param Link $tpl TPL environnement to be used during cache reading
+   * @param array $_context Variables to be given to the template
    * @return bool
    *
    * @see self::exec()
    */
-  public function __invoke(Link $tpl) {
+  public function __invoke(Link $_env, array $_context = array()) {
     return $this->exec($tpl);
   }
 }
