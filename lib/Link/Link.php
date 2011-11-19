@@ -427,26 +427,26 @@ if (!function_exists('array_replace_recursive')) {
    * both arrays, **array_replace_recursive()** will replace their respective
    * value recursively.
    *
-   * @param array $original The array in which elements are replaced.
-   * @param array $array,... The arrays from which elements will be extracted.
+   * @param array &$original The array in which elements are replaced.
+   * @param array &$array,... The arrays from which elements will be extracted.
    * @link http://www.php.net/manual/en/function.array-replace-recursive.php#92224
    * @return array Joined array
    */
-  function array_replace_recursive(array $original, array $array) {
+  function array_replace_recursive(array &$original, array &$array) {
     $arrays = func_get_args();
-    array_shift($arrays);
+    $return = array_shift($arrays);
 
     foreach ($arrays as &$array) {
       foreach ($array as $key => &$value) {
-        if (is_array($value)) {
-          $original[$key] = array_replace_recursive($original[$key], $value);
+        if (isset($original[$key]) && is_array($original[$key]) && is_array($value)) {
+          $return[$key] = array_replace_recursive($return[$key], $value);
         } else {
-          $original[$key] = $value;
+          $return[$key] = $value;
         }
       }
     }
 
-    return $original;
+    return $return;
   }
 }
 
