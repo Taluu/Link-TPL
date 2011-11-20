@@ -10,7 +10,7 @@
  * @version $Id$
  */
 
-## 1.12 ==> 1.?? (Release: ??/??/??)
+## 1.12 ==> 1.13 (Release: ??/??/??)
   #WAR : COMPATIBILITY BROKEN
   #WAR : All classes were renamed... again !
 
@@ -18,13 +18,14 @@
 
   #DEL : Useless condition when binding a variable
   #DEL : Possibility of parsing several files in one go
+  #DEL : array_map_recursive, which was not used anymore
   #DEL : Possibility of definings several auto filters in one go
 
   #CHG : Renaming the library into Link TPL
   #CHG : Renaming the Engine class to Environnement
+  #CHG : Altering the mechanism of applying auto filters on variables
   #CHG : Externalizing the autoload mechanism into a brand new class (Autoloader)
   #CHG : Fitting of the array_replace_recrusive stub with the native implementation
-  #CHG : Altering the mechanism of applying auto filters on variables
 
   #FIX : array_replace_recursive stub is now working properly (Ticket #45)
 

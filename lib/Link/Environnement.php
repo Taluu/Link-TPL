@@ -45,7 +45,7 @@ class Link_Environnement {
   const
     INCLUDE_TPL = 0,
     REQUIRE_TPL = 1,
-    VERSION = 'DEV';
+    VERSION = '1.13.0-DEV';
 
   /**
    * Initialisation.
@@ -434,49 +434,6 @@ if (!function_exists('array_replace_recursive')) {
     }
 
     return $return;
-  }
-}
-
-if (!function_exists('array_map_recursive')) {
-  /**
-   * Applies a function on an item recursively.
-   *
-   * Unlike it's sister `array_map`, it doesn't accept more than two parameters.
-   * Works a bit like  `array_walk_recursive`, but returns an array modified by
-   * the callback `$callback`.
-   *
-   * If the `$item` is a scalar, the function will be directly applied on it. If
-   * it is not an object implementing Traversable, or a resource, it will
-   * directly be returned.
-   *
-   * @param callback $callback A valid PHP callback.
-   * @param mixed $item the item on which the callback must be applied
-   * @param array $userdata Data to be passed on as the third parameter of the callback
-   * @return mixed the transformed value
-   */
-  function array_map_recursive($callback, $item, $userdata = array()) {
-    // -- verification that $callback is callable
-    if (!is_callable($callback)) {
-      trigger_error('recursive_call : not a valid callback', E_USER_WARNING);
-      return $item;
-    }
-
-    // -- Is it a scalar ? Fine then, just have to execute $fct on $ary !
-    if (is_scalar($item)) {
-      array_unshift($userdata, $item);
-      return call_user_func_array($callback, $userdata);
-    }
-
-    // -- Not traversable (resource, object) ?
-    if ((is_object($item) && !($item instanceof Traversable)) || is_resource($item)) {
-      return $item;
-    }
-
-    foreach ($item as &$val) {
-      $val = array_map_recursive($callback, $val, $userdata);
-    }
-
-    return $item;
   }
 }
 
