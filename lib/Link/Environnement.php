@@ -30,16 +30,11 @@ class Link_Environnement {
     $_references = array(),
 
      $_autoFilters = array(),
-     $_filtersClass = 'Link_Filters',
 
-    /**
-     * @var Link_Interfaces_Parser
-     */
+    /** @var Link_Interfaces_Parser */
     $_parser = null,
 
-    /**
-     * @var Link_Interfaces_Cache
-     */
+    /** @var Link_Interfaces_Cache */
     $_cache = null;
 
   const
@@ -76,8 +71,6 @@ class Link_Environnement {
     // -- Dependency Injection
     $this->dependencies($_options['dependencies']['parser'],
                         $_options['dependencies']['cache']);
-
-    $this->_filtersClass = $this->parser()->parameter('filters');
 
     $this->dir($root, $cache);
   }
@@ -140,7 +133,7 @@ class Link_Environnement {
    * @since 1.9.0
    */
   public function autoFilters($name) {
-    if (!method_exists($this->_filtersClass, $name)) {
+    if (!method_exists($this->parser()->parameter('filters'), $name)) {
       throw new Link_Exceptions_Filter(array('The filter %s doesn\'t exist...', $name), 404);
     }
 
@@ -202,7 +195,7 @@ class Link_Environnement {
     
     // -- Applying the filters...
     foreach ($this->_autoFilters as &$filter) {
-      array_walk_recursive($context, array($this->_filtersClass, $filter));
+      array_walk_recursive($context, array($this->parser()->parameter('filters'), $filter));
     }
     
     // -- and, finally, replacing the references...
