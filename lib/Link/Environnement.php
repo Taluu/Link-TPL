@@ -112,7 +112,7 @@ class Link_Environnement {
   }
 
   /**
-   * Accessor for the templates variables.
+   * Sets the global variable for all the templates
    *
    * @param array|string $vars Var(s)' name (tpl side)
    * @param mixed $value Var's value if $vars is not an array
@@ -122,47 +122,29 @@ class Link_Environnement {
    */
   public function set($vars, $value = null){
     if (is_array($vars)) {
-      foreach ($vars as $var => &$val) {
-        $this->set($var, $val);
-      }
-    } elseif ($vars !== null) {
-      foreach ($this->autoFilters(null) as $filter) {
-        $value = array_map_recursive(array($this->_filtersClass, $filter), $value);
-      }
-
-      $this->_vars[$vars] = $value;
+      $this->_vars = array_replace_recursive($this->_vars, $vars);
+      return;
     }
-
-    return $this->_vars;
+    
+    $this->_vars[$vars] = $value;
   }
 
   /**
-   * Adds defaults filters to be applied to every variables (... except references)
+   * Adds a default filter to be applied on variables (except references)
    * WARNING : BEWARE of the order of declaration !
    *
-   * @param array|string $name Filters' names ; if null, gets all the filters and do nothing
+   * @param string $name Filters' names
    * @throws Link_Exceptions_Filter
    * @return array
    *
    * @since 1.9.0
    */
-  public function autoFilters($name = null) {
-    if ($name !== null) {
-      if (!method_exists($this->_filtersClass, $name)) {
-        throw new Link_Exceptions_Filter(array('The filter %s doesn\'t exist...', $name), 404);
-      }
-
-      // -- Applying this filter to all previously declared vars... Except references
-      foreach ($this->_vars as $var => &$value) {
-        if (in_array($var, $this->_references)) {
-          continue;
-        }
-
-        $value = array_map_recursive(array($this->_filtersClass, $name), $value);
-      }
+  public function autoFilters($name) {
+    if (!method_exists($this->_filtersClass, $name)) {
+      throw new Link_Exceptions_Filter(array('The filter %s doesn\'t exist...', $name), 404);
     }
 
-    return $this->_autoFilters;
+    $this->_autoFilters[] = $name;
   }
 
   /**
@@ -192,7 +174,6 @@ class Link_Environnement {
    * @return bool
    */
   public function parse($tpl, array $_context = array(), $cache = true){
-    // -- Critical error if the argument $tpl is empty
     if (strlen((string) $tpl) === 0) {
       throw new Link_Exceptions_Parse('No template to be parsed.', 5);
       return false;
@@ -215,7 +196,17 @@ class Link_Environnement {
       $this->_cache->put($this->str(file_get_contents($file), false));
     }
     
-    $context = array_replace_recursive($this->_vars, $_context);
+    // -- extracting the references...
+    $vars = array_diff_key($this->_vars, array_flip($this->_references));
+    $context = array_replace_recursive($vars, $_context);
+    
+    // -- Applying the filters...
+    foreach ($this->_autoFilters as &$filter) {
+      array_walk_recursive($context, array($this->_filtersClass, $filter));
+    }
+    
+    // -- and, finally, replacing the references...
+    $context += array_diff($this->_vars, $vars);
 
     $this->_cache->exec($this, $context);
     return true;
