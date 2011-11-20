@@ -17,6 +17,7 @@
   #ADD : Context variables -- Variables available only in the declared template
 
   #CHG : Renaming the library into Link TPL
+  #CHG : Return of the old getters & setters
   #CHG : Renaming the Engine class to Environnement
   #CHG : Altering the mechanism of applying auto filters on variables
   #CHG : Externalizing the autoload mechanism into a brand new class (Autoloader)
@@ -24,6 +25,7 @@
   #CHG : Simplification of the include / require tags and condition tags partterns
 
   #DEL : Attribute $_filterClass
+  #DEL : Dependency Injection method (useless)
   #DEL : Useless condition when binding a variable
   #DEL : Possibility of parsing several files in one go
   #DEL : array_map_recursive, which was not used anymore

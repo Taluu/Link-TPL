@@ -61,16 +61,16 @@ class Link_Environnement {
     // -- Options
     $defaults = array(
       'dependencies' => array(
-        'parser' => new Link_Parser,
-        'cache' => new Link_Cache,
+        'parser' => null,
+        'cache' => null
        )
      );
 
     $_options = array_replace_recursive($defaults, $_options);
 
     // -- Dependency Injection
-    $this->dependencies($_options['dependencies']['parser'],
-                        $_options['dependencies']['cache']);
+    $this->setParser($_options['dependencies']['parser'] !== null ? $_options['dependencies']['parser'] : new Link_Parser);
+    $this->setCache($_options['dependencies']['cache'] !== null ? $_options['dependencies']['cache'] : new Link_Cache);
 
     $this->dir($root, $cache);
   }
@@ -101,7 +101,7 @@ class Link_Environnement {
     $this->_root = $root;
 
     // -- Let the cache engine handle his own directory !
-    $this->_cache->dir($cache);
+    $this->getCache()->dir($cache);
   }
 
   /**
@@ -133,7 +133,7 @@ class Link_Environnement {
    * @since 1.9.0
    */
   public function autoFilters($name) {
-    if (!method_exists($this->parser()->parameter('filters'), $name)) {
+    if (!method_exists($this->getParser()->parameter('filters'), $name)) {
       throw new Link_Exceptions_Filter(array('The filter %s doesn\'t exist...', $name), 404);
     }
 
@@ -183,10 +183,10 @@ class Link_Environnement {
       $this->_last[$file] = filemtime($file);
     }
 
-    $this->_cache->file($tpl, 0);
+    $this->getCache()->file($tpl, 0);
 
     if (!$this->_cache->isValid($this->_last[$file]) || !$cache) {
-      $this->_cache->put($this->str(file_get_contents($file), array(), false));
+      $this->_cache->put($this->getParser()->parse(file_get_contents($file)));
     }
     
     // -- extracting the references...
@@ -195,7 +195,7 @@ class Link_Environnement {
     
     // -- Applying the filters...
     foreach ($this->_autoFilters as &$filter) {
-      array_walk_recursive($context, array($this->parser()->parameter('filters'), $filter));
+      array_walk_recursive($context, array($this->getParser()->parameter('filters'), $filter));
     }
     
     // -- and, finally, replacing the references...
@@ -220,7 +220,7 @@ class Link_Environnement {
     }
 
     // -- Compilation
-    $compiled = $this->_parser->parse($str);
+    $compiled = $this->getParser()->parse($str);
 
     // -- Cache if need to be executed. Will be destroyed right after the execution
     if ($exec === true) {
@@ -340,47 +340,25 @@ class Link_Environnement {
   /**#@+
    * Getters / Setters
    */
-
-  /**
-   * Parser
-   *
-   * @return Link_Interfaces_Parser
-   */
-  public function parser() {
+  
+  /** @return Link_Interfaces_Parser */
+  public function getParser() {
     return $this->_parser;
   }
 
-  /**
-   * Cache
-   *
-   * @return Link_Interfaces_Cache
-   */
-  public function cache() {
+  public function setParser(Link_Interfaces_Parser $_parser) {
+    $this->_parser = $_parser;
+  }
+
+  /** @return Link_Interfaces_Cache */
+  public function getCache() {
     return $this->_cache;
   }
 
-  /**
-   * Dependency Injection handler.
-   *
-   * @param mixed $dependencies,... Dependencies
-   * @throws Link_Exceptions_Dependency
-   * @return void
-   *
-   * @todo Review the mechanism, instead of having too many conditions...
-   */
-  public function dependencies($dependencies = array()) {
-    foreach (func_get_args() as $dependency) {
-      if ($dependency instanceof Link_Interfaces_Parser) {
-        $this->_parser = $dependency;
-      } elseif ($dependency instanceof Link_Interfaces_Cache) {
-        $this->_cache = $dependency;
-      } else {
-        throw new Link_Exceptions_Dependency(
-                array('%s is not an acknowledged dependency.', get_class($dependency)));
-      }
-    }
+  public function setCache(Link_Interfaces_Cache $_cache) {
+    $this->_cache = $_cache;
   }
-
+  
   /**#@-*/
 }
 
