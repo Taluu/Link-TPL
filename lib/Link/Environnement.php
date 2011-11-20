@@ -186,7 +186,7 @@ class Link_Environnement {
     $this->_cache->file($tpl, 0);
 
     if (!$this->_cache->isValid($this->_last[$file]) || !$cache) {
-      $this->_cache->put($this->str(file_get_contents($file), false));
+      $this->_cache->put($this->str(file_get_contents($file), array(), false));
     }
     
     // -- extracting the references...
