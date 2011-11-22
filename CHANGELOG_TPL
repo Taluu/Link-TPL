@@ -23,6 +23,7 @@
   #CHG : Renaming the Engine class to Environnement
   #CHG : Now, the exceptions and interfaces parts are singular
   #CHG : Altering the mechanism of applying auto filters on variables
+  #CHG : Now, the filesystem cache have a proper name and is in a proper dir
   #CHG : Externalizing the autoload mechanism into a brand new class (Autoloader)
   #CHG : Fitting of the array_replace_recrusive stub with the native implementation
   #CHG : Simplification of the include / require tags and condition tags partterns
