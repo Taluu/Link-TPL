@@ -78,7 +78,7 @@ class Link_Environnement {
    * Set the templates directory.
    *
    * @param string $root Directory containing the original templates.
-   * @throws Talus_Dir_Exception
+   * @throws Link_Exception
    * @return void
    *
    * @since 1.7.0
@@ -92,7 +92,7 @@ class Link_Environnement {
     $root = rtrim($root, '/');
 
     if (!is_dir($root)) {
-      throw new Link_Exceptions_Dir(array('%s is not a directory.', $root), 1);
+      throw new Link_Exception(array('%s is not a directory.', $root), 1);
       return;
     }
 
@@ -122,14 +122,14 @@ class Link_Environnement {
    * WARNING : BEWARE of the order of declaration !
    *
    * @param string $name Filters' names
-   * @throws Link_Exceptions_Filter
+   * @throws Link_Exception
    * @return array
    *
    * @since 1.9.0
    */
   public function autoFilters($name) {
     if (!method_exists($this->getParser()->parameter('filters'), $name)) {
-      throw new Link_Exceptions_Filter(array('The filter %s doesn\'t exist...', $name), 404);
+      throw new Link_Exception(array('The filter %s doesn\'t exist...', $name), 404);
     }
 
     $this->_autoFilters[] = $name;
@@ -158,12 +158,12 @@ class Link_Environnement {
    * @param mixed $tpl TPL to be parsed & executed
    * @param array $_context Local variables to be given to the template
    * @param mixed $cache If the cache exists, erase it only if not fresh
-   * @throws Link_Exceptions_Parse
+   * @throws Link_Exceptions_Parser
    * @return bool
    */
   public function parse($tpl, array $_context = array(), $cache = true){
     if (strlen((string) $tpl) === 0) {
-      throw new Link_Exceptions_Parse('No template to be parsed.', 5);
+      throw new Link_Exceptions_Parser('No template to be parsed.', 5);
       return false;
     }
 
@@ -171,7 +171,7 @@ class Link_Environnement {
 
     if (!isset($this->_last[$file])) {
       if (!is_file($file)) {
-        throw new Link_Exceptions_Parse(array('The template <b>%s</b> doesn\'t exist.', $tpl), 6);
+        throw new Link_Exceptions_Parser(array('The template <b>%s</b> doesn\'t exist.', $tpl), 6);
         return false;
       }
 
@@ -206,7 +206,7 @@ class Link_Environnement {
    * @param string $str String to parse
    * @param array $_context Local variables to be given to the template
    * @param bool $exec Execute the result ?
-   * @throws Link_Exceptions_Parse
+   * @throws Link_Exceptions_Parser
    * @return string PHP Code generated
    */
   public function str($str, array $_context = array(), $exec = true) {
@@ -270,7 +270,7 @@ class Link_Environnement {
    *
    * @see Link_Parser::parse()
    * @throws Link_Exceptions_Runtime
-   * @throws Link_Exceptions_Parse
+   * @throws Link_Exceptions_Parser
    */
   public function includeTpl($file, $once = false, $type = self::INCLUDE_TPL){
     // -- Parameters extraction
@@ -310,7 +310,7 @@ class Link_Environnement {
       }
 
       $data = $this->pparse($file, $vars);
-    } catch (Link_Exceptions_Parse $e) {
+    } catch (Link_Exceptions_Parser $e) {
       /*
        * If we encounter error n°6 AND it is a require tag, throws an exception
        * Link_Exceptions_Runtime instead of Link_Exceptions_Parse. If not,

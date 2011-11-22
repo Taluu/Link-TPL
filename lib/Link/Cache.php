@@ -36,7 +36,7 @@ class Link_Cache implements Link_Interfaces_Cache {
       $dir = rtrim($dir, '/');
 
       if (!is_dir($dir)){
-        throw new Link_Exceptions_Dir(array('The directory <b>"%s"</b> doesn\'t exist.', $dir));
+        throw new Link_Exception_Cache(array('The directory <b>"%s"</b> doesn\'t exist.', $dir));
         return false;
       }
 
@@ -101,7 +101,7 @@ class Link_Cache implements Link_Interfaces_Cache {
     $lock = @fclose(fopen($lockFile, 'x'));
 
     if (!$lock){
-      throw new Link_Exceptions_Write('Writing in the cache not possible for now');
+      throw new Link_Exception_Cache('Writing in the cache not possible for now');
       return false;
     }
 
@@ -140,7 +140,7 @@ class Link_Cache implements Link_Interfaces_Cache {
     $file = $this->file(null);
 
     if ($file === array()) {
-      throw new Link_Exceptions_Exec('Beware, this file is a ghost !');
+      throw new Link_Exception_Cache('Beware, this file is a ghost !');
     }
 
     $varCount = extract($_context, EXTR_PREFIX_ALL | EXTR_REFS, '__tpl_vars_');

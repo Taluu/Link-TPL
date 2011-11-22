@@ -12,14 +12,14 @@
  */
 
 /**
- * Directory's exceptions
+ * Parser's exception
  * 
- * These exceptions are sent when there is an error with the directorys accessors.
+ * Thrown when the parser encounter an error.
  * 
  * @package Link
  * @author Baptiste "Talus" Clavié <clavie.b@gmail.com>
  */
-class Link_Exceptions_Dir extends Link_Exception {}
+class Link_Exceptions_Parser extends Link_Exception {}
 
 /*
  * EOF
