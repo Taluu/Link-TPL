@@ -12,6 +12,7 @@
 
 ## 1.12 ==> 1.13 (Release: ??/??/??)
   #WAR : COMPATIBILITY BROKEN
+  #WAR : PHP 5.2.1 is now needed
   #WAR : All classes were renamed... again !
 
   #ADD : Context variables -- Variables available only in the declared template

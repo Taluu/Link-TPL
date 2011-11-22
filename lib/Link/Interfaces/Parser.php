@@ -17,7 +17,7 @@
  * @package Link
  * @author Baptiste "Talus" Clavié <clavie.b@gmail.com>
  */
-interface Link_Interfaces_Parser extends Link_Interfaces_Dependency {
+interface Link_Interfaces_Parser {
   /**
    * Accessor for a given parameter
    *
