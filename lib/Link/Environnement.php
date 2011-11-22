@@ -46,23 +46,22 @@ class Link_Environnement {
    * Initialisation.
    *
    * Available options :
-   *  - dependencies : Handle the dependencies (parser, cache, ...). Each of
-   *                   these must be an object.
+   *  - dependencies : Handle the dependencies (parser, ...). Each of these must
+   *                   be an object.
    *
    * @param string $root Directory where the templates files are.
-   * @param string $cache Directory where the php version of the templates will be stored.
+   * @param Link_Interfaces_Cache $_cache Cache engine used
    * @param array $_options Options for the templating engine
    * @return void
    */
-  public function __construct($root, $cache, array $_options = array()){
+  public function __construct($root, Link_Interfaces_Cache $_cache = null, array $_options = array()){
     // -- Resetting the PHP cache concerning the files' information.
     clearstatcache();
 
     // -- Options
     $defaults = array(
       'dependencies' => array(
-        'parser' => null,
-        'cache' => null
+        'parser' => null
        )
      );
 
@@ -70,22 +69,21 @@ class Link_Environnement {
 
     // -- Dependency Injection
     $this->setParser($_options['dependencies']['parser'] !== null ? $_options['dependencies']['parser'] : new Link_Parser);
-    $this->setCache($_options['dependencies']['cache'] !== null ? $_options['dependencies']['cache'] : new Link_Cache);
+    $this->setCache($_cache !== null ? $_cache : new Link_Cache);
 
-    $this->dir($root, $cache);
+    $this->dir($root);
   }
 
   /**
-   * Set the templates & cache directory.
+   * Set the templates directory.
    *
    * @param string $root Directory containing the original templates.
-   * @param string $cache Directory containing the cache files.
    * @throws Talus_Dir_Exception
    * @return void
    *
    * @since 1.7.0
    */
-  public function dir($root = null, $cache = null) {
+  public function dir($root = null) {
     if ($root === null) {
       $root = $this->_root;
     }
@@ -99,9 +97,6 @@ class Link_Environnement {
     }
 
     $this->_root = $root;
-
-    // -- Let the cache engine handle his own directory !
-    $this->getCache()->dir($cache);
   }
 
   /**
@@ -185,8 +180,8 @@ class Link_Environnement {
 
     $this->getCache()->file($tpl, 0);
 
-    if (!$this->_cache->isValid($this->_last[$file]) || !$cache) {
-      $this->_cache->put($this->getParser()->parse(file_get_contents($file)));
+    if (!$this->getCache()->isValid($this->_last[$file]) || !$cache) {
+      $this->getCache()->put($this->getParser()->parse(file_get_contents($file)));
     }
     
     // -- extracting the references...
@@ -201,7 +196,7 @@ class Link_Environnement {
     // -- and, finally, replacing the references...
     $context += array_diff($this->_vars, $vars);
 
-    $this->_cache->exec($this, $context);
+    $this->getCache()->exec($this, $context);
     return true;
   }
 
@@ -224,10 +219,10 @@ class Link_Environnement {
 
     // -- Cache if need to be executed. Will be destroyed right after the execution
     if ($exec === true) {
-      $this->_cache->file(sprintf('tmp_%s.html', sha1($str)), 0);
-      $this->_cache->put($compiled);
-      $this->_cache->exec($this, $_context);
-      $this->_cache->destroy();
+      $this->getCache()->file(sprintf('tmp_%s.html', sha1($str)), 0);
+      $this->getCache()->put($compiled);
+      $this->getCache()->exec($this, $_context);
+      $this->getCache()->destroy();
     }
 
     return $compiled;
