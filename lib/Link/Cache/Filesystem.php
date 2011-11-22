@@ -14,66 +14,66 @@
 defined('PHP_EXT') || define('PHP_EXT', pathinfo(__FILE__, PATHINFO_EXTENSION));
 
 /**
- * Filecache engine for Link TPL.
+ * Filesystem cache handler for Link TPL.
  *
  * @package Link
  * @author Baptiste "Talus" Clavié <clavie.b@gmail.com>
  * @since 1.4.0
  */
-class Link_Cache implements Link_Interface_Cache {
+class Link_Cache_Filesystem implements Link_Interface_Cache {
   protected
     $_dir = null,
-    $_file = array();
-
+    $_key = array();
+  
   /**
-   * Accessor for $this->_dir
-   *
-   * @param string $dir Directory for the cache
-   * @return string
+   * Constructor
+   * 
+   * @param string $_dir dir where the cache will be stored
+   * @see Link_Cache_Filesystem::setDir()
    */
-  public function dir($dir = null) {
-    if ($dir !== null) {
-      $dir = rtrim($dir, '/');
-
-      if (!is_dir($dir)){
-        throw new Link_Exception_Cache(array('The directory <b>"%s"</b> doesn\'t exist.', $dir));
-        return false;
-      }
-
-      $this->_dir = $dir;
-    } elseif ($this->_dir === null) {
-      $this->_dir = sys_get_temp_dir();
-    }
-
-    return $this->_dir;
+  function __construct($_dir = null) {
+    $this->setDir($_dir);
   }
 
-  /**
-   * Set the file to use
-   *
-   * @param string $file File's name
-   * @return array Information on  the file
-   */
-  public function file($file = null) {
-    if ($file !== null) {
-      $file = sprintf('%1$s/tpl_%2$s.%3$s', $this->dir(null), sha1(trim($file, '.')), PHP_EXT);
+  /** @param string $_dir Directory for the cache */
+  public function setDir($_dir = null) {
+    if ($_dir === null) {
+      $this->_dir = realpath(sys_get_temp_dir());
+      return;
+    }
+    
+    $dir = realpath(rtrim($_dir, DIRECTORY_SEPARATOR));
 
-      $filemtime = 0;
-      $filesize = 0;
-
-      if (is_file($file)) {
-        $filemtime = filemtime($file);
-        $filesize = filesize($file);
-      }
-
-      $this->_file = array(
-        'url' => $file,
-        'last_modif' => $filemtime,
-        'size' => $filesize
-       );
+    if (!is_dir($dir)){
+      throw new Link_Exception_Cache(array('The directory <b>"%s"</b> doesn\'t exist.', $_dir));
+      return;
     }
 
-    return $this->_file;
+    $this->_dir = $dir;
+  }
+  
+  /** @return string dir where the cache will be stored */
+  public function getDir() {
+    return $this->_dir;
+  }
+  
+  /** @param string $_key key designing the cache */
+  public function setKey($_key) {
+    $file = sprintf('%1$s%4$stpl_%2$s.%3$s', $this->getDir(), sha1(trim($_key, '.')), PHP_EXT, DIRECTORY_SEPARATOR);
+
+    $filemtime = 0;
+    $filesize = 0;
+
+    if (is_file($file)) {
+      $filemtime = filemtime($file);
+      $filesize = filesize($file);
+    }
+
+    $this->_key = array(
+      'file' => $file,
+      'last_modif' => $filemtime,
+      'size' => $filesize
+     );
   }
 
   /**
@@ -83,8 +83,7 @@ class Link_Cache implements Link_Interface_Cache {
    * @return boolean true if still valid, false if not
    */
   public function isValid($time) {
-    $file = $this->file(null);
-    return $file['last_modif'] >= abs($time) && $file['size'] > 0;
+    return $this->_key['last_modif'] >= abs($time) && $this->_key['size'] > 0;
   }
 
   /**
@@ -94,19 +93,20 @@ class Link_Cache implements Link_Interface_Cache {
    * @return boolean
    */
   public function put($data) {
-    $file = $this->file(null);
-
+    if ($this->_key === array()) {
+      throw new Link_Exception_Cache('You should select a key to work on before putting any datas inside...');
+    }
+    
     // -- Setting a homemade LOCK
-    $lockFile = sprintf('%1$s/__tpl_flock__.%2$s', $this->dir(null), sha1($file['url']));
+    $lockFile = sprintf('%1$s%3$s__tpl_flock__.%2$s', $this->getDir(), sha1($this->_key['file']), DIRECTORY_SEPARATOR);
     $lock = @fclose(fopen($lockFile, 'x'));
 
     if (!$lock){
       throw new Link_Exception_Cache('Writing in the cache not possible for now');
-      return false;
     }
 
-    file_put_contents($file['url'], $data);
-    chmod($file['url'], 0664);
+    file_put_contents($this->_key['file'], $data);
+    chmod($this->_key['file'], 0664);
 
     // -- Removing the LOCK
     unlink($lockFile);
@@ -119,13 +119,9 @@ class Link_Cache implements Link_Interface_Cache {
    * @return void
    */
   public function destroy() {
-    $file = $this->file(null);
-
-    if ($file !== array()) {
-      unlink($file['url']);
-      unset($file);
-
-      $this->_file = array();
+    if ($this->_key !== array()) {
+      unlink($this->_key['file']);
+      $this->_key = array();
     }
   }
 
@@ -137,9 +133,7 @@ class Link_Cache implements Link_Interface_Cache {
    * @return bool execution's status
    */
   public function exec(Link_Environnement $_env, array $_context = array()) {
-    $file = $this->file(null);
-
-    if ($file === array()) {
+    if ($this->_key === array()) {
       throw new Link_Exception_Cache('Beware, this file is a ghost !');
     }
 
@@ -149,7 +143,7 @@ class Link_Cache implements Link_Interface_Cache {
       trigger_error('Some variables couldn\'t be extracted...', E_USER_NOTICE);
     }
 
-    include $file['url'];
+    include $this->_key['file'];
     return true;
   }
 

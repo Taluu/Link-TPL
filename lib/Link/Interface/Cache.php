@@ -19,23 +19,12 @@
  */
 interface Link_Interface_Cache {
   /**
-   * Accessor for $this->_dir
-   *
-   * $dir should be either a directory for FTP Cache, a DB if SQL, ...
-   *
-   * @param string $dir Directory for the cache
-   * @return string
+   * Sets the current key to work with
+   * 
+   * @param string $_key key designing the cache
    */
-  public function dir($dir = null);
-
-  /**
-   * Sets the id to use for the cache engine
-   *
-   * @param string $file File's name
-   * @return array Information on the file
-   */
-  public function file($file = null);
-
+  public function setKey($_key);
+  
   /**
    * Check if the cache file is still valid
    *

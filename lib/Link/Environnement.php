@@ -31,10 +31,10 @@ class Link_Environnement {
 
      $_autoFilters = array(),
 
-    /** @var Link_Interfaces_Parser */
+    /** @var Link_Interface_Parser */
     $_parser = null,
 
-    /** @var Link_Interfaces_Cache */
+    /** @var Link_Interface_Cache */
     $_cache = null;
 
   const
@@ -69,7 +69,7 @@ class Link_Environnement {
 
     // -- Dependency Injection
     $this->setParser($_options['dependencies']['parser'] !== null ? $_options['dependencies']['parser'] : new Link_Parser);
-    $this->setCache($_cache !== null ? $_cache : new Link_Cache);
+    $this->setCache($_cache !== null ? $_cache : new Link_Cache_Filesystem);
 
     $this->dir($root);
   }
