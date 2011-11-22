@@ -12,14 +12,14 @@
  */
 
 /**
- * Cache exceptions
+ * Runtime executions exceptions
  * 
- * These exceptions are sent when there is an error with the cache.
+ * Thrown when there is an error during the execution of a PHP compiled script.
  * 
  * @package Link
  * @author Baptiste "Talus" Clavié <clavie.b@gmail.com>
  */
-class Link_Exceptions_Cache extends Link_Exception {}
+class Link_Exception_Runtime extends Link_Exception {}
 
 /*
  * EOF

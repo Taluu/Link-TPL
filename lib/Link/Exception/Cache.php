@@ -12,14 +12,14 @@
  */
 
 /**
- * Parser's exception
+ * Cache exceptions
  * 
- * Thrown when the parser encounter an error.
+ * These exceptions are sent when there is an error with the cache.
  * 
  * @package Link
  * @author Baptiste "Talus" Clavié <clavie.b@gmail.com>
  */
-class Link_Exceptions_Parser extends Link_Exception {}
+class Link_Exception_Cache extends Link_Exception {}
 
 /*
  * EOF

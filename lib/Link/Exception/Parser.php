@@ -12,14 +12,14 @@
  */
 
 /**
- * Runtime executions exceptions
+ * Parser's exception
  * 
- * Thrown when there is an error during the execution of a PHP compiled script.
+ * Thrown when the parser encounter an error.
  * 
  * @package Link
  * @author Baptiste "Talus" Clavié <clavie.b@gmail.com>
  */
-class Link_Exceptions_Runtime extends Link_Exception {}
+class Link_Exception_Parser extends Link_Exception {}
 
 /*
  * EOF

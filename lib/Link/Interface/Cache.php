@@ -17,7 +17,7 @@
  * @package Link
  * @author Baptiste "Talus" Clavié <clavie.b@gmail.com>
  */
-interface Link_Interfaces_Cache {
+interface Link_Interface_Cache {
   /**
    * Accessor for $this->_dir
    *

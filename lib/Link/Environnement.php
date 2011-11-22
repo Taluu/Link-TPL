@@ -50,11 +50,11 @@ class Link_Environnement {
    *                   be an object.
    *
    * @param string $root Directory where the templates files are.
-   * @param Link_Interfaces_Cache $_cache Cache engine used
+   * @param Link_Interface_Cache $_cache Cache engine used
    * @param array $_options Options for the templating engine
    * @return void
    */
-  public function __construct($root, Link_Interfaces_Cache $_cache = null, array $_options = array()){
+  public function __construct($root, Link_Interface_Cache $_cache = null, array $_options = array()){
     // -- Resetting the PHP cache concerning the files' information.
     clearstatcache();
 
@@ -158,12 +158,12 @@ class Link_Environnement {
    * @param mixed $tpl TPL to be parsed & executed
    * @param array $_context Local variables to be given to the template
    * @param mixed $cache If the cache exists, erase it only if not fresh
-   * @throws Link_Exceptions_Parser
+   * @throws Link_Exception_Parser
    * @return bool
    */
   public function parse($tpl, array $_context = array(), $cache = true){
     if (strlen((string) $tpl) === 0) {
-      throw new Link_Exceptions_Parser('No template to be parsed.', 5);
+      throw new Link_Exception_Parser('No template to be parsed.', 5);
       return false;
     }
 
@@ -171,7 +171,7 @@ class Link_Environnement {
 
     if (!isset($this->_last[$file])) {
       if (!is_file($file)) {
-        throw new Link_Exceptions_Parser(array('The template <b>%s</b> doesn\'t exist.', $tpl), 6);
+        throw new Link_Exception_Parser(array('The template <b>%s</b> doesn\'t exist.', $tpl), 6);
         return false;
       }
 
@@ -206,7 +206,7 @@ class Link_Environnement {
    * @param string $str String to parse
    * @param array $_context Local variables to be given to the template
    * @param bool $exec Execute the result ?
-   * @throws Link_Exceptions_Parser
+   * @throws Link_Exception_Parser
    * @return string PHP Code generated
    */
   public function str($str, array $_context = array(), $exec = true) {
@@ -269,8 +269,8 @@ class Link_Environnement {
    * @return void
    *
    * @see Link_Parser::parse()
-   * @throws Link_Exceptions_Runtime
-   * @throws Link_Exceptions_Parser
+   * @throws Link_Exception_Runtime
+   * @throws Link_Exception_Parser
    */
   public function includeTpl($file, $once = false, $type = self::INCLUDE_TPL){
     // -- Parameters extraction
@@ -310,7 +310,7 @@ class Link_Environnement {
       }
 
       $data = $this->pparse($file, $vars);
-    } catch (Link_Exceptions_Parser $e) {
+    } catch (Link_Exception_Parser $e) {
       /*
        * If we encounter error n°6 AND it is a require tag, throws an exception
        * Link_Exceptions_Runtime instead of Link_Exceptions_Parse. If not,
@@ -319,7 +319,7 @@ class Link_Environnement {
        */
       if ($e->getCode() === 6) {
         if ($type == self::REQUIRE_TPL) {
-          throw new Link_Exceptions_Runtime(array('That was a "require" tag ; The template <b>%s</b> not existing,  the script shall then be interrupted.', $file), 7);
+          throw new Link_Exception_Runtime(array('That was a "require" tag ; The template <b>%s</b> not existing,  the script shall then be interrupted.', $file), 7);
           exit;
         }
 
@@ -336,21 +336,21 @@ class Link_Environnement {
    * Getters / Setters
    */
   
-  /** @return Link_Interfaces_Parser */
+  /** @return Link_Interface_Parser */
   public function getParser() {
     return $this->_parser;
   }
 
-  public function setParser(Link_Interfaces_Parser $_parser) {
+  public function setParser(Link_Interface_Parser $_parser) {
     $this->_parser = $_parser;
   }
 
-  /** @return Link_Interfaces_Cache */
+  /** @return Link_Interface_Cache */
   public function getCache() {
     return $this->_cache;
   }
 
-  public function setCache(Link_Interfaces_Cache $_cache) {
+  public function setCache(Link_Interface_Cache $_cache) {
     $this->_cache = $_cache;
   }
   
