@@ -348,7 +348,7 @@ class Link_Parser implements Link_Interface_Parser {
       $qs = sprintf(' . "?%s"', str_replace(array('{', '}'), array('{{', '}}'), $qs));
     }
 
-    return sprintf('<?php $tpl->includeTpl(%1$s%2$s, %3$s, Link_Environnement::%4$s_TPL); ?>',
+    return sprintf('<?php $_env->includeTpl(%1$s%2$s, %3$s, Link_Environnement::%4$s_TPL); ?>',
                    $this->_escape($match[2]), $qs,
                    isset($match[3]) && $match[3] == 'true' ? 'true' : 'false',
                    mb_strtoupper($match[1]));

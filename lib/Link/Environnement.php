@@ -178,7 +178,7 @@ class Link_Environnement {
       $this->_last[$file] = filemtime($file);
     }
 
-    $this->getCache()->file($tpl, 0);
+    $this->getCache()->setKey($tpl);
 
     if (!$this->getCache()->isValid($this->_last[$file]) || !$cache) {
       $this->getCache()->put($this->getParser()->parse(file_get_contents($file)));

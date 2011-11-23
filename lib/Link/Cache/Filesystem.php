@@ -38,7 +38,7 @@ class Link_Cache_Filesystem implements Link_Interface_Cache {
   /** @param string $_dir Directory for the cache */
   public function setDir($_dir = null) {
     if ($_dir === null) {
-      $this->_dir = realpath(sys_get_temp_dir());
+      $this->_dir = sys_get_temp_dir();
       return;
     }
     
@@ -59,7 +59,7 @@ class Link_Cache_Filesystem implements Link_Interface_Cache {
   
   /** @param string $_key key designing the cache */
   public function setKey($_key) {
-    $file = sprintf('%1$s%4$stpl_%2$s.%3$s', $this->getDir(), sha1(trim($_key, '.')), PHP_EXT, DIRECTORY_SEPARATOR);
+    $file = sprintf('%1$s%4$stpl_%2$s.%3$s', $this->getDir(), sha1($_key), PHP_EXT, DIRECTORY_SEPARATOR);
 
     $filemtime = 0;
     $filesize = 0;
