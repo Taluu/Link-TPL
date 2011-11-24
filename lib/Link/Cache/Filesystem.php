@@ -21,8 +21,7 @@ defined('PHP_EXT') || define('PHP_EXT', pathinfo(__FILE__, PATHINFO_EXTENSION));
  * @since 1.4.0
  */
 class Link_Cache_Filesystem implements Link_Interface_Cache {
-  protected
-    $_dir = null;
+  protected $_dir = null;
   
   /**
    * Constructor
@@ -58,13 +57,13 @@ class Link_Cache_Filesystem implements Link_Interface_Cache {
   }
 
   public function getTimestamp($_key) {
-    $file = sprintf('%1$s/link_%2$s.%3$s', $this->getDir(), $_key, PHP_EXT);
+    $file = $this->getFile($_key);
     
     return file_exists($file) ? filemtime($file) : 0;
   }
 
   public function put($_key, $data) {
-    $file = sprintf('%1$s/link_%2$s.%3$s', $this->getDir(), $_key, PHP_EXT);
+    $file = $this->getFile($_key);
     
     // -- Setting a homemade LOCK
     $lockFile = sprintf('%1$s/__link_flock__.%2$s', $this->getDir(), sha1($file));
@@ -83,12 +82,11 @@ class Link_Cache_Filesystem implements Link_Interface_Cache {
   }
 
   public function destroy($_key) {
-    $file = sprintf('%1$s/link_%2$s.%3$s', $this->getDir(), $_key, PHP_EXT);
-    unlink($file);
+    unlink($this->getFile($_key));
   }
 
   public function exec($_key, Link_Environnement $_env, array $_context = array()) {
-    $file = sprintf('%1$s/link_%2$s.%3$s', $this->getDir(), $_key, PHP_EXT);
+    $file = $this->getFile($_key);
     
     if (!file_exists($file)) {
       throw new Link_Exception_Cache('Beware, this file is a ghost... !');
@@ -115,6 +113,16 @@ class Link_Cache_Filesystem implements Link_Interface_Cache {
    */
   public function __invoke($_key, Link_Environnement $_env, array $_context = array()) {
     return $this->exec($_key, $_env, $_context);
+  }
+  
+  /**
+   * Gets the filename for the cache.
+   *  
+   * @param type $_key cache key
+   * @return string
+   */
+  protected function getFile($_key) {
+    return sprintf('%1$s/link_%2$$s.%3$s', $this->getDir(), $_key, PHP_EXT);
   }
 }
 
