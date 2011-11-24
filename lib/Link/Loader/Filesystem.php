@@ -26,6 +26,7 @@ class Link_Loader_Filesystem implements Link_Interface_Loader {
   protected $_dirs = array();
   
   public function __construct($_dirs) {
+    clearstatcache();
     $this->setDirs($_dirs);
   }
   
