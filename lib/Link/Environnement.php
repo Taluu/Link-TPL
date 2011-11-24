@@ -29,7 +29,10 @@ class Link_Environnement {
     $_vars = array(),
     $_references = array(),
 
-     $_autoFilters = array(),
+    $_autoFilters = array(),
+     
+    /** @var Link_Interface_Loader */
+    $_loader = null, 
 
     /** @var Link_Interface_Parser */
     $_parser = null,
@@ -330,9 +333,7 @@ class Link_Environnement {
     echo $data;
   }
 
-  /**#@+
-   * Getters / Setters
-   */
+  /**#@+ Getters / Setters */
   
   /** @return Link_Interface_Parser */
   public function getParser() {
@@ -351,7 +352,16 @@ class Link_Environnement {
   public function setCache(Link_Interface_Cache $_cache) {
     $this->_cache = $_cache;
   }
-  
+
+  /** @return Link_Interface_Loader */
+  public function getLoader() {
+    return $this->_loader;
+  }
+
+  public function setLoader(Link_Interface_Loader $_loader) {
+    $this->_loader = $_loader;
+  }
+
   /**#@-*/
 }
 
