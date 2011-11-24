@@ -22,8 +22,7 @@ defined('PHP_EXT') || define('PHP_EXT', pathinfo(__FILE__, PATHINFO_EXTENSION));
  */
 class Link_Cache_Filesystem implements Link_Interface_Cache {
   protected
-    $_dir = null,
-    $_key = array();
+    $_dir = null;
   
   /**
    * Constructor
