@@ -23,7 +23,9 @@
  * @since 1.4.0
  */
 class Link_Loader_Filesystem implements Link_Interface_Loader {
-  protected $_dirs = array();
+  protected 
+    $_dirs = array(),
+    $_cache = array();
   
   public function __construct($_dirs) {
     clearstatcache();
@@ -52,6 +54,10 @@ class Link_Loader_Filesystem implements Link_Interface_Loader {
   protected function _findFileName($_name) {
     $file = strtr($_name, '\\', '/');
     
+    if (isset($this->_cache[$_name])) {
+      return $this->_cache[$_name];
+    }
+    
     // -- Checking the key name validity...
     $level = 0;
     $parts = explode('/', $file);
@@ -71,6 +77,7 @@ class Link_Loader_Filesystem implements Link_Interface_Loader {
     foreach ($this->_dirs as &$dir) {
       $f = $this->_dirs . '/' . $file;
       if (file_exists($f)) {
+        $this->_cache[$_name] = $f;
         return $f;
       }
     }
@@ -90,6 +97,7 @@ class Link_Loader_Filesystem implements Link_Interface_Loader {
     }
     
     $this->_dirs = array();
+    $this->_cache = array();
     
     foreach ($_dirs as &$dir) {
       $this->addDir($dir);
