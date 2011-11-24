@@ -178,11 +178,9 @@ class Link_Environnement {
       $this->_last[$file] = filemtime($file);
     }
 
-    $this->getCache()->setKey($tpl);
-
-    if (!$this->getCache()->isValid($this->_last[$file]) || !$cache) {
-      $this->getCache()->put($this->getParser()->parse(file_get_contents($file)));
-    }
+    //if (!$this->getCache()->isValid($this->_last[$file]) || !$cache) {
+      $this->getCache()->put($tpl, $this->getParser()->parse(file_get_contents($file)));
+   // }
     
     // -- extracting the references...
     $vars = array_diff_key($this->_vars, array_flip($this->_references));
@@ -196,7 +194,7 @@ class Link_Environnement {
     // -- and, finally, replacing the references...
     $context += array_diff($this->_vars, $vars);
 
-    $this->getCache()->exec($this, $context);
+    $this->getCache()->exec($tpl, $this, $context);
     return true;
   }
 
