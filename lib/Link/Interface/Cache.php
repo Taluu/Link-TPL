@@ -19,42 +19,38 @@
  */
 interface Link_Interface_Cache {
   /**
-   * Sets the current key to work with
-   * 
-   * @param string $_key key designing the cache
-   */
-  public function setKey($_key);
-  
-  /**
-   * Check if the cache file is still valid
+   * Gets the last modified time for the selected key
    *
-   * @param integer $time Last modification's timestamp
-   * @return boolean true if still valid, false if not
+   * @param string $_key key designing the cache
+   * @return integer last modification unix timestamp of the file
    */
-  public function isValid($time);
+  public function getTimestamp($_key);
 
   /**
    * Write the content in the cache file
    *
+   * @param string $_key key designing the cache
    * @param string $data Data to be written
    * @return boolean
    */
-  public function put($data);
+  public function put($_key, $_data);
 
   /**
    * Delete the current cache id.
    *
+   * @param string $_key key designing the cache
    * @return void
    */
-  public function destroy();
+  public function destroy($_key);
 
   /**
    * Fetches & executes the cache content
    *
+   * @param string $_key key designing the cache
    * @param Link_Environnement $_env TPL environnement to be given to the template
    * @param array $_context Local variables to the template
    */
-  public function exec(Link_Environnement $_env, array $_context = array());
+  public function exec($_key, Link_Environnement $_env, array $_context = array());
 }
 
 /*
