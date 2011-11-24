@@ -47,7 +47,7 @@ class Link_Autoloader {
     }
     
     $file = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR;
-    $className = $class;
+    $className = $_class;
 
     // -- checking for namespaces (only for php > 5.3)
     if (($last = strripos($className, '\\')) !== false) {

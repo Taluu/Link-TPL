@@ -39,7 +39,7 @@ interface Link_Interface_Loader {
    * Gets the cache key associated with the object
    * 
    * @param string $_name Name designing the object
-   * @return string Cache key to be used
+   * @return string Cache key to be used, hashed by sha1
    */
   public function getCacheKey($_name);
 }

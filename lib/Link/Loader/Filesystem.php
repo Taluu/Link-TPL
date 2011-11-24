@@ -11,27 +11,26 @@
  * @version $Id$
  */
 
-defined('PHP_EXT') || define('PHP_EXT', pathinfo(__FILE__, PATHINFO_EXTENSION));
-defined('__DIR__') || define('__DIR__', dirname(__FILE__));
-
 /**
  * Filesystem Loader for Link TPL.
  * 
  * Loads a template from the filesystem.
+ * 
+ * This class comes from the Twig project.
  *
  * @package Link
  * @author Baptiste "Talus" Clavié <clavie.b@gmail.com>
  * @since 1.4.0
  */
 class Link_Loader_Filesystem implements Link_Interface_Loader {
-  protected $_dir;
+  protected $_dirs = array();
   
-  public function __construct($_dir) {
-    $this->setDir($_dir);
+  public function __construct($_dirs) {
+    $this->setDirs($_dirs);
   }
   
   public function getCacheKey($_name) {
-    return $this->findFileName($_name);
+    return sha1($this->findFileName($_name));
   }
     
   public function getSource($_name) {
@@ -50,23 +49,66 @@ class Link_Loader_Filesystem implements Link_Interface_Loader {
    * @throws Link_Exception_Loader if the file is not found or not accessible
    */
   protected function _findFileName($_name) {
+    $file = strtr($_name, '\\', '/');
     
-  }
-  
-  /** @param string $_dir directory to use **/
-  public function setDir($_dir) {
-    $dir = realpath($_dir);
+    // -- Checking the key name validity...
+    $level = 0;
+    $parts = explode('/', $file);
     
-    if ($dir === false) {
-      throw new Link_Exception_Loader('The directory ' . $_dir . ' does not exist...');
+    foreach ($parts as &$part) {
+      if ($part == '..') {
+        --$level;
+      } elseif ($part != '.') {
+        ++$level;
+      }
+      
+      if ($level < 0) {
+        throw new Link_Exception_Loader('You may not access a template outside its directory.');
+      }
     }
     
-    $this->_dir = $dir;
+    foreach ($this->_dirs as &$dir) {
+      $f = $this->_dirs . '/' . $file;
+      if (file_exists($f)) {
+        return $f;
+      }
+    }
+    
+    throw new Link_Exception_Loader('The template ' . $_name . ' does not seem to exist.');
   }
   
-  /** @return string directory used **/
-  public function getDir() {
-    return $this->_dir;
+  /** @return array directories used **/
+  public function getDirs() {
+    return $this->_dirs;
+  }
+  
+  /** @param string|array $_dirs directories to use **/
+  public function setDirs($_dirs) {
+    if (!is_array($_dirs)) {
+      $_dirs = array($_dirs);
+    }
+    
+    $this->_dirs = array();
+    
+    foreach ($_dirs as &$dir) {
+      $this->addDir($dir);
+    }
+  }
+  
+  /**
+   * Adds a directory to the list of directories
+   * 
+   * @param string $_dir Directory to add
+   * @throws Link_Exception_Loader
+   */
+  public function addDir($_dir) {
+    $dir = rtrim(strtr($_dir, '\\', '/'), '/');
+    
+    if (!is_dir($_dir)) {
+      throw new Link_Exception_Loader('The directory ' . $_dir . ' does not seem to exist.');
+    }
+    
+    $this->_dirs[] = $dir;
   }
 }
 
