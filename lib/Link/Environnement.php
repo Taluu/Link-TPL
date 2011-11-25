@@ -28,6 +28,8 @@ class Link_Environnement {
     $_references = array(),
 
     $_autoFilters = array(),
+    
+    $_forceReload = false,
      
     /** @var Link_Interface_Loader */
     $_loader = null, 
@@ -49,6 +51,10 @@ class Link_Environnement {
    * Available options :
    *  - dependencies : Handle the dependencies (parser, ...). Each of these must
    *                   be an object.
+   * 
+   *  - force_reload : Whether or not the cache should be reloaded each time it
+   *                   is called, the object being up to date or not. default to
+   *                   `false`.
    *
    * @param Link_Interface_Loader $_loader Loader to use
    * @param Link_Interface_Cache $_cache Cache engine used
@@ -60,15 +66,20 @@ class Link_Environnement {
     $defaults = array(
       'dependencies' => array(
         'parser' => null
-       )
+       ),
+      
+      'force_reload' => false
      );
 
-    $_options = array_replace_recursive($defaults, $_options);
+    $options = array_replace_recursive($defaults, $_options);
 
     // -- Dependency Injection
-    $this->setParser($_options['dependencies']['parser'] !== null ? $_options['dependencies']['parser'] : new Link_Parser);
+    $this->setParser($options['dependencies']['parser'] !== null ? $options['dependencies']['parser'] : new Link_Parser);
     $this->setCache($_cache !== null ? $_cache : new Link_Cache_Filesystem);
     $this->setLoader($_loader);
+    
+    // -- Options treatment
+    $this->_forceReload = (bool) $options['force_reload'];
   }
 
   /**
@@ -144,7 +155,7 @@ class Link_Environnement {
     // -- Calling the cache...
     $cache = $this->getLoader()->getCacheKey($_tpl);
 
-    if ($this->getLoader()->isFresh($_tpl, $this->getCache()->getTimestamp($cache))) {
+    if ($this->getForceReload() === true || $this->getLoader()->isFresh($_tpl, $this->getCache()->getTimestamp($cache))) {
       $this->getCache()->put($_tpl, $this->getParser()->parse($this->getLoader()->getSource($_tpl)));
     }
 
@@ -252,7 +263,7 @@ class Link_Environnement {
     echo $data;
   }
 
-  /**#@+ Getters / Setters */
+  /**#@+ Accessors */
   
   /** @return Link_Interface_Parser */
   public function getParser() {
@@ -279,6 +290,24 @@ class Link_Environnement {
 
   public function setLoader(Link_Interface_Loader $_loader) {
     $this->_loader = $_loader;
+  }
+  
+  /** @return bool */
+  public function getForceReload() {
+    return $this->_forceReload;
+  }
+  
+  /** @param bool $_reload */
+  public function setForceReload($_reload = false) {
+    $this->_forceReload = (bool) $_reload;
+  }
+  
+  public function enableForceReload() {
+    $this->setForceReload(true);
+  }
+  
+  public function disableForceReload() {
+    $this->setForceReload(false);
   }
 
   /**#@-*/
