@@ -21,8 +21,6 @@ defined('E_USER_DEPRECATED') || define('E_USER_DEPRECATED', E_USER_NOTICE);
  */
 class Link_Environnement {
   protected
-    $_root = null,
-
     $_last = array(),
     $_included = array(),
 
@@ -52,15 +50,12 @@ class Link_Environnement {
    *  - dependencies : Handle the dependencies (parser, ...). Each of these must
    *                   be an object.
    *
-   * @param string $root Directory where the templates files are.
+   * @param Link_Interface_Loader $_loader Loader to use
    * @param Link_Interface_Cache $_cache Cache engine used
    * @param array $_options Options for the templating engine
    * @return void
    */
-  public function __construct($root, Link_Interface_Cache $_cache = null, array $_options = array()){
-    // -- Resetting the PHP cache concerning the files' information.
-    clearstatcache();
-
+  public function __construct(Link_Interface_Loader $_loader, Link_Interface_Cache $_cache = null, array $_options = array()){
     // -- Options
     $defaults = array(
       'dependencies' => array(
@@ -73,33 +68,7 @@ class Link_Environnement {
     // -- Dependency Injection
     $this->setParser($_options['dependencies']['parser'] !== null ? $_options['dependencies']['parser'] : new Link_Parser);
     $this->setCache($_cache !== null ? $_cache : new Link_Cache_Filesystem);
-
-    $this->dir($root);
-  }
-
-  /**
-   * Set the templates directory.
-   *
-   * @param string $root Directory containing the original templates.
-   * @throws Link_Exception
-   * @return void
-   *
-   * @since 1.7.0
-   */
-  public function dir($root = null) {
-    if ($root === null) {
-      $root = $this->_root;
-    }
-
-    // -- Removing the final "/", if it's there.
-    $root = rtrim($root, '/');
-
-    if (!is_dir($root)) {
-      throw new Link_Exception(array('%s is not a directory.', $root), 1);
-      return;
-    }
-
-    $this->_root = $root;
+    $this->setLoader($_loader);
   }
 
   /**
@@ -156,77 +125,32 @@ class Link_Environnement {
   /**
    * Parse and execute the Template $tpl.
    *
-   * If $tpl is an array of files, all the files will be parsed.
-   *
-   * @param mixed $tpl TPL to be parsed & executed
+   * @param mixed $_tpl TPL to be parsed & executed
    * @param array $_context Local variables to be given to the template
-   * @param mixed $cache If the cache exists, erase it only if not fresh
    * @throws Link_Exception_Parser
    * @return bool
    */
-  public function parse($tpl, array $_context = array(), $cache = true){
-    if (strlen((string) $tpl) === 0) {
-      throw new Link_Exception_Parser('No template to be parsed.', 5);
-      return false;
-    }
-
-    $file = sprintf('%1$s/%2$s', $this->_root, $tpl);
-
-    if (!isset($this->_last[$file])) {
-      if (!is_file($file)) {
-        throw new Link_Exception_Parser(array('The template <b>%s</b> doesn\'t exist.', $tpl), 6);
-        return false;
-      }
-
-      $this->_last[$file] = filemtime($file);
-    }
-
-    //if (!$this->getCache()->isValid($this->_last[$file]) || !$cache) {
-      $this->getCache()->put($tpl, $this->getParser()->parse(file_get_contents($file)));
-   // }
-    
-    // -- extracting the references...
+  public function parse($_tpl, array $_context = array()){
+    // -- Applying the auto filters...
     $vars = array_diff_key($this->_vars, array_flip($this->_references));
     $context = array_replace_recursive($vars, $_context);
     
-    // -- Applying the filters...
     foreach ($this->_autoFilters as &$filter) {
       array_walk_recursive($context, array($this->getParser()->parameter('filters'), $filter));
     }
     
-    // -- and, finally, replacing the references...
     $context += array_diff($this->_vars, $vars);
+    
+    // -- Calling the cache...
+    $cache = $this->getLoader()->getCacheKey($_tpl);
 
-    $this->getCache()->exec($tpl, $this, $context);
+    if ($this->getLoader()->isFresh($_tpl, $this->getCache()->getTimestamp($cache))) {
+      $this->getCache()->put($_tpl, $this->getParser()->parse($this->getLoader()->getSource($_tpl)));
+    }
+
+    $this->getCache()->exec($cache, $this, $context);
+
     return true;
-  }
-
-  /**
-   * Parse & execute a string
-   *
-   * @param string $str String to parse
-   * @param array $_context Local variables to be given to the template
-   * @param bool $exec Execute the result ?
-   * @throws Link_Exception_Parser
-   * @return string PHP Code generated
-   */
-  public function str($str, array $_context = array(), $exec = true) {
-    if (empty($str)) {
-      return '';
-    }
-
-    // -- Compilation
-    $compiled = $this->getParser()->parse($str);
-
-    // -- Cache if need to be executed. Will be destroyed right after the execution
-    if ($exec === true) {
-      $this->getCache()->file(sprintf('tmp_%s.html', sha1($str)), 0);
-      $this->getCache()->put($compiled);
-      $this->getCache()->exec($this, $_context);
-      $this->getCache()->destroy();
-    }
-
-    return $compiled;
   }
 
   /**
@@ -274,48 +198,43 @@ class Link_Environnement {
    * @throws Link_Exception_Parser
    */
   public function includeTpl($file, $once = false, $type = self::INCLUDE_TPL){
-    // -- Parameters extraction
-    $qString = '';
+    $data = '';
+    $vars = array();
+    
+    try {
+      // -- Parameters extraction
+      $qString = '';
 
-    if (strpos($file, '?') !== false) {
-      list($file, $qString) = explode('?', $file, 2);
-    }
-
-    /*
-     * If the file have to be included only once, checking if it was not already
-     * included.
-     *
-     * If it was, we're not treating it ; If not, we add it to the stack.
-     */
-    if ($once){
-      $toInclude = sprintf('%1$s/%2$s', $this->_root, $file);
-
-      if (in_array($toInclude, $this->_included)) {
-        return;
+      if (strpos($file, '?') !== false) {
+        list($file, $qString) = explode('?', $file, 2);
       }
 
-      $this->_included[] = $toInclude;
-    }
-    
-    $vars = array();
+      /*
+       * If the file have to be included only once, checking if it was not already
+       * included.
+       *
+       * If it was, we're not treating it ; If not, we add it to the stack.
+       */
+      if ($once && in_array($this->getLoader()->getCacheKey($file), $this->_included)){
+        $this->_included[] = $this->getLoader()->getCacheKey($file);
+      }
 
-    try {
       // -- Adding new variables only if there is a QS
       if (!empty($qString)) {
         parse_str($qString, $vars);
 
-        // -- If MAGIC_QUOTES is ON (grmph), Removing the \s...
+        // -- If MAGIC_QUOTES is ON (grmph), Removing the slashes...
         if (function_exists('get_magic_quotes_gpc') && get_magic_quotes_gpc()) {
           $vars = array_map('stripslashes', $vars);
         }
       }
 
       $data = $this->pparse($file, $vars);
-    } catch (Link_Exception_Parser $e) {
+    } catch (Link_Exception_Loader $e) {
       /*
        * If we encounter error n°6 AND it is a require tag, throws an exception
        * Link_Exceptions_Runtime instead of Link_Exceptions_Parse. If not,
-       * and still a nÂ°6 error, printing the error message, or else throwing this
+       * and still a n°6 error, printing the error message, or else throwing this
        * error back.
        */
       if ($e->getCode() === 6) {
