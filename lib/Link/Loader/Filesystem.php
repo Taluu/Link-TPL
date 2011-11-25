@@ -100,24 +100,40 @@ class Link_Loader_Filesystem implements Link_Interface_Loader {
     $this->_cache = array();
     
     foreach ($_dirs as &$dir) {
-      $this->addDir($dir);
+      $this->appendDir($dir);
     }
   }
   
   /**
-   * Adds a directory to the list of directories
+   * Appends a directory to the list of directories
    * 
    * @param string $_dir Directory to add
    * @throws Link_Exception_Loader
    */
-  public function addDir($_dir) {
+  public function appendDir($_dir) {
     $dir = rtrim(strtr($_dir, '\\', '/'), '/');
     
-    if (!is_dir($_dir)) {
+    if (!is_dir($dir)) {
       throw new Link_Exception_Loader('The directory ' . $_dir . ' does not seem to exist.');
     }
     
     $this->_dirs[] = $dir;
+  }
+  
+  /**
+   * Prepends a directory on the top of the pile
+   * 
+   * @param type $_dir 
+   */
+  public function prependDir($_dir) {
+    $dir = rtrim(strtr($_dir, '\\', '/'), '/');
+    
+    if (!is_dir($dir)) {
+      throw new Link_Exception_Loader('The directory ' . $_dir . ' does not seem to exist.');
+    }
+    
+    $this->_cache = array();
+    array_unshift($this->_dirs, $dir);
   }
 }
 
