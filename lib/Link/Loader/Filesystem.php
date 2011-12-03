@@ -33,7 +33,7 @@ class Link_Loader_Filesystem implements Link_Interface_Loader {
   }
   
   public function getCacheKey($_name) {
-    return sha1($this->findFileName($_name));
+    return sha1($this->_findFileName($_name));
   }
     
   public function getSource($_name) {
@@ -75,7 +75,7 @@ class Link_Loader_Filesystem implements Link_Interface_Loader {
     }
     
     foreach ($this->_dirs as &$dir) {
-      $f = $this->_dirs . '/' . $file;
+      $f = $dir . '/' . $file;
       if (file_exists($f)) {
         $this->_cache[$_name] = $f;
         return $f;
