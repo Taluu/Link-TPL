@@ -156,7 +156,7 @@ class Link_Environnement {
     $cache = $this->getLoader()->getCacheKey($_tpl);
 
     if ($this->getForceReload() === true || $this->getLoader()->isFresh($_tpl, $this->getCache()->getTimestamp($cache))) {
-      $this->getCache()->put($_tpl, $this->getParser()->parse($this->getLoader()->getSource($_tpl)));
+      $this->getCache()->put($cache, $this->getParser()->parse($this->getLoader()->getSource($_tpl)));
     }
 
     $this->getCache()->exec($cache, $this, $context);
