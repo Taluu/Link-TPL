@@ -121,7 +121,7 @@ class Link_Parser implements Link_Interface_Parser {
 
     // -- Inclusions
     if ($this->_parse & self::INCLUDES) {
-      $script = preg_replace_callback('`<(include|require) tpl="(.+?)(?=(?<!\\)")"(?: once="(true|false)")? />`', array($this, '_includes'), $script);
+      $script = preg_replace_callback('`<(include|require) tpl="(.+?)(?=(?<!\\\)")"(?: once="(true|false)")? />`', array($this, '_includes'), $script);
     }
 
     // -- <foreach> tags
@@ -187,8 +187,8 @@ class Link_Parser implements Link_Interface_Parser {
     // -- Conditions tags (<if>, <elseif />, <else />)
     if ($this->_parse & self::CONDITIONS) {
       $not_recursives = array_merge($not_recursives, array(
-        '`<if cond(?:ition)?="(.+?)(?=(?<!\\)">)">`' => '<?php if ($1) : ?>',
-        '`<el(?:se)?if cond(?:ition)?="(.+?)(?=(?<!\\)" />)" />`' => '<?php elseif ($1) : ?>'
+        '`<if cond(?:ition)?="(.+?)(?=(?<!\\\)">)">`' => '<?php if ($1) : ?>',
+        '`<el(?:se)?if cond(?:ition)?="(.+?)(?=(?<!\\\)" />)" />`' => '<?php elseif ($1) : ?>'
        ));
 
       $noRegex['<else />'] = '<?php else : ?>';

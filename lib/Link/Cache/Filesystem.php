@@ -122,7 +122,7 @@ class Link_Cache_Filesystem implements Link_Interface_Cache {
    * @return string
    */
   protected function getFile($_key) {
-    return sprintf('%1$s/link_%2$$s.%3$s', $this->getDir(), $_key, PHP_EXT);
+    return sprintf('%1$s/link_%2$s.%3$s', $this->getDir(), $_key, PHP_EXT);
   }
 }
 
