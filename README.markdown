@@ -11,4 +11,4 @@ It is still in french though ; the english version should "one day" be made (ple
 
 About this project...
 ---------------------
-This project was initiated as a fork "from scratch" from the templating engine of the [Fire Soft Board](http://www.fire-soft-board.com) project. It also has some stuff inspired from the PHPBB3 and Django's templating engines.
+This project was initiated as a fork "from scratch" from the templating engine of the [Fire Soft Board](http://www.fire-soft-board.com) project. It also has some stuff inspired from the [Twig]{https://github.com/fabpot/Twig}, [PHPBB3]{https://github.com/phpbb/phpbb3} and [Django]{https://github.com/django/django}'s templating engines.

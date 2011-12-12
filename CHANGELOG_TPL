@@ -40,6 +40,7 @@
   #DEL : Possibility of definings several auto filters in one go
 
   #FIX : array_replace_recursive stub is now working properly (Ticket #45)
+  #FIX : foreaches on arrays with keys not working properly (Ticket #49)
 
 ## 1.11 ==> 1.12 (Release: 15/09/11)
   #WAR : Almost every class had its name changed !
