@@ -82,7 +82,7 @@ class Link_Loader_Filesystem implements Link_Interface_Loader {
       }
     }
     
-    throw new Link_Exception_Loader('The template ' . $_name . ' does not seem to exist.');
+    throw new Link_Exception_Loader('The template ' . $_name . ' does not seem to exist.', 6);
   }
   
   /** @return array directories used **/
