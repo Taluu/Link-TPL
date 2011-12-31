@@ -252,7 +252,6 @@ class Link_Environnement {
         }
 
         echo $e->getMessage();
-        $this->_currentContext = $oldContext;
       } else {
         throw $e;
       }
