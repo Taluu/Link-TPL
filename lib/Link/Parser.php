@@ -381,7 +381,7 @@ class Link_Parser implements Link_Interface_Parser {
     if (method_exists($this, 'set' . lcfirst($_param))) {
       $method = 'set' . lcfirst($_param);
       
-      return $this->$method($_value);
+      $this->$method($_value);
     }
   }
   
