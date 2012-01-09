@@ -257,7 +257,6 @@ class Link_Environnement {
       if ($e->getCode() === 6) {
         if ($type == self::REQUIRE_TPL) {
           throw new Link_Exception_Runtime(array('That was a "require" tag ; The template <b>%s</b> not existing,  the script shall then be interrupted.', $file), 7);
-          exit;
         }
 
         echo $e->getMessage();
