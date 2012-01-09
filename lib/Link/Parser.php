@@ -74,9 +74,9 @@ class Link_Parser implements Link_Interface_Parser {
 
     $options = array_replace_recursive($defaults, $_options);
 
-    $this->_compact = $options['compact'];
-    $this->_filters = $options['filters'];
-    $this->_parse = $options['parse'];
+    $this->_compact = (bool) $options['compact'];
+    $this->setFilters($options['filters']);
+    $this->setParse($options['parse']);
   }
 
   /**
@@ -396,6 +396,10 @@ class Link_Parser implements Link_Interface_Parser {
 
   /** @param string $filters **/
   public function setFilters($filters) {
+    if (!class_exists($filters)) {
+      throw new Link_Exception_Parser('The selected filter class `' . $filters . '` does not exist');
+    }
+    
     $this->_filters = $filters;
   }
 
@@ -406,17 +410,12 @@ class Link_Parser implements Link_Interface_Parser {
 
   /** @param int **/
   public function setParse($parse) {
-    $this->_parse = $parse;
+    $this->_parse = (int) $parse;
   }
   
   /** @return bool **/
   public function getCompact() {
     return $this->_compact;
-  }
-
-  /** @param bool $compact **/
-  public function setCompact($compact) {
-    $this->_compact = $compact;
   }
   
   public function enableCompact() {
