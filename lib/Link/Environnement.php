@@ -111,7 +111,11 @@ class Link_Environnement {
    * @since 1.9.0
    */
   public function autoFilters($name) {
-    if (!method_exists($this->getParser()->parameter('filters'), $name)) {
+    if (!$this->getParser()->hasParameter('filters')) { // filters not parsed...
+      return;
+    }
+    
+    if (!method_exists($this->getParser()->getParameter('filters'), $name)) {
       throw new Link_Exception(array('The filter %s doesn\'t exist...', $name), 404);
     }
 
@@ -146,8 +150,10 @@ class Link_Environnement {
     $vars = array_diff_key($this->_vars, array_flip($this->_references));
     $context = array_replace_recursive($vars, $_context);
     
-    foreach ($this->_autoFilters as &$filter) {
-      array_walk_recursive($context, array($this->getParser()->parameter('filters'), $filter));
+    if ($this->getParser()->hasParameter('filters')) {
+      foreach ($this->_autoFilters as &$filter) {
+        array_walk_recursive($context, array($this->getParser()->parameter('filters'), $filter));
+      }
     }
     
     $context += array_diff($this->_vars, $vars);

@@ -80,28 +80,6 @@ class Link_Parser implements Link_Interface_Parser {
   }
 
   /**
-   * Accessor for a given parameter
-   *
-   * @param string $param Parameter's name
-   * @param mixed $value Parameter's value (if setter)
-   * @return mixed Parameter's value
-   */
-  public function parameter($param, $value = null) {
-    if (!property_exists($this, '_' . $param)) {
-      return null;
-    }
-
-    $param = '_' . $param;
-    $param = &$this->$param;
-
-    if ($value !== null) {
-      $param = $value;
-    }
-
-    return $param;
-  }
-
-  /**
    * Transform a TPL syntax towards an optimized PHP syntax
    *
    * @param string $script TPL script to parse
@@ -386,6 +364,70 @@ class Link_Parser implements Link_Interface_Parser {
 
     return $arg;
   }
+  
+  /** @#+ Getters */
+  
+  public function getParameter($_param) {
+    if (method_exists($this, 'get' . lcfirst($_param))) {
+      $method = 'get' . lcfirst($_param);
+      
+      return $this->$method();
+    }
+    
+    return null;
+  }
+  
+  public function setParameter($_param, $_value) {
+    if (method_exists($this, 'set' . lcfirst($_param))) {
+      $method = 'set' . lcfirst($_param);
+      
+      return $this->$method($_value);
+    }
+  }
+  
+  public function hasParameter($name) {
+    return in_array($name, array('compact', 'filters', 'parse'));
+  }
+
+  /** @return string **/
+  public function getFilters() {
+    return $this->_filters;
+  }
+
+  /** @param string $filters **/
+  public function setFilters($filters) {
+    $this->_filters = $filters;
+  }
+
+  /** @return int **/
+  public function getParse() {
+    return $this->_parse;
+  }
+
+  /** @param int **/
+  public function setParse($parse) {
+    $this->_parse = $parse;
+  }
+  
+  /** @return bool **/
+  public function getCompact() {
+    return $this->_compact;
+  }
+
+  /** @param bool $compact **/
+  public function setCompact($compact) {
+    $this->_compact = $compact;
+  }
+  
+  public function enableCompact() {
+    $this->_compact = true;
+  }
+  
+  public function disableCompact() {
+    $this->_compact = false;
+  }
+
+  /** @#- */
 }
 
 /** EOF /**/
