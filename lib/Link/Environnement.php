@@ -26,6 +26,7 @@ class Link_Environnement {
 
     $_vars = array(),
     $_references = array(),
+    $_currentContext = array(),
 
     $_autoFilters = array(),
     
@@ -164,7 +165,8 @@ class Link_Environnement {
     if ($this->getForceReload() === true || $this->getLoader()->isFresh($_tpl, $this->getCache()->getTimestamp($cache))) {
       $this->getCache()->put($cache, $this->getParser()->parse($this->getLoader()->getSource($_tpl)));
     }
-
+    
+    $this->_currentContext = $context;
     $this->getCache()->exec($cache, $this, $context);
 
     return true;
@@ -216,27 +218,20 @@ class Link_Environnement {
    */
   public function includeTpl($file, $once = false, $type = self::INCLUDE_TPL){
     $data = '';
+    $oldContext = $this->_currentContext;
     $vars = array();
     
     try {
-      // -- Parameters extraction
       $qString = '';
 
       if (strpos($file, '?') !== false) {
         list($file, $qString) = explode('?', $file, 2);
       }
 
-      /*
-       * If the file have to be included only once, checking if it was not already
-       * included.
-       *
-       * If it was, we're not treating it ; If not, we add it to the stack.
-       */
       if ($once && in_array($this->getLoader()->getCacheKey($file), $this->_included)){
         $this->_included[] = $this->getLoader()->getCacheKey($file);
       }
 
-      // -- Adding new variables only if there is a QS
       if (!empty($qString)) {
         parse_str($qString, $vars);
 
@@ -245,18 +240,21 @@ class Link_Environnement {
           $vars = array_map('stripslashes', $vars);
         }
       }
-
-      $data = $this->pparse($file, $vars);
+      
+      $data = $this->pparse($file, array_replace_recursive($oldContext, $vars));
     } catch (Link_Exception_Loader $e) {
+      $this->_currentContext = $oldContext;
+      
       /*
        * If we encounter error n°6 AND it is a require tag, throws an exception
-       * Link_Exceptions_Runtime instead of Link_Exceptions_Parse. If not,
-       * and still a n°6 error, printing the error message, or else throwing this
-       * error back.
+       * Link_Exceptions_Runtime instead of Link_Exceptions_Loader. If not, and
+       * it is still the error n°6, it prints the error message. 
+       * 
+       * Otherwise, the error will be throwed back.
        */
       if ($e->getCode() === 6) {
         if ($type == self::REQUIRE_TPL) {
-          throw new Link_Exception_Runtime(array('That was a "require" tag ; The template <b>%s</b> not existing,  the script shall then be interrupted.', $file), 7);
+          throw new Link_Exception_Runtime(array('The template <b>%s</b> does not exist ; Being in a require tag, the script shall then be interrupted.', $file), 7);
         }
 
         echo $e->getMessage();
@@ -265,6 +263,7 @@ class Link_Environnement {
       }
     }
 
+    $this->_currentContext = $oldContext;
     echo $data;
   }
 

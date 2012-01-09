@@ -2,7 +2,7 @@ Link TPL
 ==========
 A templating engine in PHP, using a XML syntax like, and a parser based on PCREs.
 
-**Requires** at least *PHP 5.1*, because of the utilisation of the Standard PHP Library and several object specifications available only since 5.1. Compatible PHP 5.2 and PHP 5.3.
+**Requires** at least *PHP 5.2.1*, because of the utilisation of the Standard PHP Library and several object specifications available only since 5.2.1. Compatible PHP 5.3.
 
 Documentation
 -------------
@@ -11,4 +11,4 @@ It is still in french though ; the english version should "one day" be made (ple
 
 About this project...
 ---------------------
-This project was initiated as a fork "from scratch" from the templating engine of the [Fire Soft Board](http://www.fire-soft-board.com) project. It also has some stuff inspired from the [Twig](https://github.com/fabpot/Twig), [PHPBB3](https://github.com/phpbb/phpbb3) and [Django](https://github.com/django/django)'s templating engines.
+This project was initiated as a fork "from scratch" from the templating engine of the [Fire Soft Board](http://www.fire-soft-board.com) project. It also has some stuff inspired from the [Twig](https://github.com/fabpot/Twig)'s, [PHPBB3](https://github.com/phpbb/phpbb3)'s and [Django](https://github.com/django/django)'s templating engines.
