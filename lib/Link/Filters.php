@@ -288,6 +288,21 @@ class Link_Filters {
   public static function void($arg) {
     return $arg;
   }
+  
+  /**
+   * Sets a default value for $arg if it's empty, false, ... etc
+   * 
+   * @param mixed $arg Variable
+   * @param mixed $default default value
+   * @return mixed default value if variable is empty, variables value otherwise 
+   */
+  public static function defaults($arg, $default = '') {
+    if (!$arg) {
+      return $default;
+    }
+    
+    return $arg;
+  }
 }
 
 /** EOF /**/
