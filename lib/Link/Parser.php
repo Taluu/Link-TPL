@@ -377,7 +377,7 @@ class Link_Parser implements Link_Interface_Parser {
     return null;
   }
   
-  public function setParameter($_param, $_value) {
+  public function setParameter($_param, $_value = null) {
     if (method_exists($this, 'set' . lcfirst($_param))) {
       $method = 'set' . lcfirst($_param);
       
