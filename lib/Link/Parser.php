@@ -92,7 +92,7 @@ class Link_Parser implements Link_Interface_Parser {
     // -- Filter's transformations
     if ($this->_parse & self::FILTERS) {
       $matches = array();
-      while (preg_match('`\{(\$?' . self::REGEX_PHP_ID . '(?:\.val(?:ue)?' . self::REGEX_PHP_SUFFIX . '|key|current|size|' . self::REGEX_PHP_SUFFIX . ')?)\|((?:' . self::REGEX_PHP_ID . '(?::\{\$' . self::REGEX_PHP_ID . self::REGEX_PHP_SUFFIX . '}|[^|}]+?)*\|?)+)}`', $script, $matches)) {
+      while (preg_match('`\{(\$?' . self::REGEX_PHP_ID . '(?:(?:\.val(?:ue)?)?' . self::REGEX_PHP_SUFFIX . '|\.(?:key|cur(?:rent)?|size))?)\|((?:' . self::REGEX_PHP_ID . '(?::\{\$' . self::REGEX_PHP_ID . self::REGEX_PHP_SUFFIX . '}|[^|}]+?)*\|?)+)}`', $script, $matches)) {
         $script = str_replace($matches[0], $this->_filters($matches[1], $matches[2]), $script);
       }
     }
