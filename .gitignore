@@ -1,3 +1,6 @@
+#ignore .git files
+.git*
+
 #Ignore the .ignore directory
 .ignore/
 
