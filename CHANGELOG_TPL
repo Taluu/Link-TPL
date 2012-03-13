@@ -15,6 +15,7 @@
   #WAR : PHP 5.2.1 is now needed
   #WAR : All classes were renamed... again !
 
+  #ADD : Now compliant with Composer and Packagist
   #ADD : Added a cache that.... does not cache anything
   #ADD : Added a possibility to force the reloading of the cache
   #ADD : Context variables -- Variables available only in the declared template
@@ -28,9 +29,9 @@
   #CHG : While moving the file cache, its method have also changed
   #CHG : Altering the mechanism of applying auto filters on variables
   #CHG : Now, the filesystem cache have a proper name and is in a proper dir
+  #CHG : Simplification of the include / require tags and condition tags patterns
   #CHG : Externalizing the autoload mechanism into a brand new class (Autoloader)
   #CHG : Fitting of the array_replace_recrusive stub with the native implementation
-  #CHG : Simplification of the include / require tags and condition tags partterns
 
   #DEL : Attribute $_filterClass
   #DEL : Dependency Injection method (useless)
