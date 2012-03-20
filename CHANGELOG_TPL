@@ -15,6 +15,7 @@
   #WAR : PHP 5.2.1 is now needed
   #WAR : All classes were renamed... again !
 
+  #ADD : PHPUnit tests. More tests coming soon :)
   #ADD : Now compliant with Composer and Packagist
   #ADD : Added a cache that.... does not cache anything
   #ADD : Added a possibility to force the reloading of the cache
@@ -27,6 +28,7 @@
   #CHG : Renaming the Engine class to Environnement
   #CHG : Now, the exceptions and interfaces parts are singular
   #CHG : While moving the file cache, its method have also changed
+  #CHG : The Autoloader::load() method is now public (from protected)
   #CHG : Altering the mechanism of applying auto filters on variables
   #CHG : Now, the filesystem cache have a proper name and is in a proper dir
   #CHG : Simplification of the include / require tags and condition tags patterns
