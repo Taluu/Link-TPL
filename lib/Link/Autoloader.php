@@ -29,11 +29,11 @@ defined('__DIR__') || define('__DIR__', dirname(__FILE__));
  */
 class Link_Autoloader {
   static public function register() {
-    spl_autoload_register(array('self', '_load'));
+    spl_autoload_register(array('self', 'load'));
   }
   
   static public function unregister() {
-    spl_autoload_unregister(array('self', '_load'));
+    spl_autoload_unregister(array('self', 'load'));
   }
   
   /**
@@ -41,7 +41,7 @@ class Link_Autoloader {
    *  
    * @param string $_class class to be loaded
    */
-  static private function _load($_class) {
+  static public function load($_class) {
     if (strpos($_class, 'Link') !== 0) {
       return false;
     }
