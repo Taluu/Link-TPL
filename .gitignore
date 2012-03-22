@@ -1,8 +1,4 @@
-#ignore .git files
-.git*
-
-#Ignore the .ignore directory
 .ignore/
-
-#netbeans project directory
 nbproject/
+/composer.phar
+/vendor
