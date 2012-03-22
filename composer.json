@@ -18,10 +18,17 @@
   "require": {
       "php": ">=5.2.1"
     },
+    
+    "repositories": [
+      {
+          "type": "vcs",
+          "url": "https://github.com/Taluu/Link-TPL"
+      }
+     ],
 
-  "autoload": {
-      "psr-0": {
-          "Link_": "lib/"
-        }
-    }
+    "autoload": {
+        "psr-0": {
+            "Link_": "lib/"
+          }
+     }
 }
