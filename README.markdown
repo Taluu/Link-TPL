@@ -2,7 +2,7 @@ Link TPL
 ==========
 A templating engine in PHP, using a XML syntax like, and a parser based on PCREs.
 
-**Requires** at least *PHP 5.2.1*, because of the utilisation of the Standard PHP Library and several object specifications available only since 5.2.1. Compatible PHP 5.3.
+**Requires** at least *PHP 5.2.1*, because of the utilisation of the Standard PHP Library and several object specifications available only since 5.2.1. Compatible PHP 5.3 and 5.4.
 
 [![Build Status](https://secure.travis-ci.org/Taluu/Link-TPL.png?branch=master)](http://travis-ci.org/Taluu/Link-TPL)
 
