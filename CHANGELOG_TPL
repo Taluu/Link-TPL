@@ -10,7 +10,7 @@
  * @version $Id$
  */
 
-## 1.12 ==> 1.13 (Release: ??/??/??)
+## 1.12 ==> 1.13 (Release: ??/??/12)
   #WAR : COMPATIBILITY BROKEN
   #WAR : PHP 5.2.1 is now needed
   #WAR : All classes were renamed... again !
@@ -44,6 +44,7 @@
 
   #FIX : array_replace_recursive stub is now working properly (Ticket #45)
   #FIX : foreaches on arrays with keys not working properly (Ticket #49)
+  #FIX : the ceil filter was not acting as expected (Ticket #54)
 
 ## 1.11 ==> 1.12 (Release: 15/09/11)
   #WAR : Almost every class had its name changed !
