@@ -45,6 +45,7 @@
   #FIX : array_replace_recursive stub is now working properly (Ticket #45)
   #FIX : foreaches on arrays with keys not working properly (Ticket #49)
   #FIX : the ceil filter was not acting as expected (Ticket #54)
+  #FIX : Invalid encoding given for mbstring in several filters (Ticket #55)
 
 ## 1.11 ==> 1.12 (Release: 15/09/11)
   #WAR : Almost every class had its name changed !
