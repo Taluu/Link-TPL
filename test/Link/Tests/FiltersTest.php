@@ -28,15 +28,30 @@ class Link_Tests_FiltersTest extends PHPUnit_Framework_TestCase {
   }
   
   public function testProtect() {
-    //$this->assertEquals('', $actual, $message)
+    $str = 'once upon a \'time\' there was a <little> "llama" & a giant panda.';
     
+    $this->assertEquals('once upon a \'time\' there was a &lt;little&gt; &quot;llama&quot; &amp; a giant panda.', Link_Filters::protect($str));
+    $this->assertEquals('once upon a &#039;time&#039; there was a &lt;little&gt; &quot;llama&quot; &amp; a giant panda.', Link_Filters::protect($str, ENT_QUOTES));
+    $this->assertEquals('once upon a \'time\' there was a &lt;little&gt; "llama" &amp; a giant panda.', Link_Filters::protect($str, ENT_NOQUOTES));
   }
   
-  public function testUCFirst() {}
+  public function testUCFirst() {
+    $str = 'oNce Upon A time There was a GREAT Llama';
+    $this->assertEquals('ONce Upon A time There was a GREAT Llama', Link_Filters::ucfirst($str));
+  }
   
-  public function testLCFirst() {}
+  public function testLCFirst() {
+    $str = 'ONce Upon A time There was a GREAT Llama';
+    $this->assertEquals('oNce Upon A time There was a GREAT Llama', Link_Filters::lcfirst($str));
+  }
   
-  public function testConvertCase() {}
+  public function testConvertCase() {
+    $str = 'A cool Llama is a llama that Rules';
+    
+    $this->assertEquals('a cool llama is a llama that rules', Link_Filters::convertCase($str, MB_CASE_LOWER));
+    $this->assertEquals('A COOL LLAMA IS A LLAMA THAT RULES', Link_Filters::convertCase($str, MB_CASE_UPPER));
+    $this->assertEquals('A Cool Llama Is A Llama That Rules', Link_Filters::convertCase($str, MB_CASE_TITLE));
+  }
   
   public function testMinimize() {}
   

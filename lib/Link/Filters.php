@@ -35,15 +35,13 @@
  * @since 1.5.0
  */
 class Link_Filters {
-  /**
-   * @ignore
-   */
+  // @codeCoverageIgnoreStart
+  /** @ignore */
   final private function __construct() {}
 
-  /**
-   * @ignore
-   */
+  /** @ignore */
   final private function __clone() {}
+  // @codeCoverageIgnoreEnd
 
   /**
    * Round fractions up
@@ -105,6 +103,10 @@ class Link_Filters {
    * @return string str with it's first letter converted to UPPERCASE.
    */
   public static function ucfirst($arg, $encoding = null){
+    if ($encoding === null) {
+      $encoding = mb_internal_encoding();
+    }
+    
     $arg[0] = mb_strtoupper($arg[0], $encoding);
 
     return $arg;
@@ -118,6 +120,10 @@ class Link_Filters {
    * @return string str with it's first letter converted to lowercase.
    */
   public static function lcfirst($arg, $encoding = null){
+    if ($encoding === null) {
+      $encoding = mb_internal_encoding();
+    }
+    
     $arg[0] = mb_strtolower($arg[0], $encoding);
 
     return $arg;
