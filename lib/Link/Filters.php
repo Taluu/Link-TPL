@@ -209,7 +209,7 @@ class Link_Filters {
    * @return string The altered string
    */
   public static function nl2br($arg, $is_xhtml = true){
-    return PHP_VERSION_ID > 50300 ? nl2br($arg, $is_xhtml) : nl2br($arg);
+    return PHP_VERSION_ID >= 50300 ? nl2br($arg, $is_xhtml) : nl2br($arg);
   }
 
   /**

@@ -11,6 +11,13 @@
  * @version $Id$
  */
 
+// -- If PHP < 5.2.7, emulate PHP_VERSION_ID
+if (!defined('PHP_VERSION_ID')) {
+  $v = explode('.', PHP_VERSION);
+
+  define('PHP_VERSION_ID', $v[0] * 10000 + $v[1] * 100 + $v[2]);
+}
+
 /**
  * Tests all the prebuilt filters provided in Link
  * 
@@ -70,7 +77,12 @@ class Link_Tests_FiltersTest extends PHPUnit_Framework_TestCase {
   
   public function testNl2br() {
     $str = "A llama is great. \n really.";
-    $this->assertEquals("A llama is great. <br />\n really.", Link_Filters::nl2br($str));
+    $this->assertEquals("A llama is great. <br />\n really.", Link_Filters::nl2br($str, true));
+    
+    if (PHP_VERSION_ID < 50300) {
+      $this->markTestIncomplete();
+    }
+    
     $this->assertEquals("A llama is great. <br>\n really.", Link_Filters::nl2br($str, false));
   }
   
