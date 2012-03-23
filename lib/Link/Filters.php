@@ -52,7 +52,7 @@ class Link_Filters {
    * @return string value rounded up to the next integer
    */
   public static function ceil($arg){
-    return (string) ceil((int) $arg);
+    return (string) ceil((float) $arg);
   }
 
   /**
@@ -62,7 +62,7 @@ class Link_Filters {
    * @return string value rounded to the next lower integer
    */
   public static function floor($arg){
-    return (string) floor((int) $arg);
+    return (string) floor((float) $arg);
   }
 
   /**
