@@ -155,6 +155,10 @@ class Link_Filters {
    * @return string the string converted
    */
   public static function invertCase($arg, $encoding = null){
+    if ($encoding === null) {
+      $encoding = mb_internal_encoding();
+    }
+    
     for ($i = 0, $length = mb_strlen($arg, $encoding); $i < $length; $i++){
       $tolower = mb_strtolower($arg[$i], $encoding);
       $arg[$i] = $arg[$i] == $tolower ? mb_strtoupper($arg[$i], $encoding) : $tolower;
