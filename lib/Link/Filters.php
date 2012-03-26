@@ -12,11 +12,13 @@
  */
 
 // -- If PHP < 5.2.7, emulate PHP_VERSION_ID
+// @codeCoverageIgnoreStart
 if (!defined('PHP_VERSION_ID')) {
   $v = explode('.', PHP_VERSION);
 
   define('PHP_VERSION_ID', $v[0] * 10000 + $v[1] * 100 + $v[2]);
 }
+// @codeCoverageIgnoreEnd
 
 /**
  * Filters available for Link TPL's templates
