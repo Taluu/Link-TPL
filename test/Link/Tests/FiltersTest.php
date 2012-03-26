@@ -80,7 +80,7 @@ class Link_Tests_FiltersTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals("A llama is great. <br />\n really.", Link_Filters::nl2br($str, true));
     
     if (PHP_VERSION_ID < 50300) {
-      $this->markTestIncomplete();
+      $this->markTestIncomplete('The PHP Version is not recent enough for the next test.');
     }
     
     $this->assertEquals("A llama is great. <br>\n really.", Link_Filters::nl2br($str, false));

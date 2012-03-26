@@ -11,13 +11,6 @@
  * @version $Id$
  */
 
-// -- If PHP < 5.2.7, emulate PHP_VERSION_ID
-if (!defined('PHP_VERSION_ID')) {
-  $v = explode('.', PHP_VERSION);
-
-  define('PHP_VERSION_ID', $v[0] * 10000 + $v[1] * 100 + $v[2]);
-}
-
 /**
  * Tests the prebuilt loader using a simple string
  * 
@@ -52,7 +45,7 @@ EOT;
   }
   
   public function testCacheKey() {
-    $this->assertEquals('ebef9b10907a0800db741b0f3887f174647b16cd', $this->_loader->getCacheKey($this->_actual));
+    $this->assertEquals('e305b727b174f753ea51a39548f9f804a1776fe9', $this->_loader->getCacheKey($this->_actual));
   }
   
   public function testFresh() {
