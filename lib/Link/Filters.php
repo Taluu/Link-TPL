@@ -273,10 +273,10 @@ class Link_Filters {
   public static function paragraphy($arg){
     $arg = str_replace(PHP_EOL, "\n", $arg);
 
-    $paras = preg_split("`\n{2,}`si", $arg);
+    $paras = preg_split("`(?:\n\s*\n)+`si", $arg);
 
     foreach ($paras as &$para) {
-      $para = str_replace("\n", '<br />' . PHP_EOL, $para);
+      $para = str_replace("\n", '<br />' . PHP_EOL, trim($para));
     }
 
     return '<p>' . implode('</p>' . PHP_EOL . PHP_EOL . '<p>', $paras) . '</p>';
