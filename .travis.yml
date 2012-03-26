@@ -6,5 +6,4 @@ php:
 
 # this is a test for travis
 before_script:
-  - php -r "echo sha1('test');"
-  - echo "\n should be : a94a8fe5ccb19ba61c4c0873d391e987982fbbd3\n"
+  - php -r "echo 'Actual :: ' . sha1('test') . \"\nExpected :: a94a8fe5ccb19ba61c4c0873d391e987982fbbd3\n\";"
