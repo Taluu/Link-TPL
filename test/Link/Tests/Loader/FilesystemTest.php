@@ -19,5 +19,12 @@
  *  
  */
 class Link_Tests_Loader_FilesystemTest extends PHPUnit_Framework_TestCase {
+  // from twig
+  public function testSecurity() {
+    $this->markTestIncomplete('Not implemented yet :(');
+  }
   
+  public function testFinder() {
+    $this->markTestIncomplete('Not implemented yet :(');
+  }
 }
