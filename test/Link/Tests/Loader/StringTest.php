@@ -52,7 +52,7 @@ EOT;
   }
   
   public function testCacheKey() {
-    $this->assertEquals('e305b727b174f753ea51a39548f9f804a1776fe9', $this->_loader->getCacheKey($this->_actual));
+    $this->assertEquals('ebef9b10907a0800db741b0f3887f174647b16cd', $this->_loader->getCacheKey($this->_actual));
   }
   
   public function testFresh() {
