@@ -229,9 +229,11 @@ class Link_Environnement {
       }
 
       if ($once && in_array($this->getLoader()->getCacheKey($file), $this->_included)){
-        $this->_included[] = $this->getLoader()->getCacheKey($file);
+        return;
       }
 
+      $this->_included[] = $this->getLoader()->getCacheKey($file);
+      
       if (!empty($qString)) {
         parse_str($qString, $vars);
 
