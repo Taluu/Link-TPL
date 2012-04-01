@@ -76,7 +76,7 @@ class Link_Environnement {
 
     // -- Dependency Injection
     $this->setParser($options['dependencies']['parser'] !== null ? $options['dependencies']['parser'] : new Link_Parser);
-    $this->setCache($_cache !== null ? $_cache : new Link_Cache_Filesystem);
+    $this->setCache($_cache !== null ? $_cache : new Link_Cache_None);
     $this->setLoader($_loader);
     
     // -- Options treatment
