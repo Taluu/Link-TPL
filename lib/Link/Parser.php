@@ -11,6 +11,7 @@
  * @version $Id$
  */
 
+// @codeCoverageIgnoreStart
 // -- emulating E_USER_DEPRECATED if php < 5.3
 defined('E_USER_DEPRECATED') || define('E_USER_DEPRECATED', E_USER_NOTICE);
 
@@ -20,6 +21,7 @@ if (!defined('PHP_VERSION_ID')) {
 
   define('PHP_VERSION_ID', $v[0] * 10000 + $v[1] * 100 + $v[2]);
 }
+// @codeCoverageIgnoreEnd
 
 /**
  * Templates' Parser
@@ -260,7 +262,6 @@ class Link_Parser implements Link_Interface_Parser {
    * @return string filtered var
    */
   protected function _filters($var = '', $filters = ''){
-    $brackets = 0;
     $toPrint = false;
     $return = sprintf('{%s}', $var);
     $filters = array_reverse(array_filter(explode('|', $filters)));

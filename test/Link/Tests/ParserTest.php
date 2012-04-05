@@ -19,8 +19,30 @@
  *  
  */
 class Link_Tests_ParserTest extends PHPUnit_Framework_TestCase {
+  /** @var Link_Parser */
+  private $_parser = null;
+  
+  public function setUp() {
+    $this->_parser = new Link_Parser;
+  }
+  
   public function testConditions() {
-    $this->markTestIncomplete('Not implemented yet :(');
+    $datas = array(
+        '<if cond="test">...</if>' => '<?php if (test) : ?>...<?php endif; ?>', 
+        '<if condition="test">...</if>' => '<?php if (test) : ?>...<?php endif; ?>',
+        
+        '<elif cond="test" />...' => '<?php elseif (test) : ?>...', 
+        '<elseif cond="test" />...' => '<?php elseif (test) : ?>...',
+        
+        '<if cond="test">..<else />..</if>' => '<?php if (test) : ?>..<?php else : ?>..<?php endif; ?>',
+        
+        '<if>... not valid' => '<if>... not valid', 
+        'not valid :)' => 'not valid :)' 
+      );
+    
+    foreach ($datas as $data => $expected) {
+      $this->assertEquals($expected, $this->_parser->parse($data));
+    }
   }
   
   public function testLoops() {
