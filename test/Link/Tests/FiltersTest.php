@@ -132,7 +132,7 @@ The fish doesn't think because the fish knows everything<br />
 The fish knows everything</p>
 TXT;
     
-    $this->assertEquals($expected, Link_Filters::paragraphy($str));
+    $this->assertEquals(str_replace("\n", PHP_EOL, $expected), Link_Filters::paragraphy($str));
   }
   
   public function testSafe() {
