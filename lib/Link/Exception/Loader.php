@@ -1,7 +1,7 @@
 <?php
 /**
  * This file is part of Link TPL.
- * 
+ *
  * For the full copyright and license information, please view the LICENSE file
  * that was distributed with this source code.
  *
@@ -13,9 +13,9 @@
 
 /**
  * Loader's exception
- * 
+ *
  * Thrown when the loader encounter an error.
- * 
+ *
  * @package Link
  * @author Baptiste "Talus" Clavié <clavie.b@gmail.com>
  */

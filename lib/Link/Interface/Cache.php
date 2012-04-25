@@ -1,7 +1,7 @@
 <?php
 /**
  * This file is part of Link TPL.
- * 
+ *
  * For the full copyright and license information, please view the LICENSE file
  * that was distributed with this source code.
  *
@@ -13,7 +13,7 @@
 
 /**
  * Interface to implement a new Cache engine for the templates
- * 
+ *
  * @package Link
  * @author Baptiste "Talus" Clavié <clavie.b@gmail.com>
  */

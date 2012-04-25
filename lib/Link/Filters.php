@@ -115,7 +115,7 @@ class Link_Filters {
     if ($encoding === null) {
       $encoding = mb_internal_encoding();
     }
-    
+
     $arg[0] = mb_strtoupper($arg[0], $encoding);
 
     return $arg;
@@ -132,7 +132,7 @@ class Link_Filters {
     if ($encoding === null) {
       $encoding = mb_internal_encoding();
     }
-    
+
     $arg[0] = mb_strtolower($arg[0], $encoding);
 
     return $arg;
@@ -167,7 +167,7 @@ class Link_Filters {
     if ($encoding === null) {
       $encoding = mb_internal_encoding();
     }
-    
+
     for ($i = 0, $length = mb_strlen($arg, $encoding); $i < $length; $i++){
       $tolower = mb_strtolower($arg[$i], $encoding);
       $arg[$i] = $arg[$i] == $tolower ? mb_strtoupper($arg[$i], $encoding) : $tolower;
@@ -307,19 +307,19 @@ class Link_Filters {
   public static function void($arg) {
     return $arg;
   }
-  
+
   /**
    * Sets a default value for $arg if it's empty, false, ... etc
-   * 
+   *
    * @param mixed $arg Variable
    * @param mixed $default default value
-   * @return mixed default value if variable is empty, variables value otherwise 
+   * @return mixed default value if variable is empty, variables value otherwise
    */
   public static function defaults($arg, $default = '') {
     if (!$arg) {
       return $default;
     }
-    
+
     return $arg;
   }
 }

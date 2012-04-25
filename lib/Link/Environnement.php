@@ -29,11 +29,11 @@ class Link_Environnement {
     $_currentContext = array(),
 
     $_autoFilters = array(),
-    
+
     $_forceReload = false,
-     
+
     /** @var Link_Interface_Loader */
-    $_loader = null, 
+    $_loader = null,
 
     /** @var Link_Interface_Parser */
     $_parser = null,
@@ -52,7 +52,7 @@ class Link_Environnement {
    * Available options :
    *  - dependencies : Handle the dependencies (parser, ...). Each of these must
    *                   be an object.
-   * 
+   *
    *  - force_reload : Whether or not the cache should be reloaded each time it
    *                   is called, the object being up to date or not. default to
    *                   `false`.
@@ -68,7 +68,7 @@ class Link_Environnement {
       'dependencies' => array(
         'parser' => null
        ),
-      
+
       'force_reload' => false
      );
 
@@ -78,7 +78,7 @@ class Link_Environnement {
     $this->setParser($options['dependencies']['parser'] !== null ? $options['dependencies']['parser'] : new Link_Parser);
     $this->setCache($_cache !== null ? $_cache : new Link_Cache_None);
     $this->setLoader($_loader);
-    
+
     // -- Options treatment
     $this->_forceReload = (bool) $options['force_reload'];
   }
@@ -97,7 +97,7 @@ class Link_Environnement {
       $this->_vars = array_replace_recursive($this->_vars, $vars);
       return;
     }
-    
+
     $this->_vars[$vars] = $value;
   }
 
@@ -115,7 +115,7 @@ class Link_Environnement {
     if (!$this->getParser()->hasParameter('filters')) { // filters not parsed...
       return;
     }
-    
+
     if (!method_exists($this->getParser()->getParameter('filters'), $name)) {
       throw new Link_Exception(array('The filter %s doesn\'t exist...', $name), 404);
     }
@@ -150,22 +150,22 @@ class Link_Environnement {
     // -- Applying the auto filters...
     $vars = array_diff_key($this->_vars, array_flip($this->_references));
     $context = array_replace_recursive($vars, $_context);
-    
+
     if ($this->getParser()->hasParameter('filters')) {
       foreach ($this->_autoFilters as &$filter) {
         array_walk_recursive($context, array($this->getParser()->parameter('filters'), $filter));
       }
     }
-    
+
     $context += array_diff($this->_vars, $vars);
-    
+
     // -- Calling the cache...
     $cache = $this->getLoader()->getCacheKey($_tpl);
 
     if ($this->getForceReload() === true || $this->getLoader()->isFresh($_tpl, $this->getCache()->getTimestamp($cache))) {
       $this->getCache()->put($cache, $this->getParser()->parse($this->getLoader()->getSource($_tpl)));
     }
-    
+
     $this->_currentContext = $context;
     $this->getCache()->exec($cache, $this, $context);
 
@@ -220,7 +220,7 @@ class Link_Environnement {
     $data = '';
     $oldContext = $this->_currentContext;
     $vars = array();
-    
+
     try {
       $qString = '';
 
@@ -233,7 +233,7 @@ class Link_Environnement {
       }
 
       $this->_included[] = $this->getLoader()->getCacheKey($file);
-      
+
       if (!empty($qString)) {
         parse_str($qString, $vars);
 
@@ -242,16 +242,16 @@ class Link_Environnement {
           $vars = array_map('stripslashes', $vars);
         }
       }
-      
+
       $data = $this->pparse($file, array_replace_recursive($oldContext, $vars));
     } catch (Link_Exception_Loader $e) {
       $this->_currentContext = $oldContext;
-      
+
       /*
-       * If we encounter error n°6 AND it is a require tag, throws an exception
+       * If this is a require tag, throws an exception
        * Link_Exceptions_Runtime instead of Link_Exceptions_Loader. If not, and
-       * it is still the error n°6, it prints the error message. 
-       * 
+       * it is still the error n°6, it prints the error message.
+       *
        * Otherwise, the error will be throwed back.
        */
       if ($e->getCode() === 6) {
@@ -270,7 +270,7 @@ class Link_Environnement {
   }
 
   /**#@+ Accessors */
-  
+
   /** @return Link_Interface_Parser */
   public function getParser() {
     return $this->_parser;
@@ -297,21 +297,21 @@ class Link_Environnement {
   public function setLoader(Link_Interface_Loader $_loader) {
     $this->_loader = $_loader;
   }
-  
+
   /** @return bool */
   public function getForceReload() {
     return $this->_forceReload;
   }
-  
+
   /** @param bool $_reload */
   public function setForceReload($_reload = false) {
     $this->_forceReload = (bool) $_reload;
   }
-  
+
   public function enableForceReload() {
     $this->setForceReload(true);
   }
-  
+
   public function disableForceReload() {
     $this->setForceReload(false);
   }
@@ -339,7 +339,7 @@ if (!function_exists('array_replace_recursive')) {
    *
    * When the value in `$original` is not an array, it will be replaced by the
    * value in `$array`, whatever may its value be. When the value in `$original`
-   * and `$array` are both arrays, **array_replace_recursive()** will replace 
+   * and `$array` are both arrays, **array_replace_recursive()** will replace
    * their respective value recursively.
    *
    * @param array &$original The array in which elements are replaced.

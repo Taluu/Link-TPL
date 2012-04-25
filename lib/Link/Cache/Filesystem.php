@@ -1,7 +1,7 @@
 <?php
 /**
  * This file is part of Link TPL.
- * 
+ *
  * For the full copyright and license information, please view the LICENSE file
  * that was distributed with this source code.
  *
@@ -22,10 +22,10 @@ defined('PHP_EXT') || define('PHP_EXT', pathinfo(__FILE__, PATHINFO_EXTENSION));
  */
 class Link_Cache_Filesystem implements Link_Interface_Cache {
   protected $_dir = null;
-  
+
   /**
    * Constructor
-   * 
+   *
    * @param string $_dir dir where the cache will be stored
    * @see Link_Cache_Filesystem::setDir()
    */
@@ -40,7 +40,7 @@ class Link_Cache_Filesystem implements Link_Interface_Cache {
       $this->_dir = rtrim(strtr(sys_get_temp_dir(), '\\', '/'), '/');
       return;
     }
-    
+
     $dir = rtrim(strtr($_dir, '\\', '/'), '/');
 
     if (!is_dir($dir)){
@@ -50,7 +50,7 @@ class Link_Cache_Filesystem implements Link_Interface_Cache {
 
     $this->_dir = $dir;
   }
-  
+
   /** @return string dir where the cache will be stored */
   public function getDir() {
     return $this->_dir;
@@ -58,13 +58,13 @@ class Link_Cache_Filesystem implements Link_Interface_Cache {
 
   public function getTimestamp($_key) {
     $file = $this->getFile($_key);
-    
+
     return file_exists($file) ? filemtime($file) : 0;
   }
 
   public function put($_key, $data) {
     $file = $this->getFile($_key);
-    
+
     // -- Setting a homemade LOCK
     $lockFile = sprintf('%1$s/__link_flock__.%2$s', $this->getDir(), sha1($file));
     $lock = @fclose(fopen($lockFile, 'x'));
@@ -87,7 +87,7 @@ class Link_Cache_Filesystem implements Link_Interface_Cache {
 
   public function exec($_key, Link_Environnement $_env, array $_context = array()) {
     $file = $this->getFile($_key);
-    
+
     if (!file_exists($file)) {
       throw new Link_Exception_Cache('Beware, this file is a ghost... !');
     }
@@ -114,10 +114,10 @@ class Link_Cache_Filesystem implements Link_Interface_Cache {
   public function __invoke($_key, Link_Environnement $_env, array $_context = array()) {
     return $this->exec($_key, $_env, $_context);
   }
-  
+
   /**
    * Gets the filename for the cache.
-   *  
+   *
    * @param type $_key cache key
    * @return string
    */

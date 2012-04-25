@@ -1,7 +1,7 @@
 <?php
 /**
  * This file is part of Link TPL.
- * 
+ *
  * For the full copyright and license information, please view the LICENSE file
  * that was distributed with this source code.
  *
@@ -22,7 +22,7 @@ defined('__DIR__') || define('__DIR__', dirname(__FILE__));
  * file from this directory.
  *
  * This autoloader is PSR-0 compliant.
- * 
+ *
  * @package Link
  * @author Baptiste "Talus" Clavié <clavie.b@gmail.com>
  * @link http://groups.google.com/group/php-standards/web/psr-0-final-proposal
@@ -31,21 +31,21 @@ class Link_Autoloader {
   static public function register() {
     spl_autoload_register(array('self', 'load'));
   }
-  
+
   static public function unregister() {
     spl_autoload_unregister(array('self', 'load'));
   }
-  
+
   /**
    * Autotoloads the `$class` class
-   *  
+   *
    * @param string $_class class to be loaded
    */
   static public function load($_class) {
     if (strpos($_class, 'Link') !== 0) {
       return false;
     }
-    
+
     $file = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR;
     $className = $_class;
 

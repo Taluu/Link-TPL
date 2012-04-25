@@ -1,7 +1,7 @@
 <?php
 /**
  * This file is part of Link TPL.
- * 
+ *
  * For the full copyright and license information, please view the LICENSE file
  * that was distributed with this source code.
  *
@@ -13,7 +13,7 @@
 
 /**
  * Interface to implement a new Loader engine for the templates
- * 
+ *
  * @package Link
  * @author Baptiste "Talus" Clavié <clavie.b@gmail.com>
  */
@@ -37,7 +37,7 @@ interface Link_Interface_Loader {
 
   /**
    * Gets the cache key associated with the object
-   * 
+   *
    * @param string $_name Name designing the object
    * @return string Cache key to be used, hashed by sha1
    */

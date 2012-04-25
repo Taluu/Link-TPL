@@ -365,27 +365,27 @@ class Link_Parser implements Link_Interface_Parser {
 
     return $arg;
   }
-  
+
   /** @#+ Getters */
-  
+
   public function getParameter($_param) {
     if (method_exists($this, 'get' . lcfirst($_param))) {
       $method = 'get' . lcfirst($_param);
-      
+
       return $this->$method();
     }
-    
+
     return null;
   }
-  
+
   public function setParameter($_param, $_value = null) {
     if (method_exists($this, 'set' . lcfirst($_param))) {
       $method = 'set' . lcfirst($_param);
-      
+
       $this->$method($_value);
     }
   }
-  
+
   public function hasParameter($name) {
     return in_array($name, array('compact', 'filters', 'parse'));
   }
@@ -400,7 +400,7 @@ class Link_Parser implements Link_Interface_Parser {
     if (!class_exists($filters)) {
       throw new Link_Exception_Parser('The selected filter class `' . $filters . '` does not exist');
     }
-    
+
     $this->_filters = $filters;
   }
 
@@ -413,16 +413,16 @@ class Link_Parser implements Link_Interface_Parser {
   public function setParse($parse) {
     $this->_parse = (int) $parse;
   }
-  
+
   /** @return bool **/
   public function getCompact() {
     return $this->_compact;
   }
-  
+
   public function enableCompact() {
     $this->_compact = true;
   }
-  
+
   public function disableCompact() {
     $this->_compact = false;
   }

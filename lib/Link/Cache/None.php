@@ -1,7 +1,7 @@
 <?php
 /**
  * This file is part of Link TPL.
- * 
+ *
  * For the full copyright and license information, please view the LICENSE file
  * that was distributed with this source code.
  *
@@ -15,7 +15,7 @@ defined('PHP_EXT') || define('PHP_EXT', pathinfo(__FILE__, PATHINFO_EXTENSION));
 
 /**
  * This is a ghost cache.
- * 
+ *
  * Acts a dummy to disable the cache.
  *
  * @package Link
@@ -24,19 +24,19 @@ defined('PHP_EXT') || define('PHP_EXT', pathinfo(__FILE__, PATHINFO_EXTENSION));
  */
 class Link_Cache_None implements Link_Interface_Cache {
   protected $_datas = array();
-  
+
   public function destroy($_key) {
     return; // no reason to do anything, is there ? :o
   }
-  
+
   public function getTimestamp($_key) {
     return 0; // the template is always fresher than the cache
   }
- 
+
   public function put($_key, $_data) {
     $this->_datas[$_key] = $_data; // Stocking the compilation result only...
   }
-  
+
   public function exec($_key, Link_Environnement $_env, array $_context = array()) {
     if (!isset($this->_datas[$_key])) {
       throw new Link_Exception_Cache('No data sent.');

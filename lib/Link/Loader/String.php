@@ -1,7 +1,7 @@
 <?php
 /**
  * This file is part of Link TPL.
- * 
+ *
  * For the full copyright and license information, please view the LICENSE file
  * that was distributed with this source code.
  *
@@ -13,13 +13,13 @@
 
 /**
  * Filesystem Loader for Link TPL.
- * 
+ *
  * Loads a template from a string. Note, if the sourcecode changes even a little
  * bit, the generated cache key *will be* different. So, please mind to update
- * your cache whenever you are changing the sourcecode... or to disable it. 
- * 
+ * your cache whenever you are changing the sourcecode... or to disable it.
+ *
  * It's up to you. :)
- * 
+ *
  * This class comes from the Twig project.
  *
  * @package Link
@@ -30,7 +30,7 @@ class Link_Loader_String implements Link_Interface_Loader {
   public function getCacheKey($_name) {
     return sha1($_name);
   }
-  
+
   public function getSource($_name) {
     return $_name;
   }

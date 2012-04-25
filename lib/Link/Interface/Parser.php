@@ -33,10 +33,10 @@ interface Link_Interface_Parser {
    * @return mixed Parameter's value
    */
   public function setParameter($name, $val = null);
-  
+
   /**
    * Checks whether or not this class has the `$name` parameter
-   * 
+   *
    * @param string $name Parameter's name
    * @return bool true if this parameter exists, false otherwise
    */

@@ -1,7 +1,7 @@
 <?php
 /**
  * This file is part of Link TPL.
- * 
+ *
  * For the full copyright and license information, please view the LICENSE file
  * that was distributed with this source code.
  *
@@ -13,9 +13,9 @@
 
 /**
  * Cache exceptions
- * 
+ *
  * These exceptions are sent when there is an error with the cache.
- * 
+ *
  * @package Link
  * @author Baptiste "Talus" Clavié <clavie.b@gmail.com>
  */
