@@ -46,19 +46,9 @@ class Link_Autoloader {
       return false;
     }
 
-    $file = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR;
-    $className = $_class;
-
-    // -- checking for namespaces (only for php > 5.3)
-    if (($last = strripos($className, '\\')) !== false) {
-      $namespace = substr($className, 0, $last);
-      $className = substr($className, $last + 1);
-
-      $file .= str_replace('\\', DIRECTORY_SEPARATOR, $namespace) . DIRECTORY_SEPARATOR;
-    }
-
-    $file .= str_replace(array('_', "\0"), array(DIRECTORY_SEPARATOR, ''), $className) . '.' . PHP_EXT;
-
+    $file = __DIR__ . '/../';
+    $file .= str_replace(array('_', "\0"), array('/', ''), $_class) . '.' . PHP_EXT;
+    
     if (!file_exists($file)) {
       return false;
     }
