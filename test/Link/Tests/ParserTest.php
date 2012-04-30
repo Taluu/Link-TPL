@@ -95,8 +95,28 @@ class Link_Tests_ParserTest extends PHPUnit_Framework_TestCase {
     }
   }
 
-  public function testVars() {
-    $this->markTestIncomplete('Not implemented yet :(');
+  /** @dataProvider getVarsTests */
+  public function testVars($tpl, $expected) {
+    $this->assertEquals($expected, $this->_parser->parse($tpl));
+  }
+  
+  public function getVarsTests() {
+    return array(
+      // basic vars
+      array('{abcd}', '<?php echo $__tpl_vars__abcd; ?>'),
+      array('{$abcd}', '$__tpl_vars__abcd'),
+      
+      // with suffix like array or objects
+      array('{$abcd[\'with`\']->some[\'stuff\']}', '$__tpl_vars__abcd[\'with`\']->some[\'stuff\']'),
+      
+      // filters
+      array('{$abcd|protect|safe}', 'Link_Filters::protect(Link_Filters::safe($__tpl_vars__abcd))'),
+      array('{abcd|protect|safe}', '<?php echo Link_Filters::protect(Link_Filters::safe($__tpl_vars__abcd)); ?>'),
+      
+      // foreaches
+      array('{$abcd.value}', '$__tpl_foreach__abcd[\'value\']'),
+      array('{$abcd.key}', '$__tpl_foreach__abcd[\'key\']')
+     );
   }
 
   public function testIncludes() {
