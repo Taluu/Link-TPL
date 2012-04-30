@@ -115,7 +115,12 @@ class Link_Tests_ParserTest extends PHPUnit_Framework_TestCase {
       
       // foreaches
       array('{$abcd.value}', '$__tpl_foreach__abcd[\'value\']'),
-      array('{$abcd.key}', '$__tpl_foreach__abcd[\'key\']')
+      array('{$abcd.key}', '$__tpl_foreach__abcd[\'key\']'),
+      
+      // not valid
+      array('{0_a}', '{0_a}'),
+      array('{$0_a}', '{$0_a}'),
+      array('{$_-a}', '{$_-a}')
      );
   }
 
