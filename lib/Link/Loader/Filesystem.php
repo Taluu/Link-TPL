@@ -52,11 +52,15 @@ class Link_Loader_Filesystem implements Link_Interface_Loader {
    * @throws Link_Exception_Loader if the file is not found or not accessible
    */
   protected function _findFileName($_name) {
-    $file = preg_replace('`/{2,}`', '/', strtr($_name, '\\', '/'));
-
     if (isset($this->_cache[$_name])) {
       return $this->_cache[$_name];
     }
+    
+    if (strpos($_name, "\0") !== false) {
+      throw new Link_Exception_Loader('A template name may not contain NUL bytes');
+    }
+    
+    $file = preg_replace('`/{2,}`', '/', strtr($_name, '\\', '/'));
 
     // -- Checking the key name validity...
     $level = 0;
