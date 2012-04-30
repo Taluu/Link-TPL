@@ -3,7 +3,6 @@
   "type": "Library",
   "description": "Templating Engine for PHP",
   "keywords": ["templating"],
-  "version": "1.13.0-dev",
   "homepage": "http://github.com/Taluu/Link-TPL",
   "license": "BSD-3",
 
@@ -23,5 +22,12 @@
         "psr-0": {
             "Link_": "lib/"
           }
+     },
+     
+    "extra": {
+      "branch-alias": {
+        "dev-master": "1.13-dev"
+       }
      }
+    }
 }
