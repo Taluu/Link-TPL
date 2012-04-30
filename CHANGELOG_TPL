@@ -22,6 +22,7 @@
   #ADD : Context variables -- Variables available only in the declared template
   #ADD : Loaders : now handling where to load the template data (str, files, ...)
 
+  #CHG : Simplification of the Autoloader
   #CHG : Renaming the library into Link TPL
   #CHG : Return of the old getters & setters
   #CHG : Regrouping Exceptions by their domains
