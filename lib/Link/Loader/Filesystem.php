@@ -52,7 +52,7 @@ class Link_Loader_Filesystem implements Link_Interface_Loader {
    * @throws Link_Exception_Loader if the file is not found or not accessible
    */
   protected function _findFileName($_name) {
-    $file = strtr($_name, '\\', '/');
+    $file = preg_replace('`/{2,}`', '/', strtr($_name, '\\', '/'));
 
     if (isset($this->_cache[$_name])) {
       return $this->_cache[$_name];
