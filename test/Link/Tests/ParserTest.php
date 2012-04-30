@@ -93,8 +93,6 @@ class Link_Tests_ParserTest extends PHPUnit_Framework_TestCase {
     foreach ($datas as $data => $expected) {
       $this->assertEquals($expected, $this->_parser->parse($data));
     }
-
-    $this->markTestIncomplete('Not implemented yet :(');
   }
 
   public function testVars() {
