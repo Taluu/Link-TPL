@@ -28,36 +28,33 @@ Installation
 You have multiple ways to install Link. If you are unsure what to do, go with
 the tarball.
 
-Installing from the tarball release
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+1. From the tarball release
 
-1. Download the most recent tarball from the [download page](https://github.com/Taluu/Link-TPL/tags)
-2. Unpack the tarball
-3. Move the files somewhere in your project
+  1. Download the most recent tarball from the [download page](https://github.com/Taluu/Link-TPL/tags)
+  2. Unpack the tarball
+  3. Move the files somewhere in your project
 
-Installing the development version
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+2. Development version
 
-1. Install Git
-2. `git clone git://github.com/Taluu/Link-TPL.git`
+  1. Install Git
+  2. `git clone git://github.com/Taluu/Link-TPL.git`
 
-Installing via Composer
-~~~~~~~~~~~~~~~~~~~~~~~
+3. Via Composer
 
-1. Install composer in your project: `curl -s http://getcomposer.org/installer | php`
-2. Create a `composer.json` file in your project root:
+  1. Install composer in your project: `curl -s http://getcomposer.org/installer | php`
+  2. Create a `composer.json` file in your project root:
 
-  ```javascript
+    ```javascript
 
-  {
-    "require": {
-      "Taluu/Link-TPL": "1.13.*"
+    {
+      "require": {
+        "Taluu/Link-TPL": "1.13.*"
+      }
     }
-  }
 
-  ```
+    ```
 
-3. Install via composer : `php composer.phar install`
+  3. Install via composer : `php composer.phar install`
 
 About this project...
 ---------------------
