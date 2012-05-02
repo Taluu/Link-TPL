@@ -8,7 +8,7 @@ Reference Guide
 ---------------
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
 
    reference/getting-started
    reference/templates
