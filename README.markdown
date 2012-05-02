@@ -51,7 +51,6 @@ the tarball.
         "Taluu/Link-TPL": "1.13.*"
       }
     }
-
     ```
 
   3. Install via composer : `php composer.phar install`
