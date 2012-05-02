@@ -72,16 +72,18 @@ install Link.
 .. note::
 
   Link follows the `PSR-0 convention`_, which allows you to easily integrate Link
-  with other autoloaders (like Composer, Symfony, your-own-autoloader, ...)::
+  with other autoloaders (like Composer, Symfony, your-own-autoloader, ...)
 
-    $loader = new Link_Loader_String;
-    $cache = new Link_Cache_None;
+.. code-block:: php
 
-    $link = new Link_Environnement($loader, $cache);
+  $loader = new Link_Loader_String;
+  $cache = new Link_Cache_None;
 
-    // some code logic here...
+  $link = new Link_Environnement($loader, $cache);
 
-    $link->parse('Hello {name} !', array('name' => 'Baptiste'));
+  // some code logic here...
+
+  $link->parse('Hello {name} !', array('name' => 'Baptiste'));
 
 Link uses a loader (``Link_Loader_String``) to locate templates, a cache engine
 (``Link_Cache_None`` which actually does... nothing, disabling the cache, even
