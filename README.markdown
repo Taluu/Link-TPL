@@ -44,14 +44,14 @@ the tarball.
   1. Install composer in your project: `curl -s http://getcomposer.org/installer | php`
   2. Create a `composer.json` file in your project root:
 
-    ```javascript
+      ```javascript
 
-    {
-      "require": {
-        "Taluu/Link-TPL": "1.13.*"
-      }
-    }
-    ```
+        {
+          "require": {
+            "Taluu/Link-TPL": "1.13.*"
+          }
+        }
+      ```
 
   3. Install via composer : `php composer.phar install`
 
