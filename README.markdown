@@ -30,19 +30,19 @@ the tarball.
 
 1. From the tarball release
 
-  a. Download the most recent tarball from the [download page](https://github.com/Taluu/Link-TPL/tags)
-  b. Unpack the tarball
-  c. Move the files somewhere in your project
+  1. Download the most recent tarball from the [download page](https://github.com/Taluu/Link-TPL/tags)
+  2. Unpack the tarball
+  3. Move the files somewhere in your project
 
 2. Development version
 
-  a. Install Git
-  b. `git clone git://github.com/Taluu/Link-TPL.git`
+  1. Install Git
+  2. `git clone git://github.com/Taluu/Link-TPL.git`
 
 3. Via Composer
 
-  a. Install composer in your project: `curl -s http://getcomposer.org/installer | php`
-  b. Create a `composer.json` file in your project root:
+  1. Install composer in your project: `curl -s http://getcomposer.org/installer | php`
+  2. Create a `composer.json` file in your project root:
 
       ```javascript
 
@@ -53,7 +53,7 @@ the tarball.
         }
       ```
 
-  c. Install via composer : `php composer.phar install`
+  3. Install via composer : `php composer.phar install`
 
 About this project...
 ---------------------
