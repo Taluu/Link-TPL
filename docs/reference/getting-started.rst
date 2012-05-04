@@ -65,7 +65,8 @@ install Link.
 .. note::
 
   Link follows the `PSR-0 convention`_, which allows you to easily integrate Link
-  with other autoloaders (like Composer, Symfony, your-own-autoloader, ...)::
+  with other PSR-0 compatible autoloaders (like Composer, Symfony, 
+  your-own-autoloader, ...)::
 
     $loader = new My\Fancy\Autoloader;
     
