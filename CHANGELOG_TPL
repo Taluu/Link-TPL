@@ -35,7 +35,7 @@
   #CHG : Now, the filesystem cache have a proper name and is in a proper dir
   #CHG : Simplification of the include / require tags and condition tags patterns
   #CHG : Externalizing the autoload mechanism into a brand new class (Autoloader)
-  #CHG : Fitting of the array_replace_recrusive stub with the native implementation
+  #CHG : Better fit of the array_replace_recrusive stub with the native implementation
 
   #DEL : Attribute $_filterClass
   #DEL : Dependency Injection method (useless)
