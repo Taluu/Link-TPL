@@ -10,12 +10,7 @@ Rapid Overview
 A template file is just a text file that could be rendered into *any text-format* 
 (be it HTML, XML, simple text file, JSON, ...). It does not have a particular 
 extension ; usually, we use the type of document it is destined to be (like 
-``.html`` if it is a html document, ``.json`` if it is json, ``.whatever`` for
-a whatever file, ...). 
-
-.. note::
-  It is a good practice to use a "double extension" system :  ``.html.link`` for
-  a html link template, ``.json.link`` for a json link template, ...
+``.html`` if it is a html document, ``.json`` if it is json, ...).
 
 It is mainly constitued by **variables** and **tags**, which are xml tags 
 look-alike. Here is a sample Link template (the explications on the syntax will 
@@ -85,24 +80,22 @@ And to use the variable as an entity, you will need to use the following::
     {$var['some']->thing}
 
   .. warning::
-    Do keep in mind that it is not as flexible in PHP : please avoid to use a 
-    "complex" variable (containing an array key) as a key or as a property. For 
-    example, you may not do the following::
+    But do keep in mind that it is not as flexible in PHP : please avoid to use
+    a "complex" variable (containing an array key) as a key or as a property. 
+    For example, you may not do the following::
 
       {var[{$key->a['b']}]}
 
     This is due to some limitations brought by the way of parsing the templates
-    (regular expressions) without bringing down the engine's performances.
+    (regular expressions).
 
 Constants
 ~~~~~~~~~
-You can also use constants in your templates::
-
-  {__MY_CONSTANT__}
-  {__$MY_CONSTANT__}
+todo
 
 Filters
 ~~~~~~~
+<<<<<<< HEAD
 When working on variables (and special variables as you will see them in 
 :ref:`their dedicated part <loops>`), you may want to apply some transformations
 on them (like escaping them, or changing the case of a string)::
@@ -156,6 +149,26 @@ void        Just do... nothing.
 
 Build your own filter
 ^^^^^^^^^^^^^^^^^^^^^
+You may also build your own filter (and why not propose it as a built-in filter
+via a Pull Request on `the GitHub repository <http://github.com/Taluu/Link-TPL>`_ !)
+following some rules...
+
+- You have to declare your filter in the ``Link_Filters`` class
+- The first argument is the entity itself
+- The declared method have to be ``public`` and ``static``
+
+Let's say I want to implement a ``date`` filter ; here's how to do it::
+
+  // in Link_Filters
+  public static function date($arg, $format = 'd/m/Y') {
+    if (!$arg instanceof DateTime) {
+      $arg = new DateTime($arg);
+    }
+
+    return $arg->format($format);
+  }
+
+It's that simple ! :)
 
 Control Structures
 ------------------
