@@ -1,6 +1,5 @@
 Link TPL for designers
 ======================
-
 This chapter presents the syntax used in the templates and will mainly be useful
 for the guys in charge of building the templates.
 
@@ -8,7 +7,6 @@ for the guys in charge of building the templates.
 
 Rapid Overview
 --------------
-
 A template file is just a text file that could be rendered into *any text-format* 
 (be it HTML, XML, simple text file, JSON, ...). It does not have a particular 
 extension ; usually, we use the type of document it is destined to be (like 
