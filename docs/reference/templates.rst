@@ -10,7 +10,12 @@ Rapid Overview
 A template file is just a text file that could be rendered into *any text-format* 
 (be it HTML, XML, simple text file, JSON, ...). It does not have a particular 
 extension ; usually, we use the type of document it is destined to be (like 
-``.html`` if it is a html document, ``.json`` if it is json, ...).
+``.html`` if it is a html document, ``.json`` if it is json, ``.whatever`` for
+a whatever file, ...). 
+
+.. note::
+  It is a good practice to use a "double extension" system :  ``.html.link`` for
+  a html link template, ``.json.link`` for a json link template, ...
 
 It is mainly constitued by **variables** and **tags**, which are xml tags 
 look-alike. Here is a sample Link template (the explications on the syntax will 
@@ -80,22 +85,77 @@ And to use the variable as an entity, you will need to use the following::
     {$var['some']->thing}
 
   .. warning::
-    But do keep in mind that it is not as flexible in PHP : please avoid to use
-    a "complex" variable (containing an array key) as a key or as a property. 
-    For example, you may not do the following::
+    Do keep in mind that it is not as flexible in PHP : please avoid to use a 
+    "complex" variable (containing an array key) as a key or as a property. For 
+    example, you may not do the following::
 
       {var[{$key->a['b']}]}
 
     This is due to some limitations brought by the way of parsing the templates
-    (regular expressions).
+    (regular expressions) without bringing down the engine's performances.
 
 Constants
 ~~~~~~~~~
-todo
+You can also use constants in your templates::
+
+  {__MY_CONSTANT__}
+  {__$MY_CONSTANT__}
 
 Filters
 ~~~~~~~
-todo
+When working on variables (and special variables as you will see them in 
+:ref:`their dedicated part <loops>`), you may want to apply some transformations
+on them (like escaping them, or changing the case of a string)::
+
+  {var|protect}
+  {var|maximize}
+
+You can also apply several filter on one entity::
+
+  {var|protect|maximize}
+
+The filters will be applied in the reverse of their order of declaration : in the
+case mentionned above, the output should have the ``protect`` filter applied on the
+result of the ``maximize`` filter applied on ``{var}``.
+
+You may also use arguments on filters::
+
+  {var|cut:40:...}
+
+Here, the ``cut`` filter will be applied on ``{var}`` with a limit of 50 chars
+and a finishing string ``...`` if the length of ``{var}`` exceeds 50 chars.
+
+List of pre-built filters
+^^^^^^^^^^^^^^^^^^^^^^^^^
+Here is the list of all the filters currently implemented by default in Link. 
+It is not exhaustive, as this is not really the role of this document ; you may
+find more exhaustive information about each filters in their dedicated chapter
+(not yet written), or directly in the api documentation of the ``Link_Filters``
+class.
+
+=========== ====================================================================
+Filter Name Description
+=========== ====================================================================
+ceil        Round fractions up
+convertCase Perform case folding on a string
+cut         Cut a string longer than $max characters. Words are not interrupted.
+default     Gets a default value if it's ``empty``, ``false``, ... etc
+floor       Round fractions down
+invertCase  Perform a change of case on a string
+lcfirst     Lowercase the first letter of a string
+maximize    Make a string all UPPERCASE
+minimize    Make a string all lowercase
+nl2br       Inserts HTML line breaks before all newlines in a string
+paragraphy  Smart convertion of newlines into <p> and <br />s
+protect     Convert special characters to HTML entities
+safe        Unescape a var -- useful if protect is an autofilter
+slugify     Create the slug for a string, and send it back
+ucfirst     UPPERCASE the first letter of a string
+void        Just do... nothing.
+=========== ====================================================================
+
+Build your own filter
+^^^^^^^^^^^^^^^^^^^^^
 
 Control Structures
 ------------------
@@ -104,6 +164,8 @@ todo
 Conditions
 ~~~~~~~~~~
 todo
+
+.. _loops:
 
 Loops
 ~~~~~
