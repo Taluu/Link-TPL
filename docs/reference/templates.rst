@@ -4,6 +4,8 @@ Link TPL for designers
 This chapter presents the syntax used in the templates and will mainly be useful
 for the guys in charge of building the templates.
 
+.. _rapid-overview:
+
 Rapid Overview
 --------------
 
@@ -41,11 +43,53 @@ the logic of the template.
 
 Comments
 --------
-todo
+You can comment some part of code in the template : it will not be rendered in
+the result, and are just there to help the designer. The main purpose is to give
+a message to other template designers or to yourself, or to debug something. The
+syntax for this is ``{* ... *}``
+
+.. code-block:: xml
+
+  {* useless ?
+    <if condition="true === true"></if>
+  *}
 
 Variables
 ---------
-todo
+The application may pass variables to the templates, so that you can do almost
+whatever you want in your templates : conditionning, looping, printing,
+filtering, ...
+
+As it was said in the :ref:`rapid-overview`, there are two types of variables,
+depending of the role you want them to be : either you will want to print them
+out, or you will just want to manipulate the variable by itself. 
+
+To print it out, you have to use the following (for let's say a `var` variable)::
+
+  {var}
+
+And to use the variable as an entity, you will need to use the following::
+
+  {$var}
+
+.. note::
+  As in PHP, if your variable is an object, you may want to access its properties,
+  or if your variable is an array its components. For that, you can use the basic
+  syntax in PHP (for the arrays or objects implementing the `ArrayAccess` 
+  interface) the subscript (`[]`) or the object operator (`->`)::
+
+    {var['some']->thing}
+    {$var['some']->thing}
+
+  .. warning::
+    But do keep in mind that it is not as flexible in PHP : please avoid to use
+    a "complex" variable (containing an array key) as a key or as a property. 
+    For example, you may not do the following::
+
+      {var[{$key->a['b']}]}
+
+    This is due to some limitations brought by the way of parsing the templates
+    (regular expressions).
 
 Constants
 ~~~~~~~~~
