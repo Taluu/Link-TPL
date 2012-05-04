@@ -230,11 +230,11 @@ class Link_Parser implements Link_Interface_Parser {
    * @return string
    */
   protected function _foreach($matches) {
-    $varName = $matches[1];
+    $varName = $matches[2];
 
     // -- Is the attribute "as" set ?
-    if (isset($matches[2])) {
-      $varName = $matches[2];
+    if (isset($matches[4])) {
+      $varName = $matches[4];
     }
 
     // with ref : $__tpl_foreach_ref[] = \'%1$s\';
@@ -248,7 +248,7 @@ class Link_Parser implements Link_Interface_Parser {
 
       if ({$%1$s.size} > 0) :
         foreach ({$%2$s} as {$%1$s.key} => {$%1$s.value}) {
-          ++{$%1$s.current}; ?>', $varName, $matches[1]);
+          ++{$%1$s.current}; ?>', $varName, $matches[2]);
   }
 
   /**
