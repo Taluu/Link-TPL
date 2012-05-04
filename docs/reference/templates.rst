@@ -80,25 +80,29 @@ And to use the variable as an entity, you will need to use the following::
     {$var['some']->thing}
 
   .. warning::
-    But do keep in mind that it is not as flexible in PHP : please avoid to use
-    a "complex" variable (containing an array key) as a key or as a property. 
+    Keep in mind that it is not as flexible in PHP : avoid to use a "complex" 
+    variable (containing an array key or a property) as a key or as a property. 
     For example, you may not do the following::
 
       {var[{$key->a['b']}]}
 
     This is due to some limitations brought by the way of parsing the templates
-    (regular expressions).
+    (regular expressions), as it would bring down the performances of the 
+    templating engine.
 
 Constants
 ~~~~~~~~~
-todo
+Like in PHP, you can access the declared constants in the application. To do that
+the syntax is really simple::
+
+  {__MY_CONSTANT__}
+  {__$MY_CONSTANT__}
 
 Filters
 ~~~~~~~
-<<<<<<< HEAD
 When working on variables (and special variables as you will see them in 
-:ref:`their dedicated part <loops>`), you may want to apply some transformations
-on them (like escaping them, or changing the case of a string)::
+:ref:`their dedicated part <special-variables>`), you may want to apply some
+transformations on them (like escaping them, or changing the case of a string)::
 
   {var|protect}
   {var|maximize}
@@ -117,6 +121,12 @@ You may also use arguments on filters::
 
 Here, the ``cut`` filter will be applied on ``{var}`` with a limit of 50 chars
 and a finishing string ``...`` if the length of ``{var}`` exceeds 50 chars.
+
+.. warning::
+  There is another limitation for strings : you may not use the symbol ``:``, as
+  it would be interpreted as a new parameter, which could get the parser wrong.
+  Once again, this is due to the parser, and would bring down performances to do
+  otherwise.
 
 List of pre-built filters
 ^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -178,11 +188,11 @@ Conditions
 ~~~~~~~~~~
 todo
 
-.. _loops:
-
 Loops
 ~~~~~
 todo
+
+.. _special-variables:
 
 Special variables
 ^^^^^^^^^^^^^^^^^
