@@ -89,7 +89,7 @@ class Link_Parser implements Link_Interface_Parser {
    */
   public function parse($script){
     $script = str_replace('<?' ,'<?php echo \'<?\'; ?>', $script);
-    $script = preg_replace('`/\*.*?\*/`s', '', $script);
+    $script = preg_replace('`\{\*.*?\*}`s', '', $script);
 
     // -- Filter's transformations
     if ($this->_parse & self::FILTERS) {
