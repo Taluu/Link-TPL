@@ -70,7 +70,8 @@ As it was said in the :ref:`rapid-overview`, there are two types of variables,
 depending of the role you want them to be : either you will want to print them
 out, or you will just want to manipulate the variable by itself. 
 
-To print it out, you have to use the following (for let's say a `var` variable)::
+To print it out, you have to use the following (for let's say a ``var``
+variable)::
 
   {var}
 
@@ -81,8 +82,8 @@ And to use the variable as an entity, you will need to use the following::
 .. note::
   As in PHP, if your variable is an object, you may want to access its properties,
   or if your variable is an array its components. For that, you can use the basic
-  syntax in PHP (for the arrays or objects implementing the `ArrayAccess` 
-  interface) the subscript (`[]`) or the object operator (`->`)::
+  syntax in PHP (for the arrays or objects implementing the ``ArrayAccess`` 
+  interface) the subscript (``[]``) or the object operator (``->``)::
 
     {var['some']->thing}
     {$var['some']->thing}
