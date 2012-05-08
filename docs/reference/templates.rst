@@ -12,6 +12,13 @@ A template file is just a text file that could be rendered into *any text-format
 extension ; usually, we use the type of document it is destined to be (like 
 ``.html`` if it is a html document, ``.json`` if it is json, ...).
 
+.. note::
+  Usually, when working with templates, we suffix the template engine's name at
+  the end of the final format of the file. For example, for a HTML file called
+  ``template.html``, we should name it ``template.html.link`` if we're using
+  Link as the template engine to parse it. It is destined to be a RSS file, then
+  it should be ``template.rss.link``.
+
 It is mainly constitued by **variables** and **tags**, which are xml tags 
 look-alike. Here is a sample Link template (the explications on the syntax will 
 come afterwards) :
@@ -34,10 +41,11 @@ come afterwards) :
     </body>
   </html>
 
-As you may see, there are typically three types of instructions : ``{var}``,
-representing a variable and printing it, ``{$var}``, representing the variable
-itself, and several xml-like tags like ``<foreach>``, ``<if>``, ... containing
-the logic of the template.
+As you may see, there are typically two types of instructions : ``{var}``,
+representing a variable and printing it and several xml-like tags like
+``<foreach>``, ``<if>``, ... containing the logic of the template. Of course,
+there are other types of instructions, but these two are the main ones you
+should keep in mind when creating Link templates.
 
 Comments
 --------
