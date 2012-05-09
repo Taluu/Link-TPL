@@ -153,8 +153,8 @@ class Link_Parser implements Link_Interface_Parser {
        */
       '</foreach>' => '<?php } endif; ?>',
       '<foreachelse />' => '<?php } else : if (true) { ?>',
-
-      '{\\' =>  '{'
+      
+      '&#123;' => '{'
      );
 
     // -- Constants
@@ -175,6 +175,7 @@ class Link_Parser implements Link_Interface_Parser {
       $noRegex['</if>'] = '<?php endif; ?>';
     }
 
+    $script = str_replace('\\{', '&#123;', $script);
     $script = preg_replace(array_keys($not_recursives), array_values($not_recursives), $script);
 
     foreach ($recursives as $regex => $replace) {
@@ -182,7 +183,7 @@ class Link_Parser implements Link_Interface_Parser {
         $script = preg_replace($regex, $replace, $script);
       }
     }
-
+    
     $script = str_replace(array_keys($noRegex), array_values($noRegex), $script);
 
     /*
