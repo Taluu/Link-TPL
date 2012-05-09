@@ -118,7 +118,7 @@ transformations on them (like escaping them, or changing the case of a string)::
 
 You can also apply several filter on one entity::
 
-  {var|protect|maximize}
+  {var|maximize|protect}
 
 The filters will be applied in the reverse of their order of declaration : in the
 case mentionned above, the output should have the ``protect`` filter applied on the
@@ -132,10 +132,10 @@ Here, the ``cut`` filter will be applied on ``{var}`` with a limit of 50 chars
 and a finishing string ``...`` if the length of ``{var}`` exceeds 50 chars.
 
 .. warning::
-  There is another limitation for strings : you may not use the symbol ``:``, as
-  it would be interpreted as a new parameter, which could get the parser wrong.
-  Once again, this is due to the parser, and would bring down performances to do
-  otherwise.
+  There is another limitation for strings : you may not use the symbols ``:``
+  or ``|``, as it would be interpreted as a new parameter or new filter, which
+  could get the parser wrong. Once again, this is due to the parser, and trying
+  to fix it would bring down performances.
 
 List of pre-built filters
 ^^^^^^^^^^^^^^^^^^^^^^^^^
