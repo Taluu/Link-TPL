@@ -16,8 +16,8 @@ extension ; usually, we use the type of document it is destined to be (like
   Usually, when working with templates, we suffix the template engine's name at
   the end of the final format of the file. For example, for a HTML file called
   ``template.html``, we should name it ``template.html.link`` if we're using
-  Link as the template engine to parse it. It is destined to be a RSS file, then
-  it should be ``template.rss.link``.
+  Link as the template engine to parse it. If it is destined to be a RSS file, 
+  then it should be ``template.rss.link``.
 
 It is mainly constitued by **variables** and **tags**, which are xml tags 
 look-alike. Here is a sample Link template (the explications on the syntax will 
@@ -42,7 +42,7 @@ come afterwards) :
   </html>
 
 As you may see, there are typically two types of instructions : ``{var}``,
-representing a variable and printing it and several xml-like tags like
+representing a variable and printing it, and several xml-like tags like
 ``<foreach>``, ``<if>``, ... containing the logic of the template. Of course,
 there are other types of instructions, but these two are the main ones you
 should keep in mind when creating Link templates.
