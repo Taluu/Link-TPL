@@ -191,11 +191,36 @@ It's that simple ! :)
 
 Control Structures
 ------------------
-todo
+In Link, there are several types of xml-like tags that controls the whole logic
+in Link's templates. We will see them right now.
 
 Conditions
 ~~~~~~~~~~
-todo
+In a template, it is not uncommon to print different things if the context
+presents different cases. It is called a conditionnal templating, and Link
+allows it via several tags : ``<if>`` tags, ``<elseif>`` tags, and ``<else>``
+tags :
+
+.. code-block:: xml
+
+  <if condition="true === true">
+    something is true
+  <elseif condition="false !== true" />
+    something is not true but not false either
+  <else />
+    everything is false
+  </if>
+
+In the ``condition`` attribute, may be written *any valid PHP condition*, with
+some additions (like the use of Link variables). Also, you can use as many
+``<elseif>`` tags you want, but only one ``<if>`` tag for a given ``<if>``
+structure, and a maximum of one ``<else>`` tag. Here is a minimal condition :
+
+.. code-block:: xml
+
+  <if condition="isset({$my_var})">
+    $my_var is set ! :)
+  </if>
 
 Loops
 ~~~~~
