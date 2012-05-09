@@ -99,6 +99,14 @@ And to use the variable as an entity, you will need to use the following::
     (regular expressions), as it would bring down the performances of the 
     templating engine.
 
+Escaping a variable
+~~~~~~~~~~~~~~~~~~~
+If you want to print out the ``{my_var}`` in you template without it being
+parsed by Link (a "raw" display), you have to prefix it by a slash::
+
+  \{my_var} {* will be rendered as "{my_var}" *}
+  \{$my_var} {* will be rendered as "{$my_var}" *}
+
 Constants
 ~~~~~~~~~
 Like in PHP, you can access the declared constants in the application. To do that
@@ -192,7 +200,8 @@ It's that simple ! :)
 Control Structures
 ------------------
 In Link, there are several types of xml-like tags that controls the whole logic
-in Link's templates. We will see them right now.
+in Link's templates. We may control it via two types of tags : the conditonnal
+tags and the loops ones.
 
 Conditions
 ~~~~~~~~~~
@@ -219,18 +228,92 @@ structure, and a maximum of one ``<else>`` tag. Here is a minimal condition :
 .. code-block:: xml
 
   <if condition="isset({$my_var})">
-    $my_var is set ! :)
+    \{$my_var} is set ! :)
   </if>
+
+.. note::
+  
+  There are several shortcuts here and there, specially on the conditions : for
+  example, you may use ``cond`` instead of ``condition`` as the attribute of the
+  conditionnal tags, or write ``<elif>`` instead of ``<elseif>``.
 
 Loops
 ~~~~~
-todo
+Also, the principle of a template means that when there are several datas to be
+printed, we should avoid to repeat things (you know, the 
+`DRY <http://en.wikipedia.org/wiki/DRY>`_ principle...). For that purpose, was
+created in Link the ``<foreach>`` tag : when you use it, it waits for an array
+to be iterated over and repeat a block of text as many times as there are
+elements in the array.
+
+.. code-block:: xml
+
+  some random block of text
+
+  <foreach array="{$my_array}">
+    my text will be repeated as many times there are elements in \{$my_array}.
+  </foreach>
+
+Inside the ``<foreach>`` loop, you may access some other things, like a possibly
+to do an alternate action if your array is empty (and will of course not be 
+repeated...) :
+
+.. code-block:: xml
+
+  some random block of text
+
+  <foreach array="{$my_array}">
+    my text will be repeated as many times there are elements in \{$my_array}.
+  <foreachelse />
+    \{$my_array} is empty :(
+  </foreach>
+
+.. note::
+
+  You may also remove the use of the delimiters ``{}`` for the variables in the
+  ``array`` attribute. But be careful : it's either with these braces or without
+  them !
+  
+And you have access to special variables... Let's see them now.
 
 .. _special-variables:
 
 Special variables
 ^^^^^^^^^^^^^^^^^
-todo
+Six variables are created each times you loop over an array. Let's take 
+``{$my_array}`` as an example.
+
+- ``{$my_array.value}`` contains the value of the iteration itself
+- ``{$my_array.key}`` contains the key of the iteration itself
+- ``{$my_array.current}`` contains the current numbered iteration
+- ``{$my_array.size}`` contains the size of the array that is iterated over
+- ``{$my_array.is_first}`` checks that the current iteration is the first iteration
+- ``{$my_array.is_last}`` checks that the current iteration is the last iteration
+
+You may apply a suffix (array keys, object properties, filters, ...) on the 
+value of the array (``{$my_array.value}``), print out (using ``{...}`` instead
+of ``{$...}``) everything but the verification that it is or not the first or
+the last iteration (as it does not have any senses to do otherwise).
+
+.. note::
+
+  Several shortcuts also exists for the ``foreach`` loops ; for example, you may
+  use the ``ary`` attribute instead of the ``array`` attribute in the 
+  ``<foreach>`` tag, use ``{$my_array.val}`` instead of ``{$my_array.value}``,
+  or ``{$my_array.cur}`` instead of ``{$my_array.current}``.
+
+The ``as`` attribute
+^^^^^^^^^^^^^^^^^^^^
+When iterating over complex variables (like a n-dimensionnal array), you may not
+use the following ``<foreach array="{$my_array['an_item']}">`` (or anything more
+than a simple variable name), but you should use the optionnal ``as`` attribute,
+which is mandatory for this kind of use :
+
+.. code-block:: xml
+
+  <foreach array="{$my_array.value['test']}" as="{$this_array}">
+    Now look, i'm using \{$this_array} : {this_array.value} ! :)
+  </foreach>
 
 Inclusions
 ----------
