@@ -29,6 +29,7 @@
   #CHG : Regrouping Exceptions by their domains
   #CHG : Simplification of the foreach tag (#61)
   #CHG : Renaming the Engine class to Environnement
+  #CHG : The order of the filters on a var have been reversed
   #CHG : Now, the exceptions and interfaces parts are singular
   #CHG : While moving the file cache, its method have also changed
   #CHG : The Autoloader::load() method is now public (from protected)

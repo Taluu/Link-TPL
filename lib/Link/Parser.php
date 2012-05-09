@@ -264,7 +264,7 @@ class Link_Parser implements Link_Interface_Parser {
   protected function _filters($var = '', $filters = ''){
     $toPrint = false;
     $return = sprintf('{%s}', $var);
-    $filters = array_reverse(array_filter(explode('|', $filters)));
+    $filters = array_filter(explode('|', $filters));
 
     /*
      * If we wish to print the variable (the significative $ is missing), we have
