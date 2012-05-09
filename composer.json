@@ -5,6 +5,7 @@
   "keywords": ["templating"],
   "homepage": "http://github.com/Taluu/Link-TPL",
   "license": "BSD-3",
+  "version": "1.13-dev",
 
   "authors": [
       {
