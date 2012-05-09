@@ -110,8 +110,8 @@ class Link_Tests_ParserTest extends PHPUnit_Framework_TestCase {
       array('{$abcd[\'with`\']->some[\'stuff\']}', '$__tpl_vars__abcd[\'with`\']->some[\'stuff\']'),
       
       // filters
-      array('{$abcd|protect|safe}', 'Link_Filters::protect(Link_Filters::safe($__tpl_vars__abcd))'),
-      array('{abcd|protect|safe}', '<?php echo Link_Filters::protect(Link_Filters::safe($__tpl_vars__abcd)); ?>'),
+      array('{$abcd|protect|safe}', 'Link_Filters::safe(Link_Filters::protect($__tpl_vars__abcd))'),
+      array('{abcd|protect|safe}', '<?php echo Link_Filters::safe(Link_Filters::protect($__tpl_vars__abcd)); ?>'),
       
       // foreaches
       array('{$abcd.value}', '$__tpl_foreach__abcd[\'value\']'),
