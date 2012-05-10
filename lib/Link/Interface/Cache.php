@@ -47,10 +47,10 @@ interface Link_Interface_Cache {
    * Fetches & executes the cache content
    *
    * @param string $_key key designing the cache
-   * @param Link_Environnement $_env TPL environnement to be given to the template
+   * @param Link_Environment $_env TPL environnement to be given to the template
    * @param array $_context Local variables to the template
    */
-  public function exec($_key, Link_Environnement $_env, array $_context = array());
+  public function exec($_key, Link_Environment $_env, array $_context = array());
 }
 
 /*

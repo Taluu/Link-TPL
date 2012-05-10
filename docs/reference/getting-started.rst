@@ -81,7 +81,7 @@ install Link.
   $loader = new Link_Loader_String;
   $cache = new Link_Cache_None;
 
-  $link = new Link_Environnement($loader, $cache);
+  $link = new Link_Environment($loader, $cache);
 
   // some code logic here...
 
@@ -90,7 +90,7 @@ install Link.
 Link uses a loader (``Link_Loader_String``) to locate templates, a cache engine
 (``Link_Cache_None`` which actually does... nothing, disabling the cache, even
 though I really would not recommend it -- see below) and an environnement
-(``Link_Environnement``) to store all the configuration.
+(``Link_Environment``) to store all the configuration.
 
 The ``parse()`` method loads the given templates (here a string), checks if it 
 is more up to date than the data in the cache ; if it is fresher than the cached
@@ -106,7 +106,7 @@ argument) renders the template.
     $loader = new Link_Loader_Filesystem('/path/to/templates');
     $cache = new Link_Cache_Filesystem('/path/to/cached/templates');
 
-    $link = new Link_Environnement($loader, $cache);
+    $link = new Link_Environment($loader, $cache);
 
     // some code logic here...
 

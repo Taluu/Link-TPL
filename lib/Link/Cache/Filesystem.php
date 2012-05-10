@@ -85,7 +85,7 @@ class Link_Cache_Filesystem implements Link_Interface_Cache {
     unlink($this->getFile($_key));
   }
 
-  public function exec($_key, Link_Environnement $_env, array $_context = array()) {
+  public function exec($_key, Link_Environment $_env, array $_context = array()) {
     $file = $this->getFile($_key);
 
     if (!file_exists($file)) {
@@ -105,13 +105,13 @@ class Link_Cache_Filesystem implements Link_Interface_Cache {
    * Implementation of the magic method __invoke() for PHP >= 5.3
    *
    * @param string $_key Key representating the cache file
-   * @param Link_Environnement $tpl TPL environnement to be used during cache reading
+   * @param Link_Environment $tpl TPL environnement to be used during cache reading
    * @param array $_context Variables to be given to the template
    * @return bool
    *
    * @see self::exec()
    */
-  public function __invoke($_key, Link_Environnement $_env, array $_context = array()) {
+  public function __invoke($_key, Link_Environment $_env, array $_context = array()) {
     return $this->exec($_key, $_env, $_context);
   }
 
