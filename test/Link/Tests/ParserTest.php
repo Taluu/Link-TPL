@@ -124,7 +124,40 @@ class Link_Tests_ParserTest extends PHPUnit_Framework_TestCase {
      );
   }
 
-  public function testIncludes() {
-    $this->markTestIncomplete('Not implemented yet :(');
+  /** @dataProvider getIncludesTests */
+  public function testIncludes($tpl, $expected) {
+    $this->assertEquals($expected, $this->_parser->parse($tpl));
+  }
+  
+  public function getIncludesTests() {
+    return array(
+      // includes
+      array('<include tpl="112.html" />', '<?php $_env->includeTpl(\'112.html\', false, Link_Environnement::INCLUDE_TPL); ?>'),
+      array('<include tpl="112.html" once="true" />', '<?php $_env->includeTpl(\'112.html\', true, Link_Environnement::INCLUDE_TPL); ?>'),
+      array('<include tpl="112.html" once="false" />', '<?php $_env->includeTpl(\'112.html\', false, Link_Environnement::INCLUDE_TPL); ?>'),
+      array('<include tpl="112.html?a=b&c=d" />', '<?php $_env->includeTpl(\'112.html\' . "?a=b&c=d", false, Link_Environnement::INCLUDE_TPL); ?>'),
+      array('<include tpl="112.html?a=b&c=d" once="true" />', '<?php $_env->includeTpl(\'112.html\' . "?a=b&c=d", true, Link_Environnement::INCLUDE_TPL); ?>'),
+      array('<include tpl="112.html?a=b&c=d" once="false" />', '<?php $_env->includeTpl(\'112.html\' . "?a=b&c=d", false, Link_Environnement::INCLUDE_TPL); ?>'),
+      array('<include tpl="{$TAGS}" />', '<?php $_env->includeTpl($__tpl_vars__TAGS, false, Link_Environnement::INCLUDE_TPL); ?>'),
+      array('<include tpl="{$TAGS}" once="true" />', '<?php $_env->includeTpl($__tpl_vars__TAGS, true, Link_Environnement::INCLUDE_TPL); ?>'),
+      array('<include tpl="{$TAGS}" once="false" />', '<?php $_env->includeTpl($__tpl_vars__TAGS, false, Link_Environnement::INCLUDE_TPL); ?>'),
+      array('<include tpl="{$TAGS}?a=b&c=d" />', '<?php $_env->includeTpl($__tpl_vars__TAGS . "?a=b&c=d", false, Link_Environnement::INCLUDE_TPL); ?>'),
+      array('<include tpl="{$TAGS}?a=b&c=d" once="true" />', '<?php $_env->includeTpl($__tpl_vars__TAGS . "?a=b&c=d", true, Link_Environnement::INCLUDE_TPL); ?>'),
+      array('<include tpl="{$TAGS}?a=b&c=d" once="false" />', '<?php $_env->includeTpl($__tpl_vars__TAGS . "?a=b&c=d", false, Link_Environnement::INCLUDE_TPL); ?>'),
+      
+      // requires
+      array('<require tpl="112.html" />', '<?php $_env->includeTpl(\'112.html\', false, Link_Environnement::REQUIRE_TPL); ?>'),
+      array('<require tpl="112.html" once="true" />', '<?php $_env->includeTpl(\'112.html\', true, Link_Environnement::REQUIRE_TPL); ?>'),
+      array('<require tpl="112.html" once="false" />', '<?php $_env->includeTpl(\'112.html\', false, Link_Environnement::REQUIRE_TPL); ?>'),
+      array('<require tpl="112.html?a=b&c=d" />', '<?php $_env->includeTpl(\'112.html\' . "?a=b&c=d", false, Link_Environnement::REQUIRE_TPL); ?>'),
+      array('<require tpl="112.html?a=b&c=d" once="true" />', '<?php $_env->includeTpl(\'112.html\' . "?a=b&c=d", true, Link_Environnement::REQUIRE_TPL); ?>'),
+      array('<require tpl="112.html?a=b&c=d" once="false" />', '<?php $_env->includeTpl(\'112.html\' . "?a=b&c=d", false, Link_Environnement::REQUIRE_TPL); ?>'),
+      array('<require tpl="{$TAGS}" />', '<?php $_env->includeTpl($__tpl_vars__TAGS, false, Link_Environnement::REQUIRE_TPL); ?>'),
+      array('<require tpl="{$TAGS}" once="true" />', '<?php $_env->includeTpl($__tpl_vars__TAGS, true, Link_Environnement::REQUIRE_TPL); ?>'),
+      array('<require tpl="{$TAGS}" once="false" />', '<?php $_env->includeTpl($__tpl_vars__TAGS, false, Link_Environnement::REQUIRE_TPL); ?>'),
+      array('<require tpl="{$TAGS}?a=b&c=d" />', '<?php $_env->includeTpl($__tpl_vars__TAGS . "?a=b&c=d", false, Link_Environnement::REQUIRE_TPL); ?>'),
+      array('<require tpl="{$TAGS}?a=b&c=d" once="true" />', '<?php $_env->includeTpl($__tpl_vars__TAGS . "?a=b&c=d", true, Link_Environnement::REQUIRE_TPL); ?>'),
+      array('<require tpl="{$TAGS}?a=b&c=d" once="false" />', '<?php $_env->includeTpl($__tpl_vars__TAGS . "?a=b&c=d", false, Link_Environnement::REQUIRE_TPL); ?>'),
+     );
   }
 }
