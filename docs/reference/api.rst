@@ -239,4 +239,19 @@ An example with the Ghost cache should be more explicit than any explications::
 
 Exceptions
 ----------
-todo
+When Link encounters an error, it may throw some exceptions. All the exceptions
+are inherited from ``Link_Exception``, and are all just shell to help identify
+the error or the exception. Here is the list of the built-in exceptions that
+Link may throw :
+
+- ``Link_Exception_Cache`` : When Link encounters an error in the cache
+  treatment, it may throw a ``Link_Exception_Cache`` exception.
+
+- ``Link_Exception_Loader`` : Whenever Link encounters an error when trying to
+  load a template, it may throw a ``Link_Exception_Loader`` exception.
+
+- ``Link_Exception_Parser`` : Whenever Link encounters an error when trying to
+  parse a template, it may throw a ``Link_Exception_Parser`` exception.
+
+- ``Link_Exception_Runtime`` : Whenever Link encounters an error while trying to
+  execute a parsed template, it may throw a ``Link_Exception_Runtime`` exception.
