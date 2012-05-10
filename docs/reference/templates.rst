@@ -317,4 +317,60 @@ which is mandatory for this kind of use :
 
 Inclusions
 ----------
-todo
+The include tag was made to include a template and render its content into the
+current one.
+
+.. code-block:: xml
+
+  <include tpl="my/file.html.link" />
+
+Per defaults, the included templated inherits its context from the current one.
+You may also add other variables to the child template, adding them to its
+context ; they're lost when we leave the template.
+
+.. code-block:: xml
+
+  <include tpl="my/file.html.link?abc=def&ghi=jkl" />
+
+Here, the variables ``abc`` and ``ghi`` will be accessible in the included
+template and all its children, but not in the current template.
+
+You may also use a variable to indicate a template name (even though I would not
+particularly recommend it) :
+
+.. code-block:: xml
+
+  <include tpl="{$my_var}" />
+
+There is also another attribute for this tag, to be placed after the ``tpl``
+attribute : the attribute ``once``. As its name implies it, its purpose is to
+let the parser know that you wish to include the template once and only once. If
+the template is already included somewhere else, then the template will not be
+included. This attribute takes a boolean value. This attribute has a false value
+per default.
+
+.. code-block:: xml
+
+  <include tpl="my/template.html.link" once="true" />
+
+To conclude this part, you have also the ``require`` tag, behaving exactly like
+the ``include`` tag : if the template is not found, then an error is thrown and
+the script halts. With an ``include`` tag, only a message will be printed, but
+the script will continue.
+
+.. code-block:: xml
+
+  <require tpl="my/file.html.link" />
+
+.. note: 
+  Remember, the template inherits from the current context. For example, in a
+  loop context, it will remember the iteration :
+
+  .. code-block:: xml
+    
+    <foreach array="{$my_array}">
+      <include tpl="my/file.html.link" />
+    </foreach>
+
+  In this case, ``{$my_array.value}`` and all other loop special variables
+  should be accessible.
