@@ -110,7 +110,7 @@ the interface that all the built-in loaders implements::
     public function getCacheKey($_name);
   }
 
-Here is an example with the String loader::
+An example with the String loader will be more explicit::
 
   class Link_Loader_String implements Link_Interface_Loader {
     public function getCacheKey($_name) {
@@ -126,20 +126,116 @@ Here is an example with the String loader::
     }
   }
 
-This is a pretty minimal loader, that implements just the methods given by the
-interface. The ``getSource()`` method purpose is to load the content of the
-template and to return it ; the ``getCacheKey()``'s goal is to get a cache key ;
-and the ``isFresh()`` method is there to check if the template was modified
-since a given time or not (it is usually a timestamp). it must return a boolean,
-so it should return either ``true`` either ``false``.
-
 Parser
 ------
 todo
 
-Caches
-------
-todo
+Cache Managers
+--------------
+Using Link may ask for some performances when parsing templates. To avoid to
+parse somthing that is unchanged since the last time it was parsed, we may have
+to use a Cache, that is responsible to ask for a refresh of the result.
+
+Built-in cache managers
+^^^^^^^^^^^^^^^^^^^^^^^
+You have two built-in cache managers given with a basic download of Link : the 
+Ghost (which is the default) and the Filesystem::
+
+  $none = new Link_Cache_None;
+  $filesystem = new Link_Cache_Filesystem($cacheDir);
+
+If you give no argument to the Filesystem Cache Manager, it will try to use the
+default temp directory of your system via the ``sys_get_temp_dir()`` php 
+function.
+    
+Build your own cache manager
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+You may also develop your own cache manager (example : you want to save data in
+a database), and use it if you implement the ``Link_Interface_Cache`` interface,
+the interface that all the built-in cache managers implements::
+
+  interface Link_Interface_Cache {
+    /**
+    * Gets the last modified time for the selected key
+    *
+    * @param string $_key key designing the cache
+    * @return integer last modification unix timestamp of the file
+    */
+    public function getTimestamp($_key);
+
+    /**
+    * Write the content in the cache file
+    *
+    * @param string $_key key designing the cache
+    * @param string $data Data to be written
+    * @return boolean
+    */
+    public function put($_key, $_data);
+
+    /**
+    * Delete the current cache id.
+    *
+    * @param string $_key key designing the cache
+    * @return void
+    */
+    public function destroy($_key);
+
+    /**
+    * Fetches & executes the cache content
+    *
+    * @param string $_key key designing the cache
+    * @param Link_Environment $_env TPL environnement to be given to the template
+    * @param array $_context Local variables to the template
+    */
+    public function exec($_key, Link_Environment $_env, array $_context = array());
+  }
+
+An example with the Ghost cache should be more explicit than any explications::
+
+  class Link_Cache_None implements Link_Interface_Cache {
+    protected $_datas = array();
+
+    public function destroy($_key) {
+      return; // no reason to do anything, is there ? :o
+    }
+
+    public function getTimestamp($_key) {
+      return 0; // the template is always fresher than the cache
+    }
+
+    public function put($_key, $_data) {
+      $this->_datas[$_key] = $_data; // Stocking the compilation result only...
+    }
+
+    public function exec($_key, Link_Environment $_env, array $_context = array()) {
+      if (!isset($this->_datas[$_key])) {
+        throw new Link_Exception_Cache('No data sent.');
+      }
+
+      if (extract($_context, EXTR_PREFIX_ALL | EXTR_REFS, '__tpl_vars_') < count($_context)) {
+        trigger_error('Some variables couldn\'t be extracted...', E_USER_NOTICE);
+      }
+
+      // -- GAWD I don't like this method :(
+      eval('?>' . $this->_datas[$_key] . '<?php');
+    }
+
+    /**
+    * Executes the file's content
+    * Implementation of the magic method __invoke() for PHP >= 5.3
+    *
+    * @param string $_key Key representating the cache file
+    * @param Link_Environment $tpl TPL environnement to be used during cache reading
+    * @param array $_context Variables to be given to the template
+    * @return bool
+    *
+    * @see self::exec()
+    */
+    public function __invoke($_key, Link_Environment $_env, array $_context = array()) {
+      return $this->exec($_key, $_env, $_context);
+    }
+  }
+
 
 Exceptions
 ----------
