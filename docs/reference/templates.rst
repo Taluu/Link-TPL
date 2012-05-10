@@ -362,7 +362,7 @@ the script will continue.
 
   <require tpl="my/file.html.link" />
 
-.. note: 
+.. note:: 
   Remember, the template inherits from the current context. For example, in a
   loop context, it will remember the iteration :
 
