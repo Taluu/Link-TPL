@@ -361,16 +361,3 @@ the script will continue.
 .. code-block:: xml
 
   <require tpl="my/file.html.link" />
-
-.. note:: 
-  Remember, the template inherits from the current context. For example, in a
-  loop context, it will remember the iteration :
-
-  .. code-block:: xml
-    
-    <foreach array="{$my_array}">
-      <include tpl="my/file.html.link" />
-    </foreach>
-
-  In this case, ``{$my_array.value}`` and all other loop special variables
-  should be accessible.
