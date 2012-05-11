@@ -128,7 +128,92 @@ An example with the String loader will be more explicit::
 
 Parser
 ------
-todo
+To transform a Link syntax into a valid and optimized PHP code, Link have to
+parse the data to make it executable by PHP. We are going to base this
+documentation on the built-in parser given in Link, its options, and how to
+build your own parser.
+
+Available options
+^^^^^^^^^^^^^^^^^
+When you're using ``Link_Parser``, which is the sole built-in parser offered by
+Link, you may suggest some options to alter its behaviour. You may have two ways
+for modifying a parameter :
+
+- You pass it to the constructor, with the ``$options`` array, which is the sole
+  argument asked by the constructor (at least for the built-in parser)
+
+- You use an appropriate getter and setter.
+
+So here is the list of available options (per default) :
+
+- First, the things to parse (``parse`` key). You may choose, with a bitmask, 
+  what you want to effectively parse : constants, conditions, filters, ... But
+  you may not deactivate the "core" features like the variables and loops.
+
+  ========== ===============================================================
+  Flag Name  Flag Description
+  ========== ===============================================================
+  FILTERS    Transforms the filters
+  INCLUDES   Transforms the `<include>` tags
+  CONDITIONS Transforms the `<if>` tags
+  CONSTANTS  Transforms the constants
+  ---------- ---------------------------------------------------------------
+  BASICS     Basics suggested : Transforms at least the conditions
+  DEFAULTS   Defaults suggested : Transforms everything. This is the default
+  ALL        Transforms everything (bitmask containing everything
+  ========== ===============================================================
+
+- The output given, with the ``compact`` option. If it is true, then the code
+  will be compressed, meaning that not only the ``?><?php`` tags will be removed,
+  but also any ``?><?php`` with blancs between them willl be cleansed. If you're
+  using at least PHP 5.4, the ``<?php echo`` will be transformed into ``<?=``.
+  If it is false, then only ``?><?php`` will be cleansed.
+
+- You may also changed the filters class you want to use via the ``filters``
+  option. This option expects a class name.
+
+Build your own parser
+^^^^^^^^^^^^^^^^^^^^^
+You may also build your own parser ; you just need to implements the 
+``Link_Interface_Parser`` class::
+
+  interface Link_Interface_Parser {
+    /**
+     * Getter for a given parameter
+     *
+     * @param string $name Parameter's name
+     * @return mixed Parameter's value
+     */
+    public function getParameter($name);
+    
+    /**
+     * Setter for a given parameter
+     *
+     * @param string $name Parameter's name
+     * @param mixed $val Parameter's value
+     * @return mixed Parameter's value
+     */
+    public function setParameter($name, $val = null);
+
+    /**
+     * Checks whether or not this class has the `$name` parameter
+     *
+     * @param string $name Parameter's name
+     * @return bool true if this parameter exists, false otherwise
+     */
+    public function hasParameter($name);
+
+    /**
+     * Transform a TPL syntax towards an optimized PHP syntax
+     *
+     * @param string $str TPL script to parse
+     * @return string
+     */
+    public function parse($str);
+  }
+
+You may change the default parser by specifying it in the constructor of the
+environment ``Link_Environment``.
 
 Cache Managers
 --------------
