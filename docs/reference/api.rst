@@ -244,14 +244,14 @@ are inherited from ``Link_Exception``, and are all just shell to help identify
 the error or the exception. Here is the list of the built-in exceptions that
 Link may throw :
 
-- ``Link_Exception_Cache`` : When Link encounters an error in the cache
-  treatment, it may throw a ``Link_Exception_Cache`` exception.
+- ``Link_Exception_Cache`` : Thrown when an error in the cache treatment occurs
 
-- ``Link_Exception_Loader`` : Whenever Link encounters an error when trying to
-  load a template, it may throw a ``Link_Exception_Loader`` exception.
+- ``Link_Exception_Loader`` : Thrown when an error while trying to load a 
+  template occurs
 
-- ``Link_Exception_Parser`` : Whenever Link encounters an error when trying to
-  parse a template, it may throw a ``Link_Exception_Parser`` exception.
+- ``Link_Exception_Parser`` : Thrown when an error while trying to parse a 
+  template occurs
 
-- ``Link_Exception_Runtime`` : Whenever Link encounters an error while trying to
-  execute a parsed template, it may throw a ``Link_Exception_Runtime`` exception.
+- ``Link_Exception_Runtime`` : Thrown when an error while trying to execute a 
+  parsed template occurs (like when there's an error when trying to include a
+  template).
