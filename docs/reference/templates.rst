@@ -134,7 +134,7 @@ result of the ``maximize`` filter applied on ``{var}``.
 
 You may also use arguments on filters::
 
-  {var|cut:40:...}
+  {var|cut:50:...}
 
 Here, the ``cut`` filter will be applied on ``{var}`` with a limit of 50 chars
 and a finishing string ``...`` if the length of ``{var}`` exceeds 50 chars.
