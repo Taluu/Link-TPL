@@ -43,8 +43,7 @@ class Link_Environment {
 
   const
     INCLUDE_TPL = 0,
-    REQUIRE_TPL = 1,
-    VERSION = '1.13.0-DEV';
+    REQUIRE_TPL = 1;
 
   /**
    * Initialisation.
