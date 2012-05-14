@@ -12,15 +12,15 @@ Documentation
 -------------
 For any pieces of documentation, check the 
 [official site](http://www.talus-works.net)
-([Talus' TPL > Documentation](http://www.talus-works.net/forum-6-p1-rapports-de-bugs.html)).
-It is still in french though.
+([Talus' TPL > Documentation](http://www.talus-works.net/forum-7-p1-documentation.html)).
+It is in french though, and is up to date only for Link < 1.13 (aka Talus TPL).
 
-A recent version of the documentation (in english) is being written in the `docs`
-folder, but is not complete for now.
+A recent version of the documentation (in english) can be found in the `docs`
+folder, and an online version in available on 
+[Read the docs.org](http://readthedocs.org/docs/link-templates/en/1.13.0/).
 
-For Link < 1.13, you may find a documentation on 
-[Pingax](http://github.com/Pingax)'s fork of 
-[Link TPL](http://github.com/Pingax/Link-TPL/).
+For Link < 1.13, you may find an english documentation on 
+[Pingax's fork of Link TPL](http://github.com/Pingax/Link-TPL/).
 
 Installation
 ------------
@@ -28,32 +28,29 @@ Installation
 You have multiple ways to install Link. If you are unsure what to do, go with
 the tarball.
 
-1. From the tarball release
+### From the tarball release
+1. Download the most recent tarball from the [download page](https://github.com/Taluu/Link-TPL/tags)
+2. Unpack the tarball
+3. Move the files somewhere in your project
 
-  1. Download the most recent tarball from the [download page](https://github.com/Taluu/Link-TPL/tags)
-  2. Unpack the tarball
-  3. Move the files somewhere in your project
+### Development version
+1. Install Git
+2. `git clone git://github.com/Taluu/Link-TPL.git`
 
-2. Development version
+### Via Composer
+1. Install composer in your project: `curl -s http://getcomposer.org/installer | php`
+2. Create a `composer.json` file in your project root:
 
-  1. Install Git
-  2. `git clone git://github.com/Taluu/Link-TPL.git`
+    ```javascript
 
-3. Via Composer
-
-  1. Install composer in your project: `curl -s http://getcomposer.org/installer | php`
-  2. Create a `composer.json` file in your project root:
-
-      ```javascript
-
-        {
-          "require": {
-            "Taluu/Link-TPL": "1.13.*"
-          }
+      {
+        "require": {
+          "Taluu/Link-TPL": "1.13.*"
         }
-      ```
+      }
+    ```
 
-  3. Install via composer : `php composer.phar install`
+3. Install via composer : `php composer.phar install`
 
 About this project...
 ---------------------
