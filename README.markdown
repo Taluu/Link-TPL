@@ -17,7 +17,7 @@ It is in french though, and is up to date only for Link < 1.13 (aka Talus TPL).
 
 A recent version of the documentation (in english) can be found in the `docs`
 folder, and an online version in available on 
-[Read the docs.org](http://readthedocs.org/docs/link-templates/en/1.13.0/).
+[Read the docs.org](http://readthedocs.org/docs/link-templates/en/1.13/).
 
 For Link < 1.13, you may find an english documentation on 
 [Pingax's fork of Link TPL](http://github.com/Pingax/Link-TPL/).

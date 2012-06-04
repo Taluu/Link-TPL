@@ -1,8 +1,9 @@
-.ignore/
-nbproject/
-/composer.phar
-/vendor
-/docs/.build/
-/docs/.templates/
-/docs/.static/
-/docs/make.bat
+.ignore
+nbproject
+composer.phar
+vendor
+docs/.build
+docs/.templates
+docs/.static
+docs/make.bat
+.idea
