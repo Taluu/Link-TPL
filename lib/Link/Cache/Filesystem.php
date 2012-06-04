@@ -34,7 +34,13 @@ class Link_Cache_Filesystem implements Link_Interface_Cache {
     $this->setDir($_dir);
   }
 
-  /** @param string $_dir Directory for the cache */
+  /**
+   * Directory Setter
+   *
+   * @param string $_dir Directory for the cache
+   *
+   * @throws Link_Exception_Cache
+   */
   public function setDir($_dir = null) {
     if ($_dir === null) {
       $this->_dir = rtrim(strtr(sys_get_temp_dir(), '\\', '/'), '/');
@@ -44,8 +50,7 @@ class Link_Cache_Filesystem implements Link_Interface_Cache {
     $dir = rtrim(strtr($_dir, '\\', '/'), '/');
 
     if (!is_dir($dir)){
-      throw new Link_Exception_Cache(array('The directory <b>"%s"</b> doesn\'t exist.', $_dir));
-      return;
+      throw new Link_Exception_Cache(array('The directory <strong>"%s"</strong> doesn\'t exist.', $_dir));
     }
 
     $this->_dir = $dir;
@@ -56,12 +61,14 @@ class Link_Cache_Filesystem implements Link_Interface_Cache {
     return $this->_dir;
   }
 
+  /** {@inheritDoc} */
   public function getTimestamp($_key) {
     $file = $this->getFile($_key);
 
     return file_exists($file) ? filemtime($file) : 0;
   }
 
+  /** {@inheritDoc} */
   public function put($_key, $data) {
     $file = $this->getFile($_key);
 
@@ -81,10 +88,12 @@ class Link_Cache_Filesystem implements Link_Interface_Cache {
     return true;
   }
 
+  /** {@inheritDoc} */
   public function destroy($_key) {
     unlink($this->getFile($_key));
   }
 
+  /** {@inheritDoc} */
   public function exec($_key, Link_Environment $_env, array $_context = array()) {
     $file = $this->getFile($_key);
 
@@ -105,7 +114,7 @@ class Link_Cache_Filesystem implements Link_Interface_Cache {
    * Implementation of the magic method __invoke() for PHP >= 5.3
    *
    * @param string $_key Key representating the cache file
-   * @param Link_Environment $tpl TPL environnement to be used during cache reading
+   * @param Link_Environment $_env TPL environnement to be used during cache reading
    * @param array $_context Variables to be given to the template
    * @return bool
    *
@@ -118,7 +127,7 @@ class Link_Cache_Filesystem implements Link_Interface_Cache {
   /**
    * Gets the filename for the cache.
    *
-   * @param type $_key cache key
+   * @param string $_key cache key
    * @return string
    */
   protected function getFile($_key) {

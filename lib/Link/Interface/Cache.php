@@ -30,7 +30,7 @@ interface Link_Interface_Cache {
    * Write the content in the cache file
    *
    * @param string $_key key designing the cache
-   * @param string $data Data to be written
+   * @param string $_data Data to be written
    * @return boolean
    */
   public function put($_key, $_data);

@@ -59,7 +59,6 @@ class Link_Environment {
    * @param Link_Interface_Loader $_loader Loader to use
    * @param Link_Interface_Cache $_cache Cache engine used
    * @param array $_options Options for the templating engine
-   * @return void
    */
   public function __construct(Link_Interface_Loader $_loader, Link_Interface_Cache $_cache = null, array $_options = array()){
     // -- Options
@@ -127,7 +126,7 @@ class Link_Environment {
    *
    * @param mixed $var Var's name
    * @param mixed &$value Variable to be referenced by $var
-   * @throws Link_Exceptions_Var
+   *
    * @return void
    *
    * @since 1.7.0
@@ -152,7 +151,7 @@ class Link_Environment {
 
     if ($this->getParser()->hasParameter('filters')) {
       foreach ($this->_autoFilters as &$filter) {
-        array_walk_recursive($context, array($this->getParser()->parameter('filters'), $filter));
+        array_walk_recursive($context, array($this->getParser()->getParameter('filters'), $filter));
       }
     }
 
@@ -178,7 +177,7 @@ class Link_Environment {
    * @param string $tpl TPL to be parsed & executed
    * @param array $_context Local variables to be given to the template
    * @see Link_Environment::parse()
-   * @return void
+   * @return bool
    */
   public function __invoke($tpl, array $_context = array()) {
     return $this->parse($tpl, $_context);
@@ -203,18 +202,20 @@ class Link_Environment {
     return ob_get_clean();
   }
 
-  /**
-   * Include a template into another
-   *
-   * @param string $file File to include.
-   * @param bool $once Allow the inclusion once or several times
-   * @param integer $type Inclusion or requirement ?
-   * @return void
-   *
-   * @see Link_Parser::parse()
-   * @throws Link_Exception_Runtime
-   * @throws Link_Exception_Parser
-   */
+    /**
+     * Include a template into another
+     *
+     * @param string $file File to include.
+     * @param bool $once Allow the inclusion once or several times
+     * @param integer $type Inclusion or requirement ?
+     *
+     * @return void
+     *
+     * @throws Link_Exception_Runtime
+     * @throws Link_Exception_Loader
+     *
+     * @see Link_Parser::parse()
+     */
   public function includeTpl($file, $once = false, $type = self::INCLUDE_TPL){
     $data = '';
     $oldContext = $this->_currentContext;
@@ -255,7 +256,7 @@ class Link_Environment {
        */
       if ($e->getCode() === 6) {
         if ($type == self::REQUIRE_TPL) {
-          throw new Link_Exception_Runtime(array('The template <b>%s</b> does not exist ; Being in a require tag, the script shall then be interrupted.', $file), 7);
+          throw new Link_Exception_Runtime(array('The template <strong>%s</strong> does not exist ; Being in a require tag, the script shall then be interrupted.', $file), 7);
         }
 
         echo $e->getMessage();
@@ -275,6 +276,7 @@ class Link_Environment {
     return $this->_parser;
   }
 
+  /** Sets the TPL parser */
   public function setParser(Link_Interface_Parser $_parser) {
     $this->_parser = $_parser;
   }
@@ -284,6 +286,7 @@ class Link_Environment {
     return $this->_cache;
   }
 
+  /** Sets the cache engine */
   public function setCache(Link_Interface_Cache $_cache) {
     $this->_cache = $_cache;
   }
@@ -293,6 +296,7 @@ class Link_Environment {
     return $this->_loader;
   }
 
+  /** Sets the loader */
   public function setLoader(Link_Interface_Loader $_loader) {
     $this->_loader = $_loader;
   }
