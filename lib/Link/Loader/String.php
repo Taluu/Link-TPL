@@ -27,14 +27,17 @@
  * @since 1.4.0
  */
 class Link_Loader_String implements Link_Interface_Loader {
+  /** {@inheritDoc} */
   public function getCacheKey($_name) {
     return sha1($_name);
   }
 
+  /** {@inheritDoc} */
   public function getSource($_name) {
     return $_name;
   }
 
+  /** {@inheritDoc} */
   public function isFresh($_name, $_time) {
     return true;
   }

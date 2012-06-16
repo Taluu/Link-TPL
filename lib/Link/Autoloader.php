@@ -40,6 +40,7 @@ class Link_Autoloader {
    * Autotoloads the `$class` class
    *
    * @param string $_class class to be loaded
+   * @return bool
    */
   static public function load($_class) {
     if (strpos($_class, 'Link') !== 0) {

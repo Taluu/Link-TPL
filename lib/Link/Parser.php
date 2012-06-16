@@ -65,7 +65,6 @@ class Link_Parser implements Link_Interface_Parser {
    *  - filters : Defines which class handles the filters.
    *
    * @param array $_options options to be given to the parser (see above)
-   * @return void
    */
   public function __construct(array $_options = array()){
     $defaults = array(
@@ -259,7 +258,7 @@ class Link_Parser implements Link_Interface_Parser {
    *
    * @param mixed $var Variable
    * @param string $filters Filters
-   * @param string $type Variable's type (for {TYPE,VAR})
+   *
    * @return string filtered var
    */
   protected function _filters($var = '', $filters = ''){
@@ -379,6 +378,7 @@ class Link_Parser implements Link_Interface_Parser {
     return null;
   }
 
+  /** {@inheritDoc} */
   public function setParameter($_param, $_value = null) {
     if (method_exists($this, 'set' . lcfirst($_param))) {
       $method = 'set' . lcfirst($_param);
@@ -387,6 +387,7 @@ class Link_Parser implements Link_Interface_Parser {
     }
   }
 
+  /** {@inheritDoc} */
   public function hasParameter($name) {
     return in_array($name, array('compact', 'filters', 'parse'));
   }
@@ -396,7 +397,13 @@ class Link_Parser implements Link_Interface_Parser {
     return $this->_filters;
   }
 
-  /** @param string $filters **/
+  /**
+   * Sets the filter class
+   *
+   * @param string $filters Filter class to be used
+   *
+   * @throws Link_Exception_Parser Filter class could not be loaded
+   */
   public function setFilters($filters) {
     if (!class_exists($filters)) {
       throw new Link_Exception_Parser('The selected filter class `' . $filters . '` does not exist');

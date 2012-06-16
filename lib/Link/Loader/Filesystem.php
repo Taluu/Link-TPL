@@ -27,19 +27,23 @@ class Link_Loader_Filesystem implements Link_Interface_Loader {
     $_dirs = array(),
     $_cache = array();
 
+    /** {@inheritDoc} */
   public function __construct($_dirs) {
     clearstatcache();
     $this->setDirs($_dirs);
   }
 
+  /** {@inheritDoc} */
   public function getCacheKey($_name) {
     return sha1($this->_findFileName($_name));
   }
 
+  /** {@inheritDoc} */
   public function getSource($_name) {
     return file_get_contents($this->_findFileName($_name));
   }
 
+  /** {@inheritDoc} */
   public function isFresh($_name, $_time) {
     return filemtime($this->_findFileName($_name)) > $_time;
   }
@@ -128,7 +132,10 @@ class Link_Loader_Filesystem implements Link_Interface_Loader {
   /**
    * Prepends a directory on the top of the pile
    *
-   * @param type $_dir
+   * @param string $_dir
+   *
+   * @throws Link_Exception_Loader Directory can't be added because it doesn't
+   *                               exist.
    */
   public function prependDir($_dir) {
     $dir = rtrim(strtr($_dir, '\\', '/'), '/');
