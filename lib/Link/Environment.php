@@ -377,7 +377,7 @@ if (!function_exists('array_replace_recursive')) {
      * @link http://www.php.net/manual/en/function.array-replace-recursive.php#92224
      * @return array Joined array
      */
-    public function array_replace_recursive(array &$original, array &$array)
+    function array_replace_recursive(array &$original, array &$array)
     {
         $arrays = func_get_args();
         $return = array_shift($arrays);
