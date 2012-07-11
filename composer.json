@@ -1,11 +1,11 @@
 {
-  "name": "Taluu/Link-TPL",
+  "name": "taluu/link-tpl",
   "type": "Library",
   "description": "Templating Engine for PHP",
   "keywords": ["templating"],
   "homepage": "http://github.com/Taluu/Link-TPL",
-  "license": "BSD-3",
-  "version": "1.13.0",
+  "license": "BSD-3-Clause",
+  "version": "1.14.0-dev",
 
   "authors": [
       {
