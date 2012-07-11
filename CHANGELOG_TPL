@@ -10,6 +10,9 @@
  * @version $Id$
  */
 
+## 1.13 ==> ? (Release: ??/??/??)
+  #CHG : Now adopting PSR-1 & PSR-2 standards
+
 ## 1.12 ==> 1.13 (Release: 11/05/12)
   #WAR : COMPATIBILITY BROKEN
   #WAR : PHP 5.2.1 is now needed
