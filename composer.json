@@ -1,34 +1,34 @@
 {
-  "name": "taluu/link-tpl",
-  "type": "Library",
-  "description": "Templating Engine for PHP",
-  "keywords": ["templating"],
-  "homepage": "http://github.com/Taluu/Link-TPL",
-  "license": "BSD-3-Clause",
-  "version": "1.14.0-dev",
+    "name": "taluu/link-tpl",
+    "type": "Library",
+    "description": "Templating Engine for PHP",
+    "keywords": ["templating"],
+    "homepage": "http://github.com/Taluu/Link-TPL",
+    "license": "BSD-3-Clause",
+    "version": "1.14.0-dev",
 
-  "authors": [
-      {
-        "name": "Baptiste Clavié",
-        "email": "clavie.b@gmail.com",
-        "homepage": "http://baptiste.clavié.net",
-        "role": "Lead Developper"
-      }
+    "authors": [
+        {
+            "name": "Baptiste Clavié",
+            "email": "clavie.b@gmail.com",
+            "homepage": "http://baptiste.clavié.net",
+            "role": "Lead Developper"
+        }
     ],
 
-  "require": {
-      "php": ">=5.2.1"
+    "require": {
+        "php": ">=5.2.1"
     },
 
     "autoload": {
         "psr-0": {
             "Link_": "lib/"
-          }
-     },
-     
+        }
+    },
+
     "extra": {
-      "branch-alias": {
-        "dev-master": "1-dev"
-       }
-     }
+        "branch-alias": {
+            "dev-master": "1-dev"
+        }
+    }
 }
