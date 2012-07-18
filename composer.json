@@ -16,6 +16,13 @@
         }
     ],
 
+    "support": {
+        "email": "clavie.b@gmail.com",
+        "issues": "https://github.com/Taluu/Link-TPL/issues",
+        "source": "https://github.com/Taluu/Link-TPL",
+        "forum": "http://www.talus-works.net"
+    },
+
     "require": {
         "php": ">=5.2.1"
     },
