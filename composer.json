@@ -3,7 +3,7 @@
     "type": "Library",
     "description": "Templating Engine for PHP",
     "keywords": ["templating"],
-    "homepage": "http://github.com/Taluu/Link-TPL",
+    "homepage": "http://link.talus-works.net/",
     "license": "BSD-3-Clause",
     "version": "1.14.0-dev",
 
