@@ -18,16 +18,14 @@
  * @author  Baptiste "Talus" Clavié <clavie.b@gmail.com>
  *
  */
-class Link_Tests_Loader_StringTest extends PHPUnit_Framework_TestCase
-{
+class Link_Tests_Loader_StringTest extends PHPUnit_Framework_TestCase {
     /** @var Link_Loader_String */
     protected $_loader;
 
 
     protected $_actual;
 
-    public function setUp()
-    {
+    public function setUp() {
         $this->_loader = new Link_Loader_String;
 
         // For Cap'n Mousse ! :)
@@ -42,18 +40,15 @@ And all that I can see is just another lemon-tree
 EOT;
     }
 
-    public function testSource()
-    {
+    public function testSource() {
         $this->assertEquals($this->_actual, $this->_loader->getSource($this->_actual));
     }
 
-    public function testCacheKey()
-    {
+    public function testCacheKey() {
         $this->assertEquals('ebef9b10907a0800db741b0f3887f174647b16cd', $this->_loader->getCacheKey($this->_actual));
     }
 
-    public function testFresh()
-    {
+    public function testFresh() {
         $this->assertTrue($this->_loader->isFresh($this->_actual, time()));
     }
 }

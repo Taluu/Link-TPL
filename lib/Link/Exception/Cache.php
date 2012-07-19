@@ -19,8 +19,7 @@
  * @package Link
  * @author  Baptiste "Talus" Clavié <clavie.b@gmail.com>
  */
-class Link_Exception_Cache extends Link_Exception
-{
+class Link_Exception_Cache extends Link_Exception {
 }
 
 /*

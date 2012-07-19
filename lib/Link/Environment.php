@@ -19,8 +19,7 @@ defined('E_USER_DEPRECATED') || define('E_USER_DEPRECATED', E_USER_NOTICE);
  * @package Link
  * @author  Baptiste "Talus" Clavié <clavie.b@gmail.com>
  */
-class Link_Environment
-{
+class Link_Environment {
     protected
         $_last = array(),
         $_included = array(),
@@ -61,8 +60,7 @@ class Link_Environment
      * @param Link_Interface_Cache  $_cache   Cache engine used
      * @param array                 $_options Options for the templating engine
      */
-    public function __construct(Link_Interface_Loader $_loader, Link_Interface_Cache $_cache = null, array $_options = array())
-    {
+    public function __construct(Link_Interface_Loader $_loader, Link_Interface_Cache $_cache = null, array $_options = array()) {
         // -- Options
         $defaults = array(
             'dependencies' => array(
@@ -80,7 +78,7 @@ class Link_Environment
         $this->setLoader($_loader);
 
         // -- Options treatment
-        $this->_forceReload = (bool) $options['force_reload'];
+        $this->_forceReload = (bool)$options['force_reload'];
     }
 
     /**
@@ -93,8 +91,7 @@ class Link_Environment
      *
      * @since 1.3.0
      */
-    public function set($vars, $value = null)
-    {
+    public function set($vars, $value = null) {
         if (is_array($vars)) {
             $this->_vars = array_replace_recursive($this->_vars, $vars);
 
@@ -115,8 +112,7 @@ class Link_Environment
      *
      * @since 1.9.0
      */
-    public function autoFilters($name)
-    {
+    public function autoFilters($name) {
         if (!$this->getParser()->hasParameter('filters')) { // filters not parsed...
 
             return;
@@ -139,8 +135,7 @@ class Link_Environment
      *
      * @since 1.7.0
      */
-    public function bind($var, &$value)
-    {
+    public function bind($var, &$value) {
     $this->_vars[$var] = &$value;
     $this->_references[] = $var;
   }
@@ -154,8 +149,7 @@ class Link_Environment
      * @throws Link_Exception_Parser
      * @return bool
      */
-    public function parse($_tpl, array $_context = array())
-    {
+    public function parse($_tpl, array $_context = array()) {
         // -- Applying the auto filters...
         $vars = array_diff_key($this->_vars, array_flip($this->_references));
         $context = array_replace_recursive($vars, $_context);
@@ -191,8 +185,7 @@ class Link_Environment
      * @see Link_Environment::parse()
      * @return bool
      */
-    public function __invoke($tpl, array $_context = array())
-    {
+    public function __invoke($tpl, array $_context = array()) {
         return $this->parse($tpl, $_context);
     }
 
@@ -210,8 +203,7 @@ class Link_Environment
      *
      * @todo Cache 2 ?
      */
-    public function pparse($tpl = '', array $_context = array(), $ttl = 0)
-    {
+    public function pparse($tpl = '', array $_context = array(), $ttl = 0) {
         ob_start();
         $this->parse($tpl, $_context);
 
@@ -232,8 +224,7 @@ class Link_Environment
      *
      * @see Link_Parser::parse()
      */
-    public function includeTpl($file, $once = false, $type = self::INCLUDE_TPL)
-    {
+    public function includeTpl($file, $once = false, $type = self::INCLUDE_TPL) {
         $data = '';
         $oldContext = $this->_currentContext;
         $vars = array();
@@ -289,60 +280,50 @@ class Link_Environment
     /**#@+ Accessors */
 
     /** @return Link_Interface_Parser */
-    public function getParser()
-    {
+    public function getParser() {
         return $this->_parser;
     }
 
     /** Sets the TPL parser */
-    public function setParser(Link_Interface_Parser $_parser)
-    {
+    public function setParser(Link_Interface_Parser $_parser) {
         $this->_parser = $_parser;
     }
 
     /** @return Link_Interface_Cache */
-    public function getCache()
-    {
+    public function getCache() {
         return $this->_cache;
     }
 
     /** Sets the cache engine */
-    public function setCache(Link_Interface_Cache $_cache)
-    {
+    public function setCache(Link_Interface_Cache $_cache) {
         $this->_cache = $_cache;
     }
 
     /** @return Link_Interface_Loader */
-    public function getLoader()
-    {
+    public function getLoader() {
         return $this->_loader;
     }
 
     /** Sets the loader */
-    public function setLoader(Link_Interface_Loader $_loader)
-    {
+    public function setLoader(Link_Interface_Loader $_loader) {
         $this->_loader = $_loader;
     }
 
     /** @return bool */
-    public function getForceReload()
-    {
+    public function getForceReload() {
         return $this->_forceReload;
     }
 
     /** @param bool $_reload */
-    public function setForceReload($_reload = false)
-    {
-        $this->_forceReload = (bool) $_reload;
+    public function setForceReload($_reload = false) {
+        $this->_forceReload = (bool)$_reload;
     }
 
-    public function enableForceReload()
-    {
+    public function enableForceReload() {
         $this->setForceReload(true);
     }
 
-    public function disableForceReload()
-    {
+    public function disableForceReload() {
         $this->setForceReload(false);
     }
     /**#@-*/
@@ -377,8 +358,7 @@ if (!function_exists('array_replace_recursive')) {
      * @link http://www.php.net/manual/en/function.array-replace-recursive.php#92224
      * @return array Joined array
      */
-    function array_replace_recursive(array &$original, array &$array)
-    {
+    function array_replace_recursive(array &$original, array &$array) {
         $arrays = func_get_args();
         $return = array_shift($arrays);
 

@@ -32,8 +32,7 @@ if (!defined('PHP_VERSION_ID')) {
  * @package Link
  * @author  Baptiste "Talus" Clavié <clavie.b@gmail.com>
  */
-class Link_Parser implements Link_Interface_Parser
-{
+class Link_Parser implements Link_Interface_Parser {
     const
         FILTERS = 1,
         INCLUDES = 2,
@@ -67,8 +66,7 @@ class Link_Parser implements Link_Interface_Parser
      *
      * @param array $_options options to be given to the parser (see above)
      */
-    public function __construct(array $_options = array())
-    {
+    public function __construct(array $_options = array()) {
         $defaults = array(
             'compact' => false,
             'filters' => 'Link_Filters',
@@ -77,7 +75,7 @@ class Link_Parser implements Link_Interface_Parser
 
         $options = array_replace_recursive($defaults, $_options);
 
-        $this->_compact = (bool) $options['compact'];
+        $this->_compact = (bool)$options['compact'];
         $this->setFilters($options['filters']);
         $this->setParse($options['parse']);
     }
@@ -89,8 +87,7 @@ class Link_Parser implements Link_Interface_Parser
      *
      * @return string
      */
-    public function parse($script)
-    {
+    public function parse($script) {
         $script = str_replace('<?', '<?php echo \'<?\'; ?>', $script);
         $script = preg_replace('`\{\*.*?\*}`s', '', $script);
 
@@ -224,8 +221,7 @@ class Link_Parser implements Link_Interface_Parser
      * @return string PHP Code made
      * @see self::parse()
      */
-    public function __invoke($script)
-    {
+    public function __invoke($script) {
         return $this->parse($script);
     }
 
@@ -236,8 +232,7 @@ class Link_Parser implements Link_Interface_Parser
      *
      * @return string
      */
-    protected function _foreach($matches)
-    {
+    protected function _foreach($matches) {
         $varName = $matches[2];
 
         // -- Is the attribute "as" set ?
@@ -269,8 +264,7 @@ class Link_Parser implements Link_Interface_Parser
      *
      * @return string filtered var
      */
-    protected function _filters($var = '', $filters = '')
-    {
+    protected function _filters($var = '', $filters = '') {
         $toPrint = false;
         $return = sprintf('{%s}', $var);
         $filters = array_filter(explode('|', $filters));
@@ -328,8 +322,7 @@ class Link_Parser implements Link_Interface_Parser
      * @return string include function with the right parameters
      * @todo Find a better way to handle variables in the QS
      */
-    protected function _includes(array $match)
-    {
+    protected function _includes(array $match) {
         $qs = '';
 
         // -- A QS was found
@@ -353,8 +346,7 @@ class Link_Parser implements Link_Interface_Parser
      *
      * @return string Escaped value
      */
-    protected function _escape($arg)
-    {
+    protected function _escape($arg) {
         if (!filter_var($arg, FILTER_VALIDATE_INT)
             && !empty($arg)
             && !preg_match('`^([\'"]).*?\1$`', $arg)
@@ -382,8 +374,7 @@ class Link_Parser implements Link_Interface_Parser
 
     /** @#+ Getters */
 
-    public function getParameter($_param)
-    {
+    public function getParameter($_param) {
         if (method_exists($this, 'get' . lcfirst($_param))) {
             $method = 'get' . lcfirst($_param);
 
@@ -394,8 +385,7 @@ class Link_Parser implements Link_Interface_Parser
     }
 
     /** {@inheritDoc} */
-    public function setParameter($_param, $_value = null)
-    {
+    public function setParameter($_param, $_value = null) {
         if (method_exists($this, 'set' . lcfirst($_param))) {
             $method = 'set' . lcfirst($_param);
 
@@ -404,14 +394,12 @@ class Link_Parser implements Link_Interface_Parser
     }
 
     /** {@inheritDoc} */
-    public function hasParameter($name)
-    {
+    public function hasParameter($name) {
         return in_array($name, array('compact', 'filters', 'parse'));
     }
 
     /** @return string **/
-    public function getFilters()
-    {
+    public function getFilters() {
         return $this->_filters;
     }
 
@@ -422,8 +410,7 @@ class Link_Parser implements Link_Interface_Parser
      *
      * @throws Link_Exception_Parser Filter class could not be loaded
      */
-    public function setFilters($filters)
-    {
+    public function setFilters($filters) {
         if (!class_exists($filters)) {
             throw new Link_Exception_Parser('The selected filter class `' . $filters . '` does not exist');
         }
@@ -432,30 +419,25 @@ class Link_Parser implements Link_Interface_Parser
     }
 
     /** @return int **/
-    public function getParse()
-    {
+    public function getParse() {
         return $this->_parse;
     }
 
     /** @param int **/
-    public function setParse($parse)
-    {
-        $this->_parse = (int) $parse;
+    public function setParse($parse) {
+        $this->_parse = (int)$parse;
     }
 
     /** @return bool **/
-    public function getCompact()
-    {
+    public function getCompact() {
         return $this->_compact;
     }
 
-    public function enableCompact()
-    {
+    public function enableCompact() {
         $this->_compact = true;
     }
 
-    public function disableCompact()
-    {
+    public function disableCompact() {
         $this->_compact = false;
     }
     /** @#- */

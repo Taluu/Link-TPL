@@ -17,16 +17,14 @@
  * @package Link
  * @author  Baptiste "Talus" Clavié <clavie.b@gmail.com>
  */
-class Link_Exception extends Exception
-{
+class Link_Exception extends Exception {
     /**
      * constructor
      *
      * @param array|string $message if an array, will be formatted by vsprintf
      * @param int          $code    error code
      */
-    public function __construct($message = '', $code = 0)
-    {
+    public function __construct($message = '', $code = 0) {
         if (is_array($message)) {
             $str = array_shift($message);
             $message = vsprintf($str, $message);

@@ -20,8 +20,7 @@ defined('PHP_EXT') || define('PHP_EXT', pathinfo(__FILE__, PATHINFO_EXTENSION));
  * @author  Baptiste "Talus" Clavié <clavie.b@gmail.com>
  * @since   1.4.0
  */
-class Link_Cache_Filesystem implements Link_Interface_Cache
-{
+class Link_Cache_Filesystem implements Link_Interface_Cache {
     protected $_dir = null;
 
     /**
@@ -31,8 +30,7 @@ class Link_Cache_Filesystem implements Link_Interface_Cache
      *
      * @see Link_Cache_Filesystem::setDir()
      */
-    public function __construct($_dir = null)
-    {
+    public function __construct($_dir = null) {
         clearstatcache();
         $this->setDir($_dir);
     }
@@ -44,8 +42,7 @@ class Link_Cache_Filesystem implements Link_Interface_Cache
      *
      * @throws Link_Exception_Cache
      */
-    public function setDir($_dir = null)
-    {
+    public function setDir($_dir = null) {
         if ($_dir === null) {
             $this->_dir = rtrim(strtr(sys_get_temp_dir(), '\\', '/'), '/');
 
@@ -62,22 +59,19 @@ class Link_Cache_Filesystem implements Link_Interface_Cache
     }
 
     /** @return string dir where the cache will be stored */
-    public function getDir()
-    {
+    public function getDir() {
         return $this->_dir;
     }
 
     /** {@inheritDoc} */
-    public function getTimestamp($_key)
-    {
+    public function getTimestamp($_key) {
         $file = $this->getFile($_key);
 
         return file_exists($file) ? filemtime($file) : 0;
     }
 
     /** {@inheritDoc} */
-    public function put($_key, $data)
-    {
+    public function put($_key, $data) {
         $file = $this->getFile($_key);
 
         // -- Setting a homemade LOCK
@@ -98,14 +92,12 @@ class Link_Cache_Filesystem implements Link_Interface_Cache
     }
 
     /** {@inheritDoc} */
-    public function destroy($_key)
-    {
+    public function destroy($_key) {
         unlink($this->getFile($_key));
     }
 
     /** {@inheritDoc} */
-    public function exec($_key, Link_Environment $_env, array $_context = array())
-    {
+    public function exec($_key, Link_Environment $_env, array $_context = array()) {
         $file = $this->getFile($_key);
 
         if (!file_exists($file)) {
@@ -133,8 +125,7 @@ class Link_Cache_Filesystem implements Link_Interface_Cache
      *
      * @see self::exec()
      */
-    public function __invoke($_key, Link_Environment $_env, array $_context = array())
-    {
+    public function __invoke($_key, Link_Environment $_env, array $_context = array()) {
         return $this->exec($_key, $_env, $_context);
     }
 
@@ -145,8 +136,7 @@ class Link_Cache_Filesystem implements Link_Interface_Cache
      *
      * @return string
      */
-    protected function getFile($_key)
-    {
+    protected function getFile($_key) {
         return sprintf('%1$s/link_%2$s.%3$s', $this->getDir(), $_key, PHP_EXT);
     }
 }

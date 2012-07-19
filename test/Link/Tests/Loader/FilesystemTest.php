@@ -22,14 +22,12 @@ defined('__DIR__') || define('__DIR__', dirname(__FILE__));
  * @author  Baptiste "Talus" Clavié <clavie.b@gmail.com>
  *
  */
-class Link_Tests_Loader_FilesystemTest extends PHPUnit_Framework_TestCase
-{
+class Link_Tests_Loader_FilesystemTest extends PHPUnit_Framework_TestCase {
     /** @var Link_Loader_Filesystem */
     private $_loader = null;
 
     /** @dataProvider getSecurityTests */
-    public function testSecurity($template)
-    {
+    public function testSecurity($template) {
         try {
             $this->_loader->getSource($template);
             $this->fail();
@@ -38,8 +36,7 @@ class Link_Tests_Loader_FilesystemTest extends PHPUnit_Framework_TestCase
         }
     }
 
-    public function getSecurityTests()
-    {
+    public function getSecurityTests() {
         return array(
             array("AutoloaderTest\0.php"),
             array('..\\AutoloaderTest.php'),
@@ -62,8 +59,7 @@ class Link_Tests_Loader_FilesystemTest extends PHPUnit_Framework_TestCase
         );
     }
 
-    public function setUp()
-    {
+    public function setUp() {
         $this->_loader = new Link_Loader_Filesystem(__DIR__);
     }
 }

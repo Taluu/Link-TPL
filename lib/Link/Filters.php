@@ -43,17 +43,14 @@ if (!defined('PHP_VERSION_ID')) {
  * @author  Baptiste "Talus" Clavié <clavie.b@gmail.com>
  * @since   1.5.0
  */
-class Link_Filters
-{
+class Link_Filters {
     // @codeCoverageIgnoreStart
     /** @ignore */
-    final private function __construct()
-    {
+    final private function __construct() {
     }
 
     /** @ignore */
-    final private function __clone()
-    {
+    final private function __clone() {
     }
 
     // @codeCoverageIgnoreEnd
@@ -65,9 +62,8 @@ class Link_Filters
      *
      * @return string value rounded up to the next integer
      */
-    public static function ceil($arg)
-    {
-        return (string) ceil((float) $arg);
+    public static function ceil($arg) {
+        return (string)ceil((float)$arg);
     }
 
     /**
@@ -77,16 +73,15 @@ class Link_Filters
      *
      * @return string value rounded to the next lower integer
      */
-    public static function floor($arg)
-    {
-        return (string) floor((float) $arg);
+    public static function floor($arg) {
+        return (string)floor((float)$arg);
     }
 
     /**
      * Convert special characters to HTML entities
      *
-     * @param string $arg         The string being converted
-     * @param int    $quote_style <b>[Optional]</b>
+     * @param string $arg           The string being converted
+     * @param int    $quote_style   <b>[Optional]</b>
      *                              The optional second argument, quote_style, tells the
      *                              function what to do with single and double quote
      *                              characters. The default mode, ENT_COMPAT, is the
@@ -95,7 +90,7 @@ class Link_Filters
      *                              untranslated. If ENT_QUOTES is set, both single and
      *                              double quotes are translated and if ENT_NOQUOTES is
      *                              set neither single nor double quotes are translated.
-     * @param string $charset <b>[Optional]</b>
+     * @param string $charset       <b>[Optional]</b>
      *                        <p>Defines character set used in conversion. The
      *                              default character set is ISO-8859-1.</p>
      *                        <p>For the purposes of this function, the charsets
@@ -104,15 +99,14 @@ class Link_Filters
      *                              characters affected by htmlspecialchars occupy the
      *                              same positions in all of these charsets.</p>
      *                        &reference.strings.charsets
-     * @param bool $double_encode <b>[Optional]</b>
+     * @param bool   $double_encode <b>[Optional]</b>
      *                              When double_encode is turned off PHP will not
      *                              encode existing html entities, the default is to
      *                              convert everything.
      *
      * @return string The converted string
      */
-    public static function protect($arg, $quote_style = ENT_COMPAT, $charset = 'ISO-8859-1', $double_encode = true)
-    {
+    public static function protect($arg, $quote_style = ENT_COMPAT, $charset = 'ISO-8859-1', $double_encode = true) {
         return htmlspecialchars($arg, $quote_style, $charset, $double_encode);
     }
 
@@ -124,8 +118,7 @@ class Link_Filters
      *
      * @return string str with it's first letter converted to UPPERCASE.
      */
-    public static function ucfirst($arg, $encoding = null)
-    {
+    public static function ucfirst($arg, $encoding = null) {
         if ($encoding === null) {
             $encoding = mb_internal_encoding();
         }
@@ -143,8 +136,7 @@ class Link_Filters
      *
      * @return string str with it's first letter converted to lowercase.
      */
-    public static function lcfirst($arg, $encoding = null)
-    {
+    public static function lcfirst($arg, $encoding = null) {
         if ($encoding === null) {
             $encoding = mb_internal_encoding();
         }
@@ -157,16 +149,15 @@ class Link_Filters
     /**
      * Perform case folding on a string
      *
-     * @param string $arg  <p>The string being converted.</p>
-     * @param int    $mode <p>The mode of the conversion. It can be one of
+     * @param string $arg      <p>The string being converted.</p>
+     * @param int    $mode     <p>The mode of the conversion. It can be one of
     MB_CASE_UPPER, MB_CASE_LOWER, or MB_CASE_TITLE.</p>
      * @param string $encoding <b>[optional]</b> &mbstring.encoding.parameter;
      *
      * @return string A case folded version of string converted in the
      *                way specified by $mode.
      */
-    public static function convertCase($arg, $mode, $encoding = null)
-    {
+    public static function convertCase($arg, $mode, $encoding = null) {
         if ($encoding === null) {
             $encoding = mb_internal_encoding();
         }
@@ -182,8 +173,7 @@ class Link_Filters
      *
      * @return string the string converted
      */
-    public static function invertCase($arg, $encoding = null)
-    {
+    public static function invertCase($arg, $encoding = null) {
         if ($encoding === null) {
             $encoding = mb_internal_encoding();
         }
@@ -206,8 +196,7 @@ class Link_Filters
      *
      * @return string the string UPPERCASED
      */
-    public static function maximize($arg, $encoding = null)
-    {
+    public static function maximize($arg, $encoding = null) {
         return self::convertCase($arg, MB_CASE_UPPER, $encoding);
     }
 
@@ -221,8 +210,7 @@ class Link_Filters
      *
      * @return string the string lowercased
      */
-    public static function minimize($arg, $encoding = null)
-    {
+    public static function minimize($arg, $encoding = null) {
         return self::convertCase($arg, MB_CASE_LOWER, $encoding);
     }
 
@@ -235,8 +223,7 @@ class Link_Filters
      *
      * @return string The altered string
      */
-    public static function nl2br($arg, $is_xhtml = true)
-    {
+    public static function nl2br($arg, $is_xhtml = true) {
         return PHP_VERSION_ID >= 50300 ? nl2br($arg, $is_xhtml) : nl2br($arg);
     }
 
@@ -249,8 +236,7 @@ class Link_Filters
      * @link http://www.symfony-project.org Symfony Framework
      * @return string $arg's slug, n-a if not valid.
      */
-    public static function slugify($arg)
-    {
+    public static function slugify($arg) {
         $arg = trim(preg_replace('`[^\\pL\d]+`u', '-', trim($arg)), '-');
 
         if (function_exists('iconv')) {
@@ -275,8 +261,7 @@ class Link_Filters
      *
      * @return string string altered if too long, or id if not.
      */
-    public static function cut($arg, $max = 50, $finish = '...')
-    {
+    public static function cut($arg, $max = 50, $finish = '...') {
         if (strlen($arg) <= $max) {
             return $arg;
         }
@@ -301,8 +286,7 @@ class Link_Filters
      *
      * @return string altered string
      */
-    public static function paragraphy($arg)
-    {
+    public static function paragraphy($arg) {
         $arg = str_replace(PHP_EOL, "\n", $arg);
 
         $paras = preg_split("`(?:\n\s*\n)+`si", $arg);
@@ -326,8 +310,7 @@ class Link_Filters
      *
      * @return string unescaped var
      */
-    public static function safe($arg, $quote_style = ENT_COMPAT)
-    {
+    public static function safe($arg, $quote_style = ENT_COMPAT) {
         return htmlspecialchars_decode($arg, $quote_style);
     }
 
@@ -338,8 +321,7 @@ class Link_Filters
      *
      * @return string the variable's value
      */
-    public static function void($arg)
-    {
+    public static function void($arg) {
         return $arg;
     }
 
@@ -351,8 +333,7 @@ class Link_Filters
      *
      * @return mixed default value if variable is empty, variables value otherwise
      */
-    public static function defaults($arg, $default = '')
-    {
+    public static function defaults($arg, $default = '') {
         if (!$arg) {
             return $default;
         }

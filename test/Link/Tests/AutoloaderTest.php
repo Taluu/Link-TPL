@@ -11,10 +11,8 @@
  * @version   $Id$
  */
 
-class Link_Tests_AutoloaderTest extends PHPUnit_Framework_TestCase
-{
-    public function testAutoload()
-    {
+class Link_Tests_AutoloaderTest extends PHPUnit_Framework_TestCase {
+    public function testAutoload() {
         $this->assertFalse(class_exists('FooBarFoo'), '->load() does not try to load classes that does not begin with Link');
 
         $this->assertFalse(Link_Autoloader::load('Foo'), '->load() does not return false if it is not able to load a class');

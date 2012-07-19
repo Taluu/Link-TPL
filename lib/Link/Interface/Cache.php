@@ -17,8 +17,7 @@
  * @package Link
  * @author  Baptiste "Talus" Clavié <clavie.b@gmail.com>
  */
-interface Link_Interface_Cache
-{
+interface Link_Interface_Cache {
     /**
      * Gets the last modified time for the selected key
      *

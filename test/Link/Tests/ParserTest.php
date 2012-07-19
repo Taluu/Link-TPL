@@ -18,18 +18,15 @@
  * @author  Baptiste "Talus" Clavié <clavie.b@gmail.com>
  *
  */
-class Link_Tests_ParserTest extends PHPUnit_Framework_TestCase
-{
+class Link_Tests_ParserTest extends PHPUnit_Framework_TestCase {
     /** @var Link_Parser */
     private $_parser = null;
 
-    public function setUp()
-    {
+    public function setUp() {
         $this->_parser = new Link_Parser;
     }
 
-    public function testConditions()
-    {
+    public function testConditions() {
         $datas = array(
             '<if cond="test">...</if>'          => '<?php if (test) : ?>...<?php endif; ?>',
             '<if condition="test">...</if>'     => '<?php if (test) : ?>...<?php endif; ?>',
@@ -48,8 +45,7 @@ class Link_Tests_ParserTest extends PHPUnit_Framework_TestCase
         }
     }
 
-    public function testLoops()
-    {
+    public function testLoops() {
         $datas = array(
             // Normal foreach
             '<foreach array="{$sth}">'                                    => '<?php
@@ -100,13 +96,11 @@ class Link_Tests_ParserTest extends PHPUnit_Framework_TestCase
     }
 
     /** @dataProvider getVarsTests */
-    public function testVars($tpl, $expected)
-    {
+    public function testVars($tpl, $expected) {
         $this->assertEquals($expected, $this->_parser->parse($tpl));
     }
 
-    public function getVarsTests()
-    {
+    public function getVarsTests() {
         return array(
             // basic vars
             array('{abcd}', '<?php echo $__tpl_vars__abcd; ?>'),
@@ -131,13 +125,11 @@ class Link_Tests_ParserTest extends PHPUnit_Framework_TestCase
     }
 
     /** @dataProvider getIncludesTests */
-    public function testIncludes($tpl, $expected)
-    {
+    public function testIncludes($tpl, $expected) {
         $this->assertEquals($expected, $this->_parser->parse($tpl));
     }
 
-    public function getIncludesTests()
-    {
+    public function getIncludesTests() {
         return array(
             // includes
             array('<include tpl="112.html" />', '<?php $_env->includeTpl(\'112.html\', false, Link_Environment::INCLUDE_TPL); ?>'),

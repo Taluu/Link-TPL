@@ -17,8 +17,7 @@
  * @package Link
  * @author  Baptiste "Talus" Clavié <clavie.b@gmail.com>
  */
-interface Link_Interface_Parser
-{
+interface Link_Interface_Parser {
     /**
      * Getter for a given parameter
      *

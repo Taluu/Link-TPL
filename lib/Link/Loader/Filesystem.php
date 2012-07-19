@@ -22,34 +22,29 @@
  * @author  Baptiste "Talus" Clavié <clavie.b@gmail.com>
  * @since   1.4.0
  */
-class Link_Loader_Filesystem implements Link_Interface_Loader
-{
+class Link_Loader_Filesystem implements Link_Interface_Loader {
     protected
         $_dirs = array(),
         $_cache = array();
 
     /** {@inheritDoc} */
-    public function __construct($_dirs)
-    {
+    public function __construct($_dirs) {
         clearstatcache();
         $this->setDirs($_dirs);
     }
 
     /** {@inheritDoc} */
-    public function getCacheKey($_name)
-    {
+    public function getCacheKey($_name) {
         return sha1($this->_findFileName($_name));
     }
 
     /** {@inheritDoc} */
-    public function getSource($_name)
-    {
+    public function getSource($_name) {
         return file_get_contents($this->_findFileName($_name));
     }
 
     /** {@inheritDoc} */
-    public function isFresh($_name, $_time)
-    {
+    public function isFresh($_name, $_time) {
         return filemtime($this->_findFileName($_name)) > $_time;
     }
 
@@ -61,8 +56,7 @@ class Link_Loader_Filesystem implements Link_Interface_Loader
      * @return string                the corresponding file name
      * @throws Link_Exception_Loader if the file is not found or not accessible
      */
-    protected function _findFileName($_name)
-    {
+    protected function _findFileName($_name) {
         if (isset($this->_cache[$_name])) {
             return $this->_cache[$_name];
         }
@@ -103,14 +97,12 @@ class Link_Loader_Filesystem implements Link_Interface_Loader
     }
 
     /** @return array directories used **/
-    public function getDirs()
-    {
+    public function getDirs() {
         return $this->_dirs;
     }
 
     /** @param string|array $_dirs directories to use **/
-    public function setDirs($_dirs)
-    {
+    public function setDirs($_dirs) {
         if (!is_array($_dirs)) {
             $_dirs = array($_dirs);
         }
@@ -130,8 +122,7 @@ class Link_Loader_Filesystem implements Link_Interface_Loader
      *
      * @throws Link_Exception_Loader
      */
-    public function appendDir($_dir)
-    {
+    public function appendDir($_dir) {
         $dir = rtrim(strtr($_dir, '\\', '/'), '/');
 
         if (!is_dir($dir)) {
@@ -149,8 +140,7 @@ class Link_Loader_Filesystem implements Link_Interface_Loader
      * @throws Link_Exception_Loader Directory can't be added because it doesn't
      *                               exist.
      */
-    public function prependDir($_dir)
-    {
+    public function prependDir($_dir) {
         $dir = rtrim(strtr($_dir, '\\', '/'), '/');
 
         if (!is_dir($dir)) {

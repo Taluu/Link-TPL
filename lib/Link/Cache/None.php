@@ -22,31 +22,26 @@ defined('PHP_EXT') || define('PHP_EXT', pathinfo(__FILE__, PATHINFO_EXTENSION));
  * @author  Baptiste "Talus" Clavié <clavie.b@gmail.com>
  * @since   1.13.0
  */
-class Link_Cache_None implements Link_Interface_Cache
-{
+class Link_Cache_None implements Link_Interface_Cache {
     protected $_datas = array();
 
     /** {@inheritDoc} */
-    public function destroy($_key)
-    {
+    public function destroy($_key) {
         return; // no reason to do anything, is there ? :o
     }
 
     /** {@inheritDoc} */
-    public function getTimestamp($_key)
-    {
+    public function getTimestamp($_key) {
         return 0; // the template is always fresher than the cache
     }
 
     /** {@inheritDoc} */
-    public function put($_key, $_data)
-    {
+    public function put($_key, $_data) {
         $this->_datas[$_key] = $_data; // Stocking the compilation result only...
     }
 
     /** {@inheritDoc} */
-    public function exec($_key, Link_Environment $_env, array $_context = array())
-    {
+    public function exec($_key, Link_Environment $_env, array $_context = array()) {
         if (!isset($this->_datas[$_key])) {
             throw new Link_Exception_Cache('No data sent.');
         }
@@ -56,7 +51,7 @@ class Link_Cache_None implements Link_Interface_Cache
         }
 
         // -- GAWD I don't like this method :(
-        return (bool) eval('?>' . $this->_datas[$_key] . '<?php');
+        return (bool)eval('?>' . $this->_datas[$_key] . '<?php');
     }
 
     /**
@@ -71,8 +66,7 @@ class Link_Cache_None implements Link_Interface_Cache
      *
      * @see self::exec()
      */
-    public function __invoke($_key, Link_Environment $_env, array $_context = array())
-    {
+    public function __invoke($_key, Link_Environment $_env, array $_context = array()) {
         return $this->exec($_key, $_env, $_context);
     }
 }

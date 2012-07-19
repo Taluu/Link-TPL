@@ -11,15 +11,15 @@
          syntaxCheck="false"
          bootstrap="test/bootstrap.php"
          verbose="true">
-  <testsuites>
-    <testsuite name="Link Test Suite">
-      <directory>./test/Link/</directory>
-    </testsuite>
-  </testsuites>
+    <testsuites>
+        <testsuite name="Link Test Suite">
+            <directory>./test/Link/</directory>
+        </testsuite>
+    </testsuites>
 
-  <filter>
-    <whitelist>
-      <directory suffix=".php">./lib/Link/</directory>
-    </whitelist>
-  </filter>
+    <filter>
+        <whitelist>
+            <directory suffix=".php">./lib/Link/</directory>
+        </whitelist>
+    </filter>
 </phpunit>

@@ -27,15 +27,12 @@ defined('__DIR__') || define('__DIR__', dirname(__FILE__));
  * @author  Baptiste "Talus" Clavié <clavie.b@gmail.com>
  * @link    http://groups.google.com/group/php-standards/web/psr-0-final-proposal
  */
-class Link_Autoloader
-{
-    public static function register()
-    {
+class Link_Autoloader {
+    public static function register() {
         spl_autoload_register(array('self', 'load'));
     }
 
-    public static function unregister()
-    {
+    public static function unregister() {
         spl_autoload_unregister(array('self', 'load'));
     }
 
@@ -46,8 +43,7 @@ class Link_Autoloader
      *
      * @return bool
      */
-    public static function load($_class)
-    {
+    public static function load($_class) {
         if (strpos($_class, 'Link') !== 0) {
             return false;
         }
