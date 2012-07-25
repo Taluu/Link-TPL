@@ -46,48 +46,30 @@ class Link_Tests_ParserTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testLoops() {
+        $foreach = '<?php
+            $__tpl_foreach__%1$s = array(
+                \'value\' => null,
+                \'key\' => null,
+                \'size\' => isset($__tpl_%2$s) ? count($__tpl_%2$s) : 0,
+                \'current\' => 0
+              );
+
+            if ($__tpl_foreach__%1$s[\'size\'] > 0) :
+                foreach ($__tpl_%2$s as $__tpl_foreach__%1$s[\'key\'] => $__tpl_foreach__%1$s[\'value\']) {
+                  ++$__tpl_foreach__%1$s[\'current\']; ?>';
+    
         $datas = array(
             // Normal foreach
-            '<foreach array="{$sth}">'                                    => '<?php
-      $__tpl_foreach__sth = array(
-        \'value\' => null,
-        \'key\' => null,
-        \'size\' => isset($__tpl_vars__sth) ? count($__tpl_vars__sth) : 0,
-        \'current\' => 0
-       );
-
-      if ($__tpl_foreach__sth[\'size\'] > 0) :
-        foreach ($__tpl_vars__sth as $__tpl_foreach__sth[\'key\'] => $__tpl_foreach__sth[\'value\']) {
-          ++$__tpl_foreach__sth[\'current\']; ?>',
+            '<foreach array="{$sth}">'                                    => sprintf($foreach, 'sth', 'vars__sth'),
 
             // with Shortcut
-            '<foreach ary="{$sth}">'                                      => '<?php
-      $__tpl_foreach__sth = array(
-        \'value\' => null,
-        \'key\' => null,
-        \'size\' => isset($__tpl_vars__sth) ? count($__tpl_vars__sth) : 0,
-        \'current\' => 0
-       );
-
-      if ($__tpl_foreach__sth[\'size\'] > 0) :
-        foreach ($__tpl_vars__sth as $__tpl_foreach__sth[\'key\'] => $__tpl_foreach__sth[\'value\']) {
-          ++$__tpl_foreach__sth[\'current\']; ?>',
+            '<foreach ary="{$sth}">'                                      => sprintf($foreach, 'sth', 'vars__sth'),
 
             // Something not really valid...
             '<foreach array="{$sth[\'not\']->valid}">'                    => '<foreach array="$__tpl_vars__sth[\'not\']->valid">',
 
             // Heavy syntax
-            '<foreach array="{$sth.value[\'which\']->is}" as="{$valid}">' => '<?php
-      $__tpl_foreach__valid = array(
-        \'value\' => null,
-        \'key\' => null,
-        \'size\' => isset($__tpl_foreach__sth[\'value\'][\'which\']->is) ? count($__tpl_foreach__sth[\'value\'][\'which\']->is) : 0,
-        \'current\' => 0
-       );
-
-      if ($__tpl_foreach__valid[\'size\'] > 0) :
-        foreach ($__tpl_foreach__sth[\'value\'][\'which\']->is as $__tpl_foreach__valid[\'key\'] => $__tpl_foreach__valid[\'value\']) {
-          ++$__tpl_foreach__valid[\'current\']; ?>'
+            '<foreach array="{$sth.value[\'which\']->is}" as="{$valid}">' => sprintf($foreach, 'valid', 'foreach__sth[\'value\'][\'which\']->is')
         );
 
         foreach ($datas as $data => $expected) {
