@@ -7,11 +7,12 @@
  * @copyright Copyleft (c) 2007+, Baptiste Clavié, Talus' Works
  * @link http://www.talus-works.net Talus' Works
  * @license http://www.opensource.org/licenses/BSD-3-Clause Modified BSD License
- * @version $Id$
+ * @version $Id: c943b372181f3da5098c6407ab268d68ca7b4b87 $
  */
 
 ## 1.13 ==> 1.? (Release: ??/??/??)
     #CHG : Now adopting PSR-1 & PSR-2 standards (minus some things)
+    #CHG : Broke the Parser interface for the handling of parameters
 
 ## 1.12 ==> 1.13 (Release: 11/05/12)
     #WAR : COMPATIBILITY BROKEN

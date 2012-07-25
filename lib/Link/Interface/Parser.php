@@ -17,35 +17,7 @@
  * @package Link
  * @author  Baptiste "Talus" Clavié <clavie.b@gmail.com>
  */
-interface Link_Interface_Parser {
-    /**
-     * Getter for a given parameter
-     *
-     * @param string $name Parameter's name
-     *
-     * @return mixed Parameter's value
-     */
-    public function getParameter($name);
-
-    /**
-     * Setter for a given parameter
-     *
-     * @param string $name Parameter's name
-     * @param mixed  $val  Parameter's value
-     *
-     * @return mixed Parameter's value
-     */
-    public function setParameter($name, $val = null);
-
-    /**
-     * Checks whether or not this class has the `$name` parameter
-     *
-     * @param string $name Parameter's name
-     *
-     * @return bool true if this parameter exists, false otherwise
-     */
-    public function hasParameter($name);
-
+interface Link_Interface_Parser extends Link_Interface_Parameters {
     /**
      * Transform a TPL syntax towards an optimized PHP syntax
      *
