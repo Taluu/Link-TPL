@@ -87,8 +87,6 @@ class Link_Cache_Filesystem implements Link_Interface_Cache {
 
         // -- Removing the LOCK
         unlink($lockFile);
-
-        return true;
     }
 
     /** {@inheritDoc} */

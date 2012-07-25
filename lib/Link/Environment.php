@@ -87,8 +87,6 @@ class Link_Environment {
      * @param array|string $vars  Var(s)' name (tpl side)
      * @param mixed        $value Var's value if $vars is not an array
      *
-     * @return array
-     *
      * @since 1.3.0
      */
     public function set($vars, $value = null) {
@@ -114,7 +112,6 @@ class Link_Environment {
      */
     public function autoFilters($name) {
         if (!$this->getParser()->hasParameter('filters')) { // filters not parsed...
-
             return;
         }
 
@@ -136,9 +133,9 @@ class Link_Environment {
      * @since 1.7.0
      */
     public function bind($var, &$value) {
-    $this->_vars[$var] = &$value;
-    $this->_references[] = $var;
-  }
+        $this->_vars[$var] = &$value;
+        $this->_references[] = $var;
+    }
 
     /**
      * Parse and execute the Template $tpl.

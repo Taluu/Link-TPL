@@ -242,16 +242,16 @@ class Link_Parser implements Link_Interface_Parser {
 
         // with ref : $__tpl_foreach_ref[] = \'%1$s\';
         return sprintf('<?php
-      $__tpl_foreach__%1$s = array(
-        \'value\' => null,
-        \'key\' => null,
-        \'size\' => isset({$%2$s}) ? count({$%2$s}) : 0,
-        \'current\' => 0
-       );
+            $__tpl_foreach__%1$s = array(
+                \'value\' => null,
+                \'key\' => null,
+                \'size\' => isset({$%2$s}) ? count({$%2$s}) : 0,
+                \'current\' => 0
+              );
 
-      if ({$%1$s.size} > 0) :
-        foreach ({$%2$s} as {$%1$s.key} => {$%1$s.value}) {
-          ++{$%1$s.current}; ?>', $varName, $matches[2]);
+            if ({$%1$s.size} > 0) :
+                foreach ({$%2$s} as {$%1$s.key} => {$%1$s.value}) {
+                  ++{$%1$s.current}; ?>', $varName, $matches[2]);
     }
 
     /**
