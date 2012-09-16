@@ -13,7 +13,6 @@
 
 // -- Useful constants....
 defined('PHP_EXT') || define('PHP_EXT', pathinfo(__FILE__, PATHINFO_EXTENSION));
-defined('__DIR__') || define('__DIR__', dirname(__FILE__));
 
 /**
  * Autoloader
@@ -50,7 +49,7 @@ class Link_Autoloader {
             return false;
         }
 
-        $file = __DIR__ . '/../';
+        $file = dirname(__FILE__) . '/../';
         $file .= str_replace(array('_', "\0"), array('/', ''), $_class) . '.' . PHP_EXT;
 
         if (!file_exists($file)) {
