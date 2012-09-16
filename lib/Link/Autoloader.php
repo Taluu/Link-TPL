@@ -28,10 +28,12 @@ defined('__DIR__') || define('__DIR__', dirname(__FILE__));
  * @link    http://groups.google.com/group/php-standards/web/psr-0-final-proposal
  */
 class Link_Autoloader {
+    /** @codeCoverageIgnore */
     public static function register() {
         spl_autoload_register(array('self', 'load'));
     }
 
+    /** @codeCoverageIgnore */
     public static function unregister() {
         spl_autoload_unregister(array('self', 'load'));
     }
