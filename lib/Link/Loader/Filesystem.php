@@ -96,12 +96,15 @@ class Link_Loader_Filesystem implements Link_Interface_Loader {
         throw new Link_Exception_Loader('The template ' . $_name . ' does not seem to exist.', 6);
     }
 
-    /** @return array directories used **/
+    /**
+     * @return array directories used
+     * @codeCoverageIgnore
+     */
     public function getDirs() {
         return $this->_dirs;
     }
 
-    /** @param string|array $_dirs directories to use **/
+    /** @param string|array $_dirs directories to use */
     public function setDirs($_dirs) {
         if (!is_array($_dirs)) {
             $_dirs = array($_dirs);
@@ -137,8 +140,7 @@ class Link_Loader_Filesystem implements Link_Interface_Loader {
      *
      * @param string $_dir
      *
-     * @throws Link_Exception_Loader Directory can't be added because it doesn't
-     *                               exist.
+     * @throws Link_Exception_Loader Directory can't be added because it doesn't exist.
      */
     public function prependDir($_dir) {
         $dir = rtrim(strtr($_dir, '\\', '/'), '/');

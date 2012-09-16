@@ -59,6 +59,46 @@ class Link_Tests_Loader_FilesystemTest extends PHPUnit_Framework_TestCase {
         );
     }
 
+    public function testLoad() {
+        // -- should not be any errors...
+        $this->_loader->getSource('FilesystemTest.php');
+        $this->_loader->getSource('FilesystemTest.php');
+
+
+        $this->_loader->appendDir(dirname(__FILE__) . '/../Loader');
+        $this->_loader->prependDir(dirname(__FILE__) . '/../Loader');
+    }
+
+    public function testFail() {
+        $item = 'not_existant';
+
+        try {
+            $this->_loader->getSource($item);
+            $this->fail('Can\'t detect if a file does not exist...');
+        } catch (Link_Exception_Loader $e) {
+            $this->assertContains('does not seem to exist', $e->getMessage());
+        }
+
+        try {
+            $this->_loader->appendDir($item);
+            $this->fail('Can\'t detect if a directory does not exist...');
+        } catch (Link_Exception_Loader $e) {
+            $this->assertContains('does not seem to exist', $e->getMessage());
+        }
+
+        try {
+            $this->_loader->prependDir($item);
+            $this->fail('Can\'t detect if a directory does not exist...');
+        } catch (Link_Exception_Loader $e) {
+            $this->assertContains('does not seem to exist', $e->getMessage());
+        }
+    }
+
+    public function testStatus() {
+        $this->assertEquals('a98ce5f337ecc400dc63abf653053a9e0c86eed6', $this->_loader->getCacheKey('FilesystemTest.php'));
+        $this->assertTrue($this->_loader->isFresh('FilesystemTest.php', 0));
+    }
+
     public function setUp() {
         $this->_loader = new Link_Loader_Filesystem(__DIR__);
     }
