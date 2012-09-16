@@ -289,7 +289,10 @@ class Link_Parser implements Link_Interface_Parser {
             if (!method_exists($this->_filters, $fct)) {
                 trigger_error("The filter \"$fct\" does not exist, and thus shall be ignored.\n\n",
                     E_USER_NOTICE);
+
+                // @codeCoverageIgnoreStart
                 continue;
+                // @codeCoverageIgnoreEnd
             }
 
             // -- Filter's Parameters
@@ -374,6 +377,7 @@ class Link_Parser implements Link_Interface_Parser {
 
     /** @#+ Getters */
 
+    /** @codeCoverageIgnore */
     public function getParameter($_param) {
         if (method_exists($this, 'get' . lcfirst($_param))) {
             $method = 'get' . lcfirst($_param);
@@ -384,7 +388,10 @@ class Link_Parser implements Link_Interface_Parser {
         return null;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     * @codeCoverageIgnore
+     */
     public function setParameter($_param, $_value = null) {
         if (method_exists($this, 'set' . lcfirst($_param))) {
             $method = 'set' . lcfirst($_param);
@@ -393,12 +400,18 @@ class Link_Parser implements Link_Interface_Parser {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     * @codeCoverageIgnore
+     */
     public function hasParameter($name) {
         return in_array($name, array('compact', 'filters', 'parse'));
     }
 
-    /** @return string **/
+    /**
+     * @return string
+     * @codeCoverageIgnore
+     **/
     public function getFilters() {
         return $this->_filters;
     }
@@ -409,6 +422,7 @@ class Link_Parser implements Link_Interface_Parser {
      * @param string $filters Filter class to be used
      *
      * @throws Link_Exception_Parser Filter class could not be loaded
+     * @codeCoverageIgnore
      */
     public function setFilters($filters) {
         if (!class_exists($filters)) {
@@ -418,28 +432,40 @@ class Link_Parser implements Link_Interface_Parser {
         $this->_filters = $filters;
     }
 
-    /** @return int **/
+    /**
+     * @return int
+     * @codeCoverageIgnore
+     */
     public function getParse() {
         return $this->_parse;
     }
 
-    /** @param int **/
+    /**
+     * @param int
+     * @codeCoverageIgnore
+     */
     public function setParse($parse) {
         $this->_parse = (int)$parse;
     }
 
-    /** @return bool **/
+    /**
+     * @return bool
+     * @codeCoverageIgnore
+     */
     public function getCompact() {
         return $this->_compact;
     }
 
+    /** @codeCoverageIgnore */
     public function enableCompact() {
         $this->_compact = true;
     }
 
+    /** @codeCoverageIgnore */
     public function disableCompact() {
         $this->_compact = false;
     }
+
     /** @#- */
 }
 

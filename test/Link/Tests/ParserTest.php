@@ -41,7 +41,7 @@ class Link_Tests_ParserTest extends PHPUnit_Framework_TestCase {
         );
 
         foreach ($datas as $data => $expected) {
-            $this->assertEquals($expected, $this->_parser->parse($data));
+            $this->assertEquals($expected, $this->parse($data));
         }
     }
 
@@ -73,13 +73,32 @@ class Link_Tests_ParserTest extends PHPUnit_Framework_TestCase {
         );
 
         foreach ($datas as $data => $expected) {
-            $this->assertEquals($expected, $this->_parser->parse($data));
+            $this->assertEquals($expected, $this->parse($data));
         }
+    }
+
+    function testCompact() {
+        $result = '<?php echo $__tpl_vars__abcd; ?>';
+
+        if (PHP_VERSION_ID >= 50400) {
+            $result = '<?= $__tpl_vars__abcd; ?>';
+        }
+
+        $this->_parser->enableCompact();
+        $this->assertEquals($result, $this->parse('{abcd}'));
+        $this->_parser->disableCompact();
+    }
+
+    /**
+     * @expectedException PHPUnit_Framework_Error
+     */
+    public function testUnexistantFilter() {
+        $this->assertEquals('<?php echo $__tpl_vars__abcd; ?>', $this->parse('{abcd|unexpectedFilter}'));
     }
 
     /** @dataProvider getVarsTests */
     public function testVars($tpl, $expected) {
-        $this->assertEquals($expected, $this->_parser->parse($tpl));
+        $this->assertEquals($expected, $this->parse($tpl));
     }
 
     public function getVarsTests() {
@@ -94,6 +113,8 @@ class Link_Tests_ParserTest extends PHPUnit_Framework_TestCase {
             // filters
             array('{$abcd|protect|safe}', 'Link_Filters::safe(Link_Filters::protect($__tpl_vars__abcd))'),
             array('{abcd|protect|safe}', '<?php echo Link_Filters::safe(Link_Filters::protect($__tpl_vars__abcd)); ?>'),
+            array('{abcd|defaults:off}', '<?php echo Link_Filters::defaults($__tpl_vars__abcd, false); ?>'),
+            array('{abcd|defaults:true}', '<?php echo Link_Filters::defaults($__tpl_vars__abcd, true); ?>'),
 
             // foreaches
             array('{$abcd.value}', '$__tpl_foreach__abcd[\'value\']'),
@@ -108,7 +129,7 @@ class Link_Tests_ParserTest extends PHPUnit_Framework_TestCase {
 
     /** @dataProvider getIncludesTests */
     public function testIncludes($tpl, $expected) {
-        $this->assertEquals($expected, $this->_parser->parse($tpl));
+        $this->assertEquals($expected, $this->parse($tpl));
     }
 
     public function getIncludesTests() {
@@ -141,5 +162,14 @@ class Link_Tests_ParserTest extends PHPUnit_Framework_TestCase {
             array('<require tpl="{$TAGS}?a=b&c=d" once="true" />', '<?php $_env->includeTpl($__tpl_vars__TAGS . "?a=b&c=d", true, Link_Environment::REQUIRE_TPL); ?>'),
             array('<require tpl="{$TAGS}?a=b&c=d" once="false" />', '<?php $_env->includeTpl($__tpl_vars__TAGS . "?a=b&c=d", false, Link_Environment::REQUIRE_TPL); ?>'),
         );
+    }
+
+    public function parse($str) {
+        if (PHP_VERSION_ID >= 50300) {
+            $parser = $this->_parser;
+            return $parser($str);
+        }
+
+        return $this->_parser->parse($str);
     }
 }
