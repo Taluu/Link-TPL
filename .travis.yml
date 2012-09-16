@@ -4,6 +4,3 @@ php:
   - 5.2
   - 5.3
   - 5.4
- 
-#before_script:
-#  - php testSha1.php
