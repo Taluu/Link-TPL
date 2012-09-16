@@ -64,9 +64,8 @@ class Link_Tests_Loader_FilesystemTest extends PHPUnit_Framework_TestCase {
         $this->_loader->getSource('FilesystemTest.php');
         $this->_loader->getSource('FilesystemTest.php');
 
-
-        $this->_loader->appendDir(dirname(__FILE__) . '/../Loader');
-        $this->_loader->prependDir(dirname(__FILE__) . '/../Loader');
+        $this->_loader->appendDir(__DIR__ . '/../Loader');
+        $this->_loader->prependDir(__DIR__ . '/../Loader');
     }
 
     public function testFail() {
@@ -95,11 +94,12 @@ class Link_Tests_Loader_FilesystemTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testStatus() {
-        $this->assertEquals('a98ce5f337ecc400dc63abf653053a9e0c86eed6', $this->_loader->getCacheKey('FilesystemTest.php'));
+        $this->assertEquals(sha1(__DIR__ . '/FilesystemTest.php'), $this->_loader->getCacheKey('FilesystemTest.php'));
         $this->assertTrue($this->_loader->isFresh('FilesystemTest.php', 0));
     }
 
     public function setUp() {
+        echo __DIR__;
         $this->_loader = new Link_Loader_Filesystem(__DIR__);
     }
 }
