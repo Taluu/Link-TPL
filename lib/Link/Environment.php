@@ -60,7 +60,7 @@ class Link_Environment {
      * @param Link_Interface_Cache  $_cache   Cache engine used
      * @param array                 $_options Options for the templating engine
      */
-    public function __construct(Link_Interface_Loader $_loader, Link_Interface_Cache $_cache = null, array $_options = array()) {
+    public function __construct(Link_Interface_Loader $_loader = null, Link_Interface_Cache $_cache = null, array $_options = array()) {
         // -- Options
         $defaults = array(
             'dependencies' => array(
@@ -75,7 +75,7 @@ class Link_Environment {
         // -- Dependency Injection
         $this->setParser($options['dependencies']['parser'] !== null ? $options['dependencies']['parser'] : new Link_Parser);
         $this->setCache($_cache !== null ? $_cache : new Link_Cache_None);
-        $this->setLoader($_loader);
+        $this->setLoader($_loader !== null ? $_loader : new Link_Loader_String);
 
         // -- Options treatment
         $this->_forceReload = (bool)$options['force_reload'];

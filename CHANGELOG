@@ -11,6 +11,7 @@
  */
 
 ## 1.13 ==> 1.? (Release: ??/??/??)
+    #CHG : The String loader is now the one used by default.
     #CHG : Now adopting PSR-1 & PSR-2 standards (minus some things)
     #CHG : Broke the Parser interface for the handling of parameters
 
