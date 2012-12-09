@@ -10,16 +10,16 @@ PHP 5.3 and 5.4.
 
 Documentation
 -------------
-For any pieces of documentation, check the 
+For any pieces of documentation, check the
 [official site](http://www.talus-works.net)
 ([Talus' TPL > Documentation](http://www.talus-works.net/forum-7-p1-documentation.html)).
 It is in french though, and is up to date only for Link < 1.13 (aka Talus TPL).
 
 A recent version of the documentation (in english) can be found in the `docs`
-folder, and an online version in available on 
-[Read the docs.org](http://readthedocs.org/docs/link-templates/en/1.13/).
+folder, and an online version in available on
+[Read the docs.org](http://readthedocs.org/docs/link-templates/en/latest).
 
-For Link < 1.13, you may find an english documentation on 
+For Link < 1.13, you may find an english documentation on
 [Pingax's fork of Link TPL](http://github.com/Pingax/Link-TPL/).
 
 Installation
@@ -55,7 +55,7 @@ the tarball.
 About this project...
 ---------------------
 This project was initiated as a fork "from scratch" from the templating engine
-of the [Fire Soft Board](http://www.fire-soft-board.com) project. It also has 
-some stuff inspired from the [Twig](https://github.com/fabpot/Twig)'s, 
-[PHPBB3](https://github.com/phpbb/phpbb3)'s and 
+of the [Fire Soft Board](http://www.fire-soft-board.com) project. It also has
+some stuff inspired from the [Twig](https://github.com/fabpot/Twig)'s,
+[PHPBB3](https://github.com/phpbb/phpbb3)'s and
 [Django](https://github.com/django/django)'s templating engines.
