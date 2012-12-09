@@ -22,7 +22,7 @@ defined('PHP_EXT') || define('PHP_EXT', pathinfo(__FILE__, PATHINFO_EXTENSION));
  * @author  Baptiste "Talus" Clavié <clavie.b@gmail.com>
  * @since   1.13.0
  */
-class Link_Cache_None implements Link_Interface_Cache {
+class Link_Cache_None implements Link_CacheInterface {
     protected $_datas = array();
 
     /** {@inheritDoc} */

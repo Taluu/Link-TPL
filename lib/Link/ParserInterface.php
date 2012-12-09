@@ -17,7 +17,7 @@
  * @package Link
  * @author  Baptiste "Talus" Clavié <clavie.b@gmail.com>
  */
-interface Link_Interface_Parser extends Link_Interface_Parameters {
+interface Link_ParserInterface extends Link_ParametersInterface {
     /**
      * Transform a TPL syntax towards an optimized PHP syntax
      *

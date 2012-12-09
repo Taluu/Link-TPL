@@ -26,7 +26,7 @@
  * @author  Baptiste "Talus" Clavié <clavie.b@gmail.com>
  * @since   1.4.0
  */
-class Link_Loader_String implements Link_Interface_Loader {
+class Link_Loader_String implements Link_LoaderInterface {
     /** {@inheritDoc} */
     public function getCacheKey($_name) {
         return sha1($_name);

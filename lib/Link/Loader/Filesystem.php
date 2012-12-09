@@ -22,7 +22,7 @@
  * @author  Baptiste "Talus" Clavié <clavie.b@gmail.com>
  * @since   1.4.0
  */
-class Link_Loader_Filesystem implements Link_Interface_Loader {
+class Link_Loader_Filesystem implements Link_LoaderInterface {
     protected
         $_dirs = array(),
         $_cache = array();

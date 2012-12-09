@@ -32,7 +32,7 @@ if (!defined('PHP_VERSION_ID')) {
  * @package Link
  * @author  Baptiste "Talus" Clavié <clavie.b@gmail.com>
  */
-class Link_Parser implements Link_Interface_Parser {
+class Link_Parser implements Link_ParserInterface {
     const
         FILTERS = 1,
         INCLUDES = 2,

@@ -17,7 +17,7 @@
  * @package Link
  * @author  Baptiste "Talus" Clavié <clavie.b@gmail.com>
  */
-interface Link_Interface_Loader {
+interface Link_LoaderInterface {
     /**
      * Checks whether the object is fresher or not than the `$_time`
      *

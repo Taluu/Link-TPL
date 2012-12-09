@@ -32,13 +32,13 @@ class Link_Environment {
 
         $_forceReload = false,
 
-        /** @var Link_Interface_Loader */
+        /** @var Link_LoaderInterface */
         $_loader = null,
 
-        /** @var Link_Interface_Parser */
+        /** @var Link_ParserInterface */
         $_parser = null,
 
-        /** @var Link_Interface_Cache */
+        /** @var Link_CacheInterface */
         $_cache = null;
 
     const
@@ -56,11 +56,11 @@ class Link_Environment {
      *                   is called, the object being up to date or not. default to
      *                   `false`.
      *
-     * @param Link_Interface_Loader $_loader  Loader to use
-     * @param Link_Interface_Cache  $_cache   Cache engine used
-     * @param array                 $_options Options for the templating engine
+     * @param Link_LoaderInterface $_loader  Loader to use
+     * @param Link_CacheInterface  $_cache   Cache engine used
+     * @param array                $_options Options for the templating engine
      */
-    public function __construct(Link_Interface_Loader $_loader = null, Link_Interface_Cache $_cache = null, array $_options = array()) {
+    public function __construct(Link_LoaderInterface $_loader = null, Link_CacheInterface $_cache = null, array $_options = array()) {
         // -- Options
         $defaults = array(
             'dependencies' => array(
@@ -276,33 +276,33 @@ class Link_Environment {
 
     /**#@+ Accessors */
 
-    /** @return Link_Interface_Parser */
+    /** @return Link_ParserInterface */
     public function getParser() {
         return $this->_parser;
     }
 
     /** Sets the TPL parser */
-    public function setParser(Link_Interface_Parser $_parser) {
+    public function setParser(Link_ParserInterface $_parser) {
         $this->_parser = $_parser;
     }
 
-    /** @return Link_Interface_Cache */
+    /** @return Link_CacheInterface */
     public function getCache() {
         return $this->_cache;
     }
 
     /** Sets the cache engine */
-    public function setCache(Link_Interface_Cache $_cache) {
+    public function setCache(Link_CacheInterface $_cache) {
         $this->_cache = $_cache;
     }
 
-    /** @return Link_Interface_Loader */
+    /** @return Link_LoaderInterface */
     public function getLoader() {
         return $this->_loader;
     }
 
     /** Sets the loader */
-    public function setLoader(Link_Interface_Loader $_loader) {
+    public function setLoader(Link_LoaderInterface $_loader) {
         $this->_loader = $_loader;
     }
 
