@@ -252,22 +252,11 @@ class Link_Environment {
         } catch (Link_Exception_Loader $e) {
             $this->_currentContext = $oldContext;
 
-            /*
-            * If this is a require tag, throws an exception
-            * Link_Exceptions_Runtime instead of Link_Exceptions_Loader. If not, and
-            * it is still the error n°6, it prints the error message.
-            *
-            * Otherwise, the error will be throwed back.
-            */
-            if ($e->getCode() === 6) {
-                if ($type == self::REQUIRE_TPL) {
-                    throw new Link_Exception_Runtime(array('The template <strong>%s</strong> does not exist ; Being in a require tag, the script shall then be interrupted.', $file), 7);
-                }
-
-                echo $e->getMessage();
-            } else {
-                throw $e;
+            if ($type == self::REQUIRE_TPL) {
+                throw new Link_Exception_Runtime(array('There was an error while trying to load the template <strong>%s</strong>.', $file));
             }
+
+            echo $e->getMessage();
         }
 
         $this->_currentContext = $oldContext;
