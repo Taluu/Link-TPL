@@ -28,6 +28,9 @@ class Link_Environment {
         $_references = array(),
         $_currentContext = array(),
 
+        $_extensions = array(),
+        $_filters = array(),
+
         $_autoFilters = array(),
 
         $_forceReload = false,
@@ -135,6 +138,32 @@ class Link_Environment {
      */
     public function bind($var, &$value) {
         $this->set($var, $value);
+    }
+
+    /**
+     * Registers an extension (globals, filters, ...)
+     *
+     * @param Link_ExtensionInterface $extension Extension to be registered
+     *
+     * @since 1.14.0
+     */
+    public function registerExtension(Link_ExtensionInterface $extension) {
+        if (in_array($extension->getName(), $this->_extensions)) {
+            throw new Link_Exception(sprintf('The extension %s is already registered', $extension->getName()));
+        }
+
+        $this->set($extension->getGlobals());
+
+        foreach ($extension->getFilters() as $name => $filter) {
+            $this->_filters[$extension->getName() . '.' . $name] = $filter;
+
+            // use a global alias only if this filter was not yet registered
+            if (!isset($this->_filters[$name])) {
+                $this->_filters[$name] = $filter;
+            }
+        }
+
+        $this->_extensions[] = $extension->getName();
     }
 
     /**
