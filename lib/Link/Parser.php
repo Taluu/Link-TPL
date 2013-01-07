@@ -36,9 +36,7 @@ class Link_Parser implements Link_ParserInterface {
     const
         // -- Regex used
         REGEX_PHP_ID      = '[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*', // PHP Identifier
-        REGEX_PHP_ARRAYS  = '(?:\[[^]]+?])*', // PHP Arrays
-        REGEX_PHP_OBJECTS = '(?:->[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)*', // PHP Objects
-        REGEX_PHP_SUFFIX  = '(?:\[[^]]+?]|->[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)*'; // PHP Suffixes (arrays, objects)
+        REGEX_PHP_SUFFIX  = '(?:\[[^]]+?]|->[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*(?:\(\))?)*'; // PHP Suffixes (arrays, objects)
 
     protected
         $_compact = false,
@@ -82,8 +80,7 @@ class Link_Parser implements Link_ParserInterface {
         // -- Filter's transformations
         if ($this->_parse & self::FILTERS) {
             $matches = array();
-            while (preg_match('`\{(\$?' . self::REGEX_PHP_ID . '(?:(?:\.val(?:ue)?)?' . self::REGEX_PHP_ARRAYS . '|\.(?:key|cur(?:rent)?|size))?)\|((?:' . self::REGEX_PHP_ID . '(?::\{\$' . self::REGEX_PHP_ID . self::REGEX_PHP_ARRAYS . '}|[^|}]+?)*\|?)+)}`', $script, $matches)) {
-                // note : find a way to use filters on objects
+            while (preg_match('`\{(\$?' . self::REGEX_PHP_ID . '(?:(?:\.val(?:ue)?)?' . self::REGEX_PHP_SUFFIX . '|\.(?:key|cur(?:rent)?|size))?)\|((?:' . self::REGEX_PHP_ID . '(?::\{\$' . self::REGEX_PHP_ID . self::REGEX_PHP_SUFFIX . '}|[^|}]+?)*\|?)+)}`', $script, $matches)) {
                 $script = str_replace($matches[0], $this->_filters($matches[1], $matches[2]), $script);
             }
         }
@@ -121,18 +118,12 @@ class Link_Parser implements Link_ParserInterface {
 
         $recursives = array(
             // -- Foreach values
-            '`\{(' . self::REGEX_PHP_ID . ').val(?:ue)?(' . self::REGEX_PHP_ARRAYS . ')}`'   => '<?php echo $__tpl_foreach__$1[\'value\']$2->getValue(); ?>',
-            '`\{(' . self::REGEX_PHP_ID . ').val(?:ue)?(' . self::REGEX_PHP_SUFFIX . ')}`'   => '<?php echo $__tpl_foreach__$1[\'value\']->getValue()$2; ?>',
-
-            '`\{\$(' . self::REGEX_PHP_ID . ').val(?:ue)?(' . self::REGEX_PHP_ARRAYS . ')}`' => '$__tpl_foreach__$1[\'value\']$2->getValue()',
-            '`\{\$(' . self::REGEX_PHP_ID . ').val(?:ue)?(' . self::REGEX_PHP_SUFFIX . ')}`' => '$__tpl_foreach__$1[\'value\']->getValue()$2',
+            '`\{(' . self::REGEX_PHP_ID . ').val(?:ue)?(' . self::REGEX_PHP_SUFFIX . ')}`'   => '<?php echo $__tpl_foreach__$1[\'value\']$2; ?>',
+            '`\{\$(' . self::REGEX_PHP_ID . ').val(?:ue)?(' . self::REGEX_PHP_SUFFIX . ')}`' => '$__tpl_foreach__$1[\'value\']$2',
 
             // -- Simple variables ({VAR1}, {VAR2[with][a][set][of][keys]}, ...)
-            '`\{(' . self::REGEX_PHP_ID . self::REGEX_PHP_ARRAYS . ')}`'                     => '<?php echo $__tpl_vars__$1->getValue(); ?>',
-            '`\{(' . self::REGEX_PHP_ID . ')(' . self::REGEX_PHP_SUFFIX . ')}`'              => '<?php echo $__tpl_vars__$1->getValue()$2; ?>',
-
-            '`\{\$(' . self::REGEX_PHP_ID . self::REGEX_PHP_ARRAYS . ')}`'                   => '$__tpl_vars__$1->getValue()',
-            '`\{\$(' . self::REGEX_PHP_ID . ')(' . self::REGEX_PHP_SUFFIX . ')}`'            => '$__tpl_vars__$1->getValue()$2'
+            '`\{(' . self::REGEX_PHP_ID . ')(' . self::REGEX_PHP_SUFFIX . ')}`'              => '<?php echo $__tpl_vars__$1; ?>',
+            '`\{\$(' . self::REGEX_PHP_ID . self::REGEX_PHP_SUFFIX . ')}`'                   => '$__tpl_vars__$1',
         );
 
         // -- No Regex (faster !)
@@ -282,13 +273,13 @@ class Link_Parser implements Link_ParserInterface {
 
             // -- Filter's Parameters
             if (count($params) > 0) {
-                $params = array_walk($params, array($this, '_escape'));
+                $params = array_map(array($this, '_escape'), $params);
                 $params = ', ' . implode(', ', $params);
             } else {
                 $params = '';
             }
 
-            $return = sprintf('%2$s->filter(\'%1$s\'%3$s)', $fct, $return, $params);
+            $return = sprintf('$_env->filter(\'%1$s\', %2$s%3$s)', $fct, $return, $params);
         }
 
         // -- Printing the return rather than returning it

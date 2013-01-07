@@ -78,7 +78,7 @@ class Link_Environment {
 
         // -- Dependency Injection
         $this->setParser($options['dependencies']['parser'] !== null ? $options['dependencies']['parser'] : new Link_Parser);
-        $this->setVariablesFactory($options['dependencies']['variablesFactory'] !== null ? $options['dependencies']['variablesFactory'] : new Link_Variable);
+        $this->setVariablesFactory($options['dependencies']['variablesFactory'] !== null ? $options['dependencies']['variablesFactory'] : new Link_Variable($this, null));
         $this->setCache($_cache !== null ? $_cache : new Link_Cache_None);
         $this->setLoader($_loader !== null ? $_loader : new Link_Loader_String);
 
@@ -267,8 +267,26 @@ class Link_Environment {
         echo $data;
     }
 
-    public function getFilter($filter) {
-        return array('filter' => array('Link_Filters', $filter)); // awaiting for extensions handlers
+    /**
+     * Applies filter `$filter` on an argument
+     *
+     * @param string $filter Filter's name
+     * @param mixed  $arg    Argument's value
+     *
+     * @return mixed
+     * @throws Link_Exception_Runtime Filter not found
+     */
+    public function filter($filter, $arg) {
+        $args = func_get_args(); array_shift($filter);
+
+        // stub for the next feature : extensions handlers
+        if (!is_callable(array('Link_Filters', $filter))) {
+            throw new Link_Exception_Runtime(sprintf('The filter "%s" is not accessible', $filter));
+        }
+
+        $variableFactory = clone $this->getVariablesFactory();
+
+        return $variableFactory->setValue(call_user_func_array(array('Link_Filters', $filter), $args));
     }
 
     /**#@+ Accessors */

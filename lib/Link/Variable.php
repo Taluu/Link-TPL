@@ -30,25 +30,6 @@ class Link_Variable implements Link_VariableInterface {
     }
 
     /** {@inheritDoc} */
-    public function filter($filterName) {
-        $args = func_get_args(); $args[0] = $this->getValue();
-        $filter = $this->getEnvironment()->getFilter($filterName);
-
-        if (null === $filter || !is_callable($filter['filter'])) {
-            throw new Link_Exception_Runtime(sprintf('Unknown filter %s', $filterName));
-        }
-
-        if (isset($filter['options'], $filter['options']['use_environment']) && true === $filter['options']['use_environment']) {
-            array_unshift($args, $this->getEnvironment());
-        }
-
-        $var = clone $this;
-        $var->setValue(call_user_func_array($filter['filter'], $args));
-
-        return $var;
-    }
-
-    /** {@inheritDoc} */
     public function offsetGet($offset) {
         if (!isset($this->_value[$offset])) {
             trigger_error('The offset "' . $offset . '" is not defined for this variable', E_USER_NOTICE);
@@ -129,10 +110,47 @@ class Link_Variable implements Link_VariableInterface {
     }
 
     /** {@inheritDoc} */
-    public function __call($method, array $arguments) {
-        array_unshift($arguments, $method);
+    public function __get($property) {
+        if (is_object($this->getValue())) {
+            // try to find a getter
+            $getter = 'get' . ucfirst($property);
 
-        return call_user_func_array(array($this, 'filter'), $arguments);
+            if (method_exists($this->getValue(), $getter)) {
+                return $this->getValue()->$getter();
+            }
+
+            return $this->getValue()->$property;
+        }
+
+        throw new Link_Exception_Runtime(sprintf('Property "%s" is not defined on this variable', $property));
+    }
+
+    /** {@inheritDoc} */
+    public function __set($property, $value) {
+        if (is_object($this->getValue())) {
+            $setter = 'set' . ucfirst($property);
+
+            if (method_exists($this->getValue(), $setter)) {
+                $this->getValue()->$setter($value);
+
+                return;
+            }
+
+            $this->getValue()->$property = $value;
+
+            return;
+        }
+
+        throw new Link_Exception_Runtime(sprintf('Property "%s" is not defined or accessible on this variable', $property));
+    }
+
+    /** {@inheritDoc} */
+    public function __call($method, array $arguments) {
+        if (is_object($this->getValue()) && method_exists($this->getValue(), $method) && is_callable(array($this->getValue(), $method))) {
+            return call_user_func_array(array($this->getValue(), $method), $arguments);
+        }
+
+        throw new Link_Exception_Runtime(sprintf('Method "%s" is not defined or not accessible on this variable.', $method));
     }
 
 }
