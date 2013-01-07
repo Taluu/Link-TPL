@@ -30,10 +30,22 @@ class Link_Variable implements Link_VariableInterface {
     }
 
     /** {@inheritDoc} */
-    public function filter($filter) {
+    public function filter($filterName) {
         $args = func_get_args(); $args[0] = $this->getValue();
+        $filter = $this->getEnvironment()->getFilter($filterName);
 
-        return new self(call_user_func_array($this->getEnvironment()->getFilter($filter), $args));
+        if (null === $filter || !is_callable($filter['filter'])) {
+            throw new Link_Exception_Runtime(sprintf('Unknown filter %s', $filterName));
+        }
+
+        if (isset($filter['options'], $filter['options']['use_environment']) && true === $filter['options']['use_environment']) {
+            array_unshift($args, $this->getEnvironment());
+        }
+
+        $var = clone $this;
+        $var->setValue(call_user_func_array($filter['filter'], $args));
+
+        return $var;
     }
 
     /** {@inheritDoc} */

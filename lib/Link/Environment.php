@@ -264,7 +264,7 @@ class Link_Environment {
     }
 
     public function getFilter($filter) {
-        return array('Link_Filters', $filter); // awaiting for extensions handlers
+        return array('filter' => array('Link_Filters', $filter)); // awaiting for extensions handlers
     }
 
     /**#@+ Accessors */
