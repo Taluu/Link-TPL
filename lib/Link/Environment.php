@@ -263,6 +263,10 @@ class Link_Environment {
         echo $data;
     }
 
+    public function getFilter($filter) {
+        return array('Link_Filters', $filter); // awaiting for extensions handlers
+    }
+
     /**#@+ Accessors */
 
     /** @return Link_ParserInterface */
