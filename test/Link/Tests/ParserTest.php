@@ -57,7 +57,7 @@ class Link_Tests_ParserTest extends PHPUnit_Framework_TestCase {
             if ($__tpl_foreach__%1$s[\'size\'] > 0) :
                 foreach ($__tpl_%2$s as $__tpl_foreach__%1$s[\'key\'] => $__tpl_foreach__%1$s[\'value\']) {
                   ++$__tpl_foreach__%1$s[\'current\']; ?>';
-    
+
         $datas = array(
             // Normal foreach
             '<foreach array="{$sth}">'                                    => sprintf($foreach, 'sth', 'vars__sth'),
@@ -78,10 +78,10 @@ class Link_Tests_ParserTest extends PHPUnit_Framework_TestCase {
     }
 
     function testCompact() {
-        $result = '<?php echo $__tpl_vars__abcd; ?>';
+        $result = '<?php echo $__tpl_vars__abcd->getValue(); ?>';
 
         if (PHP_VERSION_ID >= 50400) {
-            $result = '<?= $__tpl_vars__abcd; ?>';
+            $result = '<?= $__tpl_vars__abcd->getValue(); ?>';
         }
 
         $this->_parser->enableCompact();
@@ -89,11 +89,8 @@ class Link_Tests_ParserTest extends PHPUnit_Framework_TestCase {
         $this->_parser->disableCompact();
     }
 
-    /**
-     * @expectedException PHPUnit_Framework_Error
-     */
     public function testUnexistantFilter() {
-        $this->assertEquals('<?php echo $__tpl_vars__abcd; ?>', $this->parse('{abcd|unexpectedFilter}'));
+        $this->assertEquals('<?php echo $__tpl_vars__abcd->filter(\'unexpectedFilter\')->getValue(); ?>', $this->parse('{abcd|unexpectedFilter}'));
     }
 
     /** @dataProvider getVarsTests */
@@ -104,20 +101,20 @@ class Link_Tests_ParserTest extends PHPUnit_Framework_TestCase {
     public function getVarsTests() {
         return array(
             // basic vars
-            array('{abcd}', '<?php echo $__tpl_vars__abcd; ?>'),
-            array('{$abcd}', '$__tpl_vars__abcd'),
+            array('{abcd}', '<?php echo $__tpl_vars__abcd->getValue(); ?>'),
+            array('{$abcd}', '$__tpl_vars__abcd->getValue()'),
 
             // with suffix like array or objects
-            array('{$abcd[\'with`\']->some[\'stuff\']}', '$__tpl_vars__abcd[\'with`\']->some[\'stuff\']'),
+            // array('{$abcd[\'with`\']->some[\'stuff\']}', '$__tpl_vars__abcd[\'with`\']->getValue()->some[\'stuff\']'),
 
             // filters
-            array('{$abcd|protect|safe}', 'Link_Filters::safe(Link_Filters::protect($__tpl_vars__abcd))'),
-            array('{abcd|protect|safe}', '<?php echo Link_Filters::safe(Link_Filters::protect($__tpl_vars__abcd)); ?>'),
-            array('{abcd|defaults:off}', '<?php echo Link_Filters::defaults($__tpl_vars__abcd, false); ?>'),
-            array('{abcd|defaults:true}', '<?php echo Link_Filters::defaults($__tpl_vars__abcd, true); ?>'),
+            array('{$abcd|protect|safe}', '$__tpl_vars__abcd->filter(\'safe\')->filter(\'protect\')->getValue()'),
+            array('{abcd|protect|safe}', '<?php echo $__tpl_vars__abcd->filter(\'safe\')->filter(\'protect\')->getValue(); ?>'),
+            array('{abcd|defaults:off}', '<?php echo $__tpl_vars__abcd->filter(\'defaults\', false)->->getValue(); ?>'),
+            array('{abcd|defaults:true}', '<?php echo $__tpl_vars__abcd->filter(\'defaults\', true)->->getValue(); ?>'),
 
             // foreaches
-            array('{$abcd.value}', '$__tpl_foreach__abcd[\'value\']'),
+            array('{$abcd.value}', '$__tpl_foreach__abcd[\'value\']->getValue()'),
             array('{$abcd.key}', '$__tpl_foreach__abcd[\'key\']'),
 
             // not valid
@@ -141,12 +138,12 @@ class Link_Tests_ParserTest extends PHPUnit_Framework_TestCase {
             array('<include tpl="112.html?a=b&c=d" />', '<?php $_env->includeTpl(\'112.html\' . "?a=b&c=d", false, Link_Environment::INCLUDE_TPL); ?>'),
             array('<include tpl="112.html?a=b&c=d" once="true" />', '<?php $_env->includeTpl(\'112.html\' . "?a=b&c=d", true, Link_Environment::INCLUDE_TPL); ?>'),
             array('<include tpl="112.html?a=b&c=d" once="false" />', '<?php $_env->includeTpl(\'112.html\' . "?a=b&c=d", false, Link_Environment::INCLUDE_TPL); ?>'),
-            array('<include tpl="{$TAGS}" />', '<?php $_env->includeTpl($__tpl_vars__TAGS, false, Link_Environment::INCLUDE_TPL); ?>'),
-            array('<include tpl="{$TAGS}" once="true" />', '<?php $_env->includeTpl($__tpl_vars__TAGS, true, Link_Environment::INCLUDE_TPL); ?>'),
-            array('<include tpl="{$TAGS}" once="false" />', '<?php $_env->includeTpl($__tpl_vars__TAGS, false, Link_Environment::INCLUDE_TPL); ?>'),
-            array('<include tpl="{$TAGS}?a=b&c=d" />', '<?php $_env->includeTpl($__tpl_vars__TAGS . "?a=b&c=d", false, Link_Environment::INCLUDE_TPL); ?>'),
-            array('<include tpl="{$TAGS}?a=b&c=d" once="true" />', '<?php $_env->includeTpl($__tpl_vars__TAGS . "?a=b&c=d", true, Link_Environment::INCLUDE_TPL); ?>'),
-            array('<include tpl="{$TAGS}?a=b&c=d" once="false" />', '<?php $_env->includeTpl($__tpl_vars__TAGS . "?a=b&c=d", false, Link_Environment::INCLUDE_TPL); ?>'),
+            array('<include tpl="{$TAGS}" />', '<?php $_env->includeTpl($__tpl_vars__TAGS->getValue(), false, Link_Environment::INCLUDE_TPL); ?>'),
+            array('<include tpl="{$TAGS}" once="true" />', '<?php $_env->includeTpl($__tpl_vars__TAGS->getValue(), true, Link_Environment::INCLUDE_TPL); ?>'),
+            array('<include tpl="{$TAGS}" once="false" />', '<?php $_env->includeTpl($__tpl_vars__TAGS->getValue(), false, Link_Environment::INCLUDE_TPL); ?>'),
+            array('<include tpl="{$TAGS}?a=b&c=d" />', '<?php $_env->includeTpl($__tpl_vars__TAGS->getValue() . "?a=b&c=d", false, Link_Environment::INCLUDE_TPL); ?>'),
+            array('<include tpl="{$TAGS}?a=b&c=d" once="true" />', '<?php $_env->includeTpl($__tpl_vars__TAGS->getValue() . "?a=b&c=d", true, Link_Environment::INCLUDE_TPL); ?>'),
+            array('<include tpl="{$TAGS}?a=b&c=d" once="false" />', '<?php $_env->includeTpl($__tpl_vars__TAGS->getValue() . "?a=b&c=d", false, Link_Environment::INCLUDE_TPL); ?>'),
 
             // requires
             array('<require tpl="112.html" />', '<?php $_env->includeTpl(\'112.html\', false, Link_Environment::REQUIRE_TPL); ?>'),
@@ -155,12 +152,12 @@ class Link_Tests_ParserTest extends PHPUnit_Framework_TestCase {
             array('<require tpl="112.html?a=b&c=d" />', '<?php $_env->includeTpl(\'112.html\' . "?a=b&c=d", false, Link_Environment::REQUIRE_TPL); ?>'),
             array('<require tpl="112.html?a=b&c=d" once="true" />', '<?php $_env->includeTpl(\'112.html\' . "?a=b&c=d", true, Link_Environment::REQUIRE_TPL); ?>'),
             array('<require tpl="112.html?a=b&c=d" once="false" />', '<?php $_env->includeTpl(\'112.html\' . "?a=b&c=d", false, Link_Environment::REQUIRE_TPL); ?>'),
-            array('<require tpl="{$TAGS}" />', '<?php $_env->includeTpl($__tpl_vars__TAGS, false, Link_Environment::REQUIRE_TPL); ?>'),
-            array('<require tpl="{$TAGS}" once="true" />', '<?php $_env->includeTpl($__tpl_vars__TAGS, true, Link_Environment::REQUIRE_TPL); ?>'),
-            array('<require tpl="{$TAGS}" once="false" />', '<?php $_env->includeTpl($__tpl_vars__TAGS, false, Link_Environment::REQUIRE_TPL); ?>'),
-            array('<require tpl="{$TAGS}?a=b&c=d" />', '<?php $_env->includeTpl($__tpl_vars__TAGS . "?a=b&c=d", false, Link_Environment::REQUIRE_TPL); ?>'),
-            array('<require tpl="{$TAGS}?a=b&c=d" once="true" />', '<?php $_env->includeTpl($__tpl_vars__TAGS . "?a=b&c=d", true, Link_Environment::REQUIRE_TPL); ?>'),
-            array('<require tpl="{$TAGS}?a=b&c=d" once="false" />', '<?php $_env->includeTpl($__tpl_vars__TAGS . "?a=b&c=d", false, Link_Environment::REQUIRE_TPL); ?>'),
+            array('<require tpl="{$TAGS}" />', '<?php $_env->includeTpl($__tpl_vars__TAGS->getValue(), false, Link_Environment::REQUIRE_TPL); ?>'),
+            array('<require tpl="{$TAGS}" once="true" />', '<?php $_env->includeTpl($__tpl_vars__TAGS->getValue(), true, Link_Environment::REQUIRE_TPL); ?>'),
+            array('<require tpl="{$TAGS}" once="false" />', '<?php $_env->includeTpl($__tpl_vars__TAGS->getValue(), false, Link_Environment::REQUIRE_TPL); ?>'),
+            array('<require tpl="{$TAGS}?a=b&c=d" />', '<?php $_env->includeTpl($__tpl_vars__TAGS->getValue() . "?a=b&c=d", false, Link_Environment::REQUIRE_TPL); ?>'),
+            array('<require tpl="{$TAGS}?a=b&c=d" once="true" />', '<?php $_env->includeTpl($__tpl_vars__TAGS->getValue() . "?a=b&c=d", true, Link_Environment::REQUIRE_TPL); ?>'),
+            array('<require tpl="{$TAGS}?a=b&c=d" once="false" />', '<?php $_env->includeTpl($__tpl_vars__TAGS->getValue() . "?a=b&c=d", false, Link_Environment::REQUIRE_TPL); ?>'),
         );
     }
 

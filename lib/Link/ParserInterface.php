@@ -18,6 +18,16 @@
  * @author  Baptiste "Talus" Clavié <clavie.b@gmail.com>
  */
 interface Link_ParserInterface extends Link_ParametersInterface {
+    const
+        FILTERS = 1,
+        INCLUDES = 2,
+        CONDITIONS = 4,
+        CONSTANTS = 8,
+
+        BASICS = 4,
+        DEFAULTS = 15,
+        ALL = 15;
+
     /**
      * Transform a TPL syntax towards an optimized PHP syntax
      *

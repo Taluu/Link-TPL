@@ -97,6 +97,11 @@ class Link_Variable implements Link_VariableInterface {
     }
 
     /** {@inheritDoc} */
+    public function count() {
+        return count($this->getValue());
+    }
+
+    /** {@inheritDoc} */
     public function getValue() {
         return $this->_value;
     }

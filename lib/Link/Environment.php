@@ -32,6 +32,9 @@ class Link_Environment {
 
         $_forceReload = false,
 
+        /** @var Link_VariableInterface */
+        $_varFactory = null,
+
         /** @var Link_LoaderInterface */
         $_loader = null,
 
@@ -64,7 +67,8 @@ class Link_Environment {
         // -- Options
         $defaults = array(
             'dependencies' => array(
-                'parser' => null
+                'parser'           => null,
+                'variablesFactory' => null
             ),
 
             'force_reload' => false
@@ -74,6 +78,7 @@ class Link_Environment {
 
         // -- Dependency Injection
         $this->setParser($options['dependencies']['parser'] !== null ? $options['dependencies']['parser'] : new Link_Parser);
+        $this->setVariablesFactory($options['dependencies']['variablesFactory'] !== null ? $options['dependencies']['variablesFactory'] : new Link_Variable);
         $this->setCache($_cache !== null ? $_cache : new Link_Cache_None);
         $this->setLoader($_loader !== null ? $_loader : new Link_Loader_String);
 
@@ -90,13 +95,11 @@ class Link_Environment {
      * @since 1.3.0
      */
     public function set($vars, $value = null) {
-        if (is_array($vars)) {
-            $this->_vars = array_replace_recursive($this->_vars, $vars);
-
-            return;
+        if (!is_array($vars)) {
+            $vars = array($vars => $value);
         }
 
-        $this->_vars[$vars] = $value;
+        $this->_vars = array_replace_recursive($this->_vars, $vars);
     }
 
     /**
@@ -111,12 +114,8 @@ class Link_Environment {
      * @since 1.9.0
      */
     public function autoFilters($name) {
-        if (!$this->getParser()->hasParameter('filters')) { // filters not parsed...
+        if (Link_ParserInterface::FILTERS & ~$this->getParser()->getParse()) { // filters not parsed...
             return;
-        }
-
-        if (!method_exists($this->getParser()->getParameter('filters'), $name)) {
-            throw new Link_Exception(array('The filter %s doesn\'t exist...', $name), 404);
         }
 
         $this->_autoFilters[] = $name;
@@ -131,10 +130,11 @@ class Link_Environment {
      * @return void
      *
      * @since 1.7.0
+     *
+     * @deprecated 1.14 Will be removed in 1.15
      */
     public function bind($var, &$value) {
-        $this->_vars[$var] = &$value;
-        $this->_references[] = $var;
+        $this->set($var, $value);
     }
 
     /**
@@ -148,16 +148,20 @@ class Link_Environment {
      */
     public function parse($_tpl, array $_context = array()) {
         // -- Applying the auto filters...
-        $vars = array_diff_key($this->_vars, array_flip($this->_references));
-        $context = array_replace_recursive($vars, $_context);
+        $context = array_replace_recursive($this->_vars, $_context);
 
-        if ($this->getParser()->hasParameter('filters')) {
-            foreach ($this->_autoFilters as &$filter) {
-                array_walk_recursive($context, array($this->getParser()->getParameter('filters'), $filter));
+        foreach ($context as &$value) {
+            if (!$value instanceof Link_VariableInterface) {
+                $variableFactory = clone $this->getVariablesFactory();
+                $value = $variableFactory->setValue($value);
+            }
+
+            if ($this->getParser()->getParse() & Link_ParserInterface::FILTERS) {
+                foreach ($this->_autoFilters as $filter) {
+                    $value = $value->filter($filter);
+                }
             }
         }
-
-        $context += array_diff($this->_vars, $vars);
 
         // -- Calling the cache...
         $cache = $this->getLoader()->getCacheKey($_tpl);
@@ -277,6 +281,16 @@ class Link_Environment {
     /** Sets the TPL parser */
     public function setParser(Link_ParserInterface $_parser) {
         $this->_parser = $_parser;
+    }
+
+    /** @return Link_VariableInterface */
+    public function getVariablesFactory() {
+        return $this->_variablesFactory;
+    }
+
+    /** Sets the TPL variables factory */
+    public function setVariablesFactory(Link_VariableInterface $_variablesFactory) {
+        $this->_variablesFactory = $_variablesFactory;
     }
 
     /** @return Link_CacheInterface */

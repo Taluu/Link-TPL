@@ -17,7 +17,7 @@
  * @package Link
  * @author  Baptiste "Talus" Clavié <clavie.b@gmail.com>
  */
-interface Link_VariableInterface extends ArrayAccess, IteratorAggregate {
+interface Link_VariableInterface extends ArrayAccess, IteratorAggregate, Countable {
     /**
      * Gets the variable's value
      *
