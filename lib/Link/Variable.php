@@ -129,7 +129,47 @@ class Link_Variable implements Link_VariableInterface {
     }
 
     /** {@inheritDoc} */
+    public function __get($property) {
+        if (is_object($this->getValue())) {
+            // try to find a getter
+            $getter = 'get' . ucfirst($property);
+
+            if (method_exists($this->getValue(), $getter)) {
+                return $this->getValue()->$getter();
+            }
+
+            return $this->getValue()->$property;
+        }
+
+        throw new Link_Exception_Runtime(sprintf('Property "%s" is not defined on this variable', $property));
+    }
+
+    /** {@inheritDoc} */
+    public function __set($property, $value) {
+        if (is_object($this->getValue())) {
+            $setter = 'set' . ucfirst($property);
+
+            if (method_exists($this->getValue(), $setter)) {
+                $this->getValue()->$setter($value);
+
+                return;
+            }
+
+            $this->getValue()->$property = $value;
+
+            return;
+        }
+
+        throw new Link_Exception_Runtime(sprintf('Property "%s" is not defined or accessible on this variable', $property));
+    }
+
+    /** {@inheritDoc} */
     public function __call($method, array $arguments) {
+        if (is_object($this->getValue()) && method_exists($this->getValue(), $method)) {
+            return call_user_func_array(array($this->getValue(), $mmethod), $arguments);
+        }
+
+        // ty to interpret it as a filter
         array_unshift($arguments, $method);
 
         return call_user_func_array(array($this, 'filter'), $arguments);
