@@ -34,22 +34,14 @@ if (!defined('PHP_VERSION_ID')) {
  */
 class Link_Parser implements Link_ParserInterface {
     const
-        FILTERS = 1,
-        INCLUDES = 2,
-        CONDITIONS = 4,
-        CONSTANTS = 8,
-
-        BASICS = 4,
-        DEFAULTS = 15,
-        ALL = 15,
-
         // -- Regex used
-        REGEX_PHP_ID = '[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*', // PHP Identifier
-        REGEX_PHP_SUFFIX = '(?:\[[^]]+?]|->[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)*'; // PHP Suffixes (arrays, objects)
+        REGEX_PHP_ID      = '[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*', // PHP Identifier
+        REGEX_PHP_ARRAYS  = '(?:\[[^]]+?])*', // PHP Arrays
+        REGEX_PHP_OBJECTS = '(?:->[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)*', // PHP Objects
+        REGEX_PHP_SUFFIX  = '(?:\[[^]]+?]|->[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)*'; // PHP Suffixes (arrays, objects)
 
     protected
         $_compact = false,
-        $_filters = 'Link_Filters',
         $_parse = self::DEFAULTS;
 
     /**
@@ -62,21 +54,17 @@ class Link_Parser implements Link_ParserInterface {
      *  - parse : Defines what are the objects to be parsed (inclusions, filters,
      *            conditions, ...). Can be a combination of the class' constants.
      *
-     *  - filters : Defines which class handles the filters.
-     *
      * @param array $_options options to be given to the parser (see above)
      */
     public function __construct(array $_options = array()) {
         $defaults = array(
             'compact' => false,
-            'filters' => 'Link_Filters',
             'parse'   => self::DEFAULTS
         );
 
         $options = array_replace_recursive($defaults, $_options);
 
         $this->_compact = (bool)$options['compact'];
-        $this->setFilters($options['filters']);
         $this->setParse($options['parse']);
     }
 
@@ -94,7 +82,8 @@ class Link_Parser implements Link_ParserInterface {
         // -- Filter's transformations
         if ($this->_parse & self::FILTERS) {
             $matches = array();
-            while (preg_match('`\{(\$?' . self::REGEX_PHP_ID . '(?:(?:\.val(?:ue)?)?' . self::REGEX_PHP_SUFFIX . '|\.(?:key|cur(?:rent)?|size))?)\|((?:' . self::REGEX_PHP_ID . '(?::\{\$' . self::REGEX_PHP_ID . self::REGEX_PHP_SUFFIX . '}|[^|}]+?)*\|?)+)}`', $script, $matches)) {
+            while (preg_match('`\{(\$?' . self::REGEX_PHP_ID . '(?:(?:\.val(?:ue)?)?' . self::REGEX_PHP_ARRAYS . '|\.(?:key|cur(?:rent)?|size))?)\|((?:' . self::REGEX_PHP_ID . '(?::\{\$' . self::REGEX_PHP_ID . self::REGEX_PHP_ARRAYS . '}|[^|}]+?)*\|?)+)}`', $script, $matches)) {
+                // note : find a way to use filters on objects
                 $script = str_replace($matches[0], $this->_filters($matches[1], $matches[2]), $script);
             }
         }
@@ -124,20 +113,26 @@ class Link_Parser implements Link_ParserInterface {
             '`\{\$(' . self::REGEX_PHP_ID . ').cur(?:rent)?}`' => '$__tpl_foreach__$1[\'current\']',
 
             // -- is_first : checks if this is the first iteration
-            '`\{\$(' . self::REGEX_PHP_ID . ').is_first}`'     => '($__tpl_foreach__$1[\'current\'] == 1)',
+            '`\{\$(' . self::REGEX_PHP_ID . ').is_first}`'     => '($__tpl_foreach__$1[\'current\'] === 1)',
 
             // -- is_last : checks if this is the last iteration
-            '`\{\$(' . self::REGEX_PHP_ID . ').is_last}`'      => '($__tpl_foreach__$1[\'current\'] == $__tpl_foreach__$1[\'size\'])'
+            '`\{\$(' . self::REGEX_PHP_ID . ').is_last}`'      => '($__tpl_foreach__$1[\'current\'] === $__tpl_foreach__$1[\'size\'])'
         );
 
         $recursives = array(
             // -- Foreach values
-            '`\{(' . self::REGEX_PHP_ID . ').val(?:ue)?(' . self::REGEX_PHP_SUFFIX . ')}`'   => '<?php echo $__tpl_foreach__$1[\'value\']$2; ?>',
-            '`\{\$(' . self::REGEX_PHP_ID . ').val(?:ue)?(' . self::REGEX_PHP_SUFFIX . ')}`' => '$__tpl_foreach__$1[\'value\']$2',
+            '`\{(' . self::REGEX_PHP_ID . ').val(?:ue)?(' . self::REGEX_PHP_ARRAYS . ')}`'   => '<?php echo $__tpl_foreach__$1[\'value\']$2->getValue(); ?>',
+            '`\{(' . self::REGEX_PHP_ID . ').val(?:ue)?(' . self::REGEX_PHP_SUFFIX . ')}`'   => '<?php echo $__tpl_foreach__$1[\'value\']->getValue()$2; ?>',
+
+            '`\{\$(' . self::REGEX_PHP_ID . ').val(?:ue)?(' . self::REGEX_PHP_ARRAYS . ')}`' => '$__tpl_foreach__$1[\'value\']$2->getValue()',
+            '`\{\$(' . self::REGEX_PHP_ID . ').val(?:ue)?(' . self::REGEX_PHP_SUFFIX . ')}`' => '$__tpl_foreach__$1[\'value\']->getValue()$2',
 
             // -- Simple variables ({VAR1}, {VAR2[with][a][set][of][keys]}, ...)
-            '`\{(' . self::REGEX_PHP_ID . self::REGEX_PHP_SUFFIX . ')}`'                     => '<?php echo $__tpl_vars__$1; ?>',
-            '`\{\$(' . self::REGEX_PHP_ID . self::REGEX_PHP_SUFFIX . ')}`'                   => '$__tpl_vars__$1'
+            '`\{(' . self::REGEX_PHP_ID . self::REGEX_PHP_ARRAYS . ')}`'                     => '<?php echo $__tpl_vars__$1->getValue(); ?>',
+            '`\{(' . self::REGEX_PHP_ID . ')(' . self::REGEX_PHP_SUFFIX . ')}`'              => '<?php echo $__tpl_vars__$1->getValue()$2; ?>',
+
+            '`\{\$(' . self::REGEX_PHP_ID . self::REGEX_PHP_ARRAYS . ')}`'                   => '$__tpl_vars__$1->getValue()',
+            '`\{\$(' . self::REGEX_PHP_ID . ')(' . self::REGEX_PHP_SUFFIX . ')}`'            => '$__tpl_vars__$1->getValue()$2'
         );
 
         // -- No Regex (faster !)
@@ -285,28 +280,15 @@ class Link_Parser implements Link_ParserInterface {
             $params = explode(':', $filter);
             $fct = array_shift($params);
 
-            // -- unimplemented filter ?
-            if (!method_exists($this->_filters, $fct)) {
-                trigger_error("The filter \"$fct\" does not exist, and thus shall be ignored.\n\n",
-                    E_USER_NOTICE);
-
-                // @codeCoverageIgnoreStart
-                continue;
-                // @codeCoverageIgnoreEnd
-            }
-
             // -- Filter's Parameters
             if (count($params) > 0) {
-                foreach ($params as &$param) {
-                    $param = $this->_escape($param);
-                }
-
+                $params = array_walk($params, array($this, '_escape'));
                 $params = ', ' . implode(', ', $params);
             } else {
                 $params = '';
             }
 
-            $return = sprintf('%1$s::%2$s(%3$s%4$s)', $this->_filters, $fct, $return, $params);
+            $return = sprintf('%2$s->filter(\'%1$s\'%3$s)', $fct, $return, $params);
         }
 
         // -- Printing the return rather than returning it
@@ -405,31 +387,7 @@ class Link_Parser implements Link_ParserInterface {
      * @codeCoverageIgnore
      */
     public function hasParameter($name) {
-        return in_array($name, array('compact', 'filters', 'parse'));
-    }
-
-    /**
-     * @return string
-     * @codeCoverageIgnore
-     **/
-    public function getFilters() {
-        return $this->_filters;
-    }
-
-    /**
-     * Sets the filter class
-     *
-     * @param string $filters Filter class to be used
-     *
-     * @throws Link_Exception_Parser Filter class could not be loaded
-     * @codeCoverageIgnore
-     */
-    public function setFilters($filters) {
-        if (!class_exists($filters)) {
-            throw new Link_Exception_Parser('The selected filter class `' . $filters . '` does not exist');
-        }
-
-        $this->_filters = $filters;
+        return in_array($name, array('compact', 'parse'));
     }
 
     /**

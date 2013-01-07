@@ -11,9 +11,15 @@
  */
 
 ## 1.13 ==> 1.? (Release: ??/??/??)
-    #CHG : The String loader is now the one used by default.
+    #CHG : The String loader is now the one used by default
+    #CHG : Moved the constants from Link_Parser to its interface
     #CHG : Now adopting PSR-1 & PSR-2 standards (minus some things)
+    #CHG : (BC BREAK) Filters can not be applied on objects anymore
     #CHG : Broke the Parser interface for the handling of parameters
+
+    #ADD : Variable class to manage variables in a template
+
+    #OBS : Binding global variables by reference
 
 ## 1.12 ==> 1.13 (Release: 11/05/12)
     #WAR : COMPATIBILITY BROKEN
