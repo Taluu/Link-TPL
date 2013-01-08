@@ -63,7 +63,7 @@ class Link_Variable implements Link_VariableInterface {
     }
 
     /** {@inheritDoc} */
-    public function getIterator() {0
+    public function getIterator() {
         if ($this->getValue() instanceof Traversable) {
             return new IteratorIterator($this->getValue());
         }
