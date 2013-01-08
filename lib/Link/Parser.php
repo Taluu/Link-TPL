@@ -279,7 +279,7 @@ class Link_Parser implements Link_ParserInterface {
                 $params = '';
             }
 
-            $return = sprintf('%2$s->filter(\'%1$s\'%3$s)', $fct, $return, $params);
+            $return = sprintf('$_env->filter(\'%1$s\', %2$s%3$s)', $fct, $return, $params);
         }
 
         // -- Printing the return rather than returning it

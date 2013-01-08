@@ -32,16 +32,6 @@ interface Link_VariableInterface extends ArrayAccess, IteratorAggregate, Countab
      */
     public function getEnvironment();
 
-    /**
-     * Filters a variable through... a filter.
-     *
-     * @param string $filter   Filter's name
-     * @param mixed  $args,... Arguments to be passed to this filter
-     *
-     * @return Link_Var filtered var
-     */
-    public function filter($filter);
-
     /** {@inheritDoc} */
     public function __toString();
 

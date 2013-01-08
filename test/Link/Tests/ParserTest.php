@@ -104,10 +104,10 @@ class Link_Tests_ParserTest extends PHPUnit_Framework_TestCase {
             array('{$abcd[\'with`\']->some[\'stuff\']}', '$__tpl_vars__abcd[\'with`\']->some[\'stuff\']'),
 
             // filters
-            array('{$abcd|protect|safe}', '$__tpl_vars__abcd->filter(\'protect\')->filter(\'safe\')'),
-            array('{abcd|protect|safe}', '<?php echo $__tpl_vars__abcd->filter(\'protect\')->filter(\'safe\'); ?>'),
-            array('{abcd|defaults:off}', '<?php echo $__tpl_vars__abcd->filter(\'defaults\', false); ?>'),
-            array('{abcd|defaults:true}', '<?php echo $__tpl_vars__abcd->filter(\'defaults\', true); ?>'),
+            array('{$abcd|protect|safe}', '$_env->filter(\'safe\', $_env->filter(\'protect\', $__tpl_vars__abcd))'),
+            array('{abcd|protect|safe}', '<?php echo $_env->filter(\'safe\', $_env->filter(\'protect\', $__tpl_vars__abcd)); ?>'),
+            array('{abcd|defaults:off}', '<?php echo $_env->filter(\'defaults\', $__tpl_vars__abcd, false); ?>'),
+            array('{abcd|defaults:true}', '<?php echo $_env->filter(\'defaults\', $__tpl_vars__abcd, true); ?>'),
 
             // foreaches
             array('{$abcd.value}', '$__tpl_foreach__abcd[\'value\']'),
