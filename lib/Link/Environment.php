@@ -284,7 +284,9 @@ class Link_Environment {
             throw new Link_Exception_Runtime(sprintf('The filter "%s" is not accessible', $filter));
         }
 
-        return call_user_func_array(array('Link_Filters', $filter), $args);
+        $variableFactory = clone $this->getVariablesFactory();
+
+        return $variableFactory->setValue(call_user_func_array(array('Link_Filters', $filter), $args));
     }
 
     /**#@+ Accessors */
