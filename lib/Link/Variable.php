@@ -36,17 +36,13 @@ class Link_Variable implements Link_VariableInterface {
             return null;
         }
 
-        if (!$this->_value[$offset] instanceof self) {
-            $this->_value[$offset] = new self($this->_environment, $this->_value[$offset]);
-        }
-
         return $this->_value[$offset];
     }
 
     /** {@inheritDoc} */
     public function offsetSet($offset, $value) {
         if (!$value instanceof self) {
-            $value = new self($this->_environment, $value);
+            $value = new self($this->getEnvironment(), $value);
         }
 
         $this->_value[$offset] = $value;
@@ -88,6 +84,14 @@ class Link_Variable implements Link_VariableInterface {
     }
 
     public function setValue($value) {
+        if (!$value instanceof self && ($value instanceof Traversable || is_array($value))) {
+            foreach ($value as &$val) {
+                if (!$val instanceof self) {
+                    $val = new self($this->getEnvironment(), $val);
+                }
+            }
+        }
+
         $this->_value = $value;
 
         return $this;
@@ -119,7 +123,9 @@ class Link_Variable implements Link_VariableInterface {
                 return $this->getValue()->$getter();
             }
 
-            return $this->getValue()->$property;
+            if (isset($this->getValue()->$property) || property_exists($this->getValue(), $property)) {
+                return $this->getValue()->$property;
+            }
         }
 
         throw new Link_Exception_Runtime(sprintf('Property "%s" is not defined on this variable', $property));
