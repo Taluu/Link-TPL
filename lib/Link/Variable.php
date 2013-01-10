@@ -65,7 +65,7 @@ class Link_Variable implements Link_VariableInterface {
             return new IteratorIterator($this->getValue());
         }
 
-        if (is_array($this->getValue())) {
+        if (is_array($this->getValue()) || is_object($this->getValue())) {
             return new ArrayIterator($this->getValue());
         }
 
@@ -85,7 +85,7 @@ class Link_Variable implements Link_VariableInterface {
     }
 
     public function setValue($value) {
-        if (!$value instanceof self && ($value instanceof Traversable || is_array($value))) {
+        if (!$value instanceof self && (is_object($value) || is_array($value))) {
             foreach ($value as &$val) {
                 $val = $this->toSelf($val);
             }
