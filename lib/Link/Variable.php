@@ -103,46 +103,75 @@ class Link_Variable implements Link_VariableInterface {
 
     /** {@inheritDoc} */
     public function __get($property) {
-        if (is_object($this->getValue())) {
-            // try to find a getter
-            $getter = 'get' . ucfirst($property);
+        if (!is_object($this->getValue())) {
+            throw new Link_Exception_Runtime(sprintf('This variable is not an object, but a(n) "%s"', getType($this->getValue())));
+        }
 
-            if (method_exists($this->getValue(), $getter)) {
+        // try to find a getter
+        $getter = 'get' . ucfirst($property);
+
+        if (method_exists($this->getValue(), $getter)) {
+            $reflection = new ReflectionMethod($this->getValue(), $getter);
+
+            if ($reflection->isPublic()) {
                 return $this->toSelf($this->getValue()->$getter());
             }
+        }
 
-            if (isset($this->getValue()->$property) || property_exists($this->getValue(), $property)) {
+        if (isset($this->getValue()->$property) || property_exists($this->getValue(), $property)) {
+            $reflection = new ReflectionProperty($this->getValue(), $property);
+
+            if ($reflection->isPublic()) {
                 return $this->toSelf($this->getValue()->$property);
             }
         }
 
-        throw new Link_Exception_Runtime(sprintf('Property "%s" is not defined on this variable', $property));
+        throw new Link_Exception_Runtime(sprintf('Property "%1$s::\$%2$s" is not defined or accessible', get_class($this->getValue()), $property));
+
     }
 
     /** {@inheritDoc} */
     public function __set($property, $value) {
-        if (is_object($this->getValue())) {
-            $setter = 'set' . ucfirst($property);
-
-            if (method_exists($this->getValue(), $setter)) {
-                return $this->getValue()->$setter($value);
-            }
-
-            $this->getValue()->$property = $value;
-
-            return;
+        if (!is_object($this->getValue())) {
+            throw new Link_Exception_Runtime(sprintf('This variable is not an object, but a(n) "%s"', getType($this->getValue())));
         }
 
-        throw new Link_Exception_Runtime(sprintf('Property "%s" is not defined or accessible on this variable', $property));
+        $setter = 'set' . ucfirst($property);
+
+        if (method_exists($this->getValue(), $setter)) {
+            $reflection = new ReflectionMethod($this->getValue(), $setter);
+
+            if ($reflection->isPublic()) {
+                return $this->getValue()->$setter($value);
+            }
+        }
+
+        if (isset($this->getValue()->$property) || property_exists($this->getValue(), $property)) {
+            $reflection = new ReflectionProperty($this->getValue(), $property);
+
+            if (!$reflection->isPublic()) {
+                throw new Link_Exception_Runtime(sprintf('Property "%1$s::\$%2$s" is not accessible', get_class($this->getValue()), $property));
+            }
+        }
+
+        $this->getValue()->$property = $value;
     }
 
     /** {@inheritDoc} */
     public function __call($method, array $arguments) {
-        if (is_object($this->getValue()) && method_exists($this->getValue(), $method) && is_callable(array($this->getValue(), $method))) {
-            return call_user_func_array(array($this->getValue(), $method), $arguments);
+        if (!is_object($this->getValue())) {
+            throw new Link_Exception_Runtime(sprintf('This variable is not an object, but a(n) "%s"', getType($this->getValue())));
         }
 
-        throw new Link_Exception_Runtime(sprintf('Method "%s" is not defined or not accessible on this variable.', $method));
+        if (method_exists($this->getValue(), $method)) {
+            if (is_callable(array($this->getValue(), $method))) {
+                return call_user_func_array(array($this->getValue(), $method), $arguments);
+            }
+
+            throw new Link_Exception_Runtime(sprintf('Method "%1$s::\$%2$s" is not accessible', get_class($this->getValue()), $method));
+        }
+
+        throw new Link_Exception_Runtime(sprintf('Method "%1$s::%2$s()" is not defined', get_class($this->getValue()), $method));
     }
 
     /**
