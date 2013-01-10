@@ -115,7 +115,7 @@ class Link_Variable implements Link_VariableInterface {
             return $this->toSelf($this->getValue()->$getter());
         }
 
-        if (($reflection->hasProperty($property) && !$reflection->getProperty($property)->isPublic()) || $reflection->hasMethod('__get')) {
+        if (($reflection->hasProperty($property) && $reflection->getProperty($property)->isPublic()) || $reflection->hasMethod('__get')) {
             return $this->toSelf($this->getValue()->$property);
         }
 
