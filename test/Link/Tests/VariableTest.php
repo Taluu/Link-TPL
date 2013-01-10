@@ -122,6 +122,20 @@ class Link_Tests_VariableTest extends PHPUnit_Framework_TestCase {
         $var->noAccessor = 'a';
         $this->fail('Should not get here !');
     }
+
+    /**
+     * @covers Link_Variable::__call
+     * @expectedException Link_Exception_Runtime
+     */
+    public function testMethodCaller() {
+        $var = new Link_Variable(new ObjectTest);
+
+        $this->assertInternalType('array', $var->aMethod());
+        $this->assertEquals(array('a', 'b'), $var->aMethod('a', 'b'));
+
+        $var->aPrivateMethod();
+        $this->fail('Should not be here !');
+    }
 }
 
 /**
@@ -143,5 +157,13 @@ class ObjectTest {
 
     public function setWithAccessor($value) {
         $this->withAccessor = $value;
+    }
+
+    public function aMethod($arg1 = null, $arg2 = null) {
+        return func_get_args();
+    }
+
+    private function aPrivateMethod() {
+        return null;
     }
 }
