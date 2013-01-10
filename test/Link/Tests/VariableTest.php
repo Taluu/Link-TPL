@@ -79,11 +79,11 @@ class Link_Tests_VariableTest extends PHPUnit_Framework_TestCase {
     public function testPropertySet() {
         $var = new Link_Variable(new ObjectTest);
 
-        $var->newProp = 'a';
+        $var->publicScalar = 'b';
 
-        $this->assertInstanceOf('Link_Variable', $var->newProp);
+        $this->assertInstanceOf('Link_Variable', $var->publicScalar);
 
-        $this->assertEquals('a', (string) $var->newProp);
+        $this->assertEquals('b', (string) $var->publicScalar);
     }
 
     /**
