@@ -108,26 +108,18 @@ class Link_Variable implements Link_VariableInterface {
         }
 
         // try to find a getter
-        $getter = 'get' . ucfirst($property);
+        $getter     = 'get' . ucfirst($property);
+        $reflection = new ReflectionClass($this->getValue());
 
-        if (method_exists($this->getValue(), $getter)) {
-            $reflection = new ReflectionMethod($this->getValue(), $getter);
-
-            if ($reflection->isPublic()) {
-                return $this->toSelf($this->getValue()->$getter());
-            }
+        if ($reflection->hasMethod($getter) && $reflection->getMethod($getter)->isPublic()) {
+            return $this->toSelf($this->getValue()->$getter());
         }
 
-        if (isset($this->getValue()->$property) || property_exists($this->getValue(), $property)) {
-            $reflection = new ReflectionProperty($this->getValue(), $property);
-
-            if ($reflection->isPublic()) {
-                return $this->toSelf($this->getValue()->$property);
-            }
+        if (($reflection->hasProperty($property) && $reflection->getProperty($property)->isPublic()) || $reflection->hasMethod('__get')) {
+            return $this->toSelf($this->getValue()->$property);
         }
 
-        throw new Link_Exception_Runtime(sprintf('Property "%1$s::\$%2$s" is not defined or accessible', get_class($this->getValue()), $property));
-
+        throw new Link_Exception_Runtime(sprintf('Property "%1$s::$%2$s" is not defined or accessible', get_class($this->getValue()), $property));
     }
 
     /** {@inheritDoc} */
@@ -136,22 +128,15 @@ class Link_Variable implements Link_VariableInterface {
             throw new Link_Exception_Runtime(sprintf('This variable is not an object, but a(n) "%s"', getType($this->getValue())));
         }
 
-        $setter = 'set' . ucfirst($property);
+        $setter     = 'set' . ucfirst($property);
+        $reflection = new ReflectionClass($this->getValue());
 
-        if (method_exists($this->getValue(), $setter)) {
-            $reflection = new ReflectionMethod($this->getValue(), $setter);
-
-            if ($reflection->isPublic()) {
-                return $this->getValue()->$setter($value);
-            }
+        if ($reflection->hasMethod($setter) && $reflection->getMethod($setter)->isPublic()) {
+            return $this->getValue()->$setter($value);
         }
 
-        if (isset($this->getValue()->$property) || property_exists($this->getValue(), $property)) {
-            $reflection = new ReflectionProperty($this->getValue(), $property);
-
-            if (!$reflection->isPublic()) {
-                throw new Link_Exception_Runtime(sprintf('Property "%1$s::\$%2$s" is not accessible', get_class($this->getValue()), $property));
-            }
+        if ($reflection->hasProperty($property) && !$reflection->getProperty($property)->isPublic() && !$reflection->hasMethod('__set')) {
+            throw new Link_Exception_Runtime(sprintf('Property "%1$s::$%2$s" is not accessible', get_class($this->getValue()), $property));
         }
 
         $this->getValue()->$property = $value;
