@@ -152,13 +152,12 @@ class Link_Environment {
 
         foreach ($context as &$value) {
             if (!$value instanceof Link_VariableInterface) {
-                $variableFactory = clone $this->getVariablesFactory();
-                $value = $variableFactory->setValue($value);
+                $value = $this->cloneVariablesFactory()->setValue($value);
             }
 
             if ($this->getParser()->getParse() & Link_ParserInterface::FILTERS) {
                 foreach ($this->_autoFilters as $filter) {
-                    $value = $value->filter($filter);
+                    $value = $this->filter($filter, $value);
                 }
             }
         }
@@ -277,16 +276,14 @@ class Link_Environment {
      * @throws Link_Exception_Runtime Filter not found
      */
     public function filter($filter, $arg) {
-        $args = func_get_args(); array_shift($filter);
+        $args = func_get_args(); array_shift($args);
 
         // stub for the next feature : extensions handlers
         if (!is_callable(array('Link_Filters', $filter))) {
             throw new Link_Exception_Runtime(sprintf('The filter "%s" is not accessible', $filter));
         }
 
-        $variableFactory = clone $this->getVariablesFactory();
-
-        return $variableFactory->setValue(call_user_func_array(array('Link_Filters', $filter), $args));
+        return $this->cloneVariablesFactory()->setValue(call_user_func_array(array('Link_Filters', $filter), $args));
     }
 
     /**#@+ Accessors */
@@ -302,8 +299,8 @@ class Link_Environment {
     }
 
     /** @return Link_VariableInterface */
-    public function getVariablesFactory() {
-        return $this->_variablesFactory;
+    public function cloneVariablesFactory() {
+        return clone $this->_variablesFactory;
     }
 
     /** Sets the TPL variables factory */
