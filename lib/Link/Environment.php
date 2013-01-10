@@ -78,7 +78,7 @@ class Link_Environment {
 
         // -- Dependency Injection
         $this->setParser($options['dependencies']['parser'] !== null ? $options['dependencies']['parser'] : new Link_Parser);
-        $this->setVariablesFactory($options['dependencies']['variablesFactory'] !== null ? $options['dependencies']['variablesFactory'] : new Link_Variable($this, null));
+        $this->setVariablesFactory($options['dependencies']['variablesFactory'] !== null ? $options['dependencies']['variablesFactory'] : new Link_Variable);
         $this->setCache($_cache !== null ? $_cache : new Link_Cache_None);
         $this->setLoader($_loader !== null ? $_loader : new Link_Loader_String);
 

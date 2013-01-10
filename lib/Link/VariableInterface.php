@@ -25,13 +25,6 @@ interface Link_VariableInterface extends ArrayAccess, IteratorAggregate, Countab
      */
     public function getValue();
 
-    /**
-     * Gets the environment
-     *
-     * @return Link_Environment
-     */
-    public function getEnvironment();
-
     /** {@inheritDoc} */
     public function __toString();
 
