@@ -132,7 +132,9 @@ class Link_Variable implements Link_VariableInterface {
         $reflection = new ReflectionClass($this->getValue());
 
         if ($reflection->hasMethod($setter) && $reflection->getMethod($setter)->isPublic()) {
-            return $this->getValue()->$setter($value);
+            $this->getValue()->$setter($value);
+
+            return;
         }
 
         if ($reflection->hasProperty($property) && !$reflection->getProperty($property)->isPublic() && !$reflection->hasMethod('__set')) {
@@ -148,15 +150,17 @@ class Link_Variable implements Link_VariableInterface {
             throw new Link_Exception_Runtime(sprintf('This variable is not an object, but a(n) "%s"', getType($this->getValue())));
         }
 
-        if (method_exists($this->getValue(), $method)) {
-            if (is_callable(array($this->getValue(), $method))) {
-                return call_user_func_array(array($this->getValue(), $method), $arguments);
-            }
+        $reflection = new ReflectionClass($this->getValue());
 
-            throw new Link_Exception_Runtime(sprintf('Method "%1$s::\$%2$s" is not accessible', get_class($this->getValue()), $method));
+        if ($reflection->hasMethod($method) && $reflection->getMethod($method)->isPublic()) {
+            return $reflection->getMethod($method)->invokeArgs($this->getValue(), $arguments);
         }
 
-        throw new Link_Exception_Runtime(sprintf('Method "%1$s::%2$s()" is not defined', get_class($this->getValue()), $method));
+        if ($reflection->hasMethod('__call')) {
+            return call_user_func_array(array($this->getValue(), $method), $arguments);
+        }
+
+        throw new Link_Exception_Runtime(sprintf('Method "%1$s::%2$s()" is not accessible or not defined.', get_class($this->getValue()), $method));
     }
 
     /**
