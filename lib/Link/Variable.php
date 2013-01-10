@@ -40,11 +40,7 @@ class Link_Variable implements Link_VariableInterface {
             throw new Link_Exception_Runtime('This variable is not an array, a traversable, or a string and a numeric offset');
         }
 
-        if (!$value instanceof self) {
-            $value = new self($value);
-        }
-
-        $this->_value[$offset] = $value;
+        $this->_value[$offset] = $this->toSelf($value);
     }
 
     /** {@inheritDoc} */
@@ -85,9 +81,7 @@ class Link_Variable implements Link_VariableInterface {
     public function setValue($value) {
         if (!$value instanceof self && ($value instanceof Traversable || is_array($value))) {
             foreach ($value as &$val) {
-                if (!$val instanceof self) {
-                    $val = new self($val);
-                }
+                $val = $this->toSelf($val);
             }
         }
 
@@ -108,11 +102,11 @@ class Link_Variable implements Link_VariableInterface {
             $getter = 'get' . ucfirst($property);
 
             if (method_exists($this->getValue(), $getter)) {
-                return $this->getValue()->$getter();
+                return $this->toSelf($this->getValue()->$getter());
             }
 
             if (isset($this->getValue()->$property) || property_exists($this->getValue(), $property)) {
-                return $this->getValue()->$property;
+                return $this->toSelf($this->getValue()->$property);
             }
         }
 
@@ -125,9 +119,7 @@ class Link_Variable implements Link_VariableInterface {
             $setter = 'set' . ucfirst($property);
 
             if (method_exists($this->getValue(), $setter)) {
-                $this->getValue()->$setter($value);
-
-                return;
+                return $this->getValue()->$setter($value);
             }
 
             $this->getValue()->$property = $value;
@@ -145,6 +137,20 @@ class Link_Variable implements Link_VariableInterface {
         }
 
         throw new Link_Exception_Runtime(sprintf('Method "%s" is not defined or not accessible on this variable.', $method));
+    }
+
+    /**
+     * Transforms a value to an instance of this class
+     *
+     * @param mixed $value value to transform
+     * @return Link_VariableInterface
+     */
+    private function toSelf($value) {
+        if (!$value instanceof self) {
+            $value = new self($value);
+        }
+
+        return $value;
     }
 
 }
