@@ -40,7 +40,13 @@ class Link_Variable implements Link_VariableInterface {
             throw new Link_Exception_Runtime('This variable is not an array, a traversable, or a string and a numeric offset');
         }
 
-        $this->_value[$offset] = $this->toSelf($value);
+        if (null !== $offset) {
+            $this->_value[$offset] = $this->toSelf($value);
+
+            return;
+        }
+
+        $this->_value[] = $this->toSelf($value);
     }
 
     /** {@inheritDoc} */
