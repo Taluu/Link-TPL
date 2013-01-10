@@ -18,14 +18,9 @@
  * @author  Baptiste "Talus" Clavié <clavie.b@gmail.com>
  */
 class Link_Variable implements Link_VariableInterface {
-    private
-        /** @var Link_Environment */
-        $_environment = null,
+    private $_value = null;
 
-        $_value = null;
-
-    public function __construct(Link_Environment $env, $value) {
-        $this->setEnvironment($env);
+    public function __construct($value = null) {
         $this->setValue($value);
     }
 
@@ -93,23 +88,12 @@ class Link_Variable implements Link_VariableInterface {
         if (!$value instanceof self && ($value instanceof Traversable || is_array($value))) {
             foreach ($value as &$val) {
                 if (!$val instanceof self) {
-                    $val = new self($this->getEnvironment(), $val);
+                    $val = new self($val);
                 }
             }
         }
 
         $this->_value = $value;
-
-        return $this;
-    }
-
-    /** @return Link_Environement */
-    public function getEnvironment() {
-        return $this->_environment;
-    }
-
-    public function setEnvironment(Link_Environment $env) {
-        $this->_environment = $env;
 
         return $this;
     }
