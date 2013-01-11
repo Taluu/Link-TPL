@@ -19,7 +19,13 @@
  *
  */
 class Link_Tests_VariableTest extends PHPUnit_Framework_TestCase {
-    /** @covers Link_Variable::toSelf */
+    /**
+     * @covers Link_Variable::__construct
+     * @covers Link_Variable::__toString
+     * @covers Link_Variable::getValue
+     * @covers Link_Variable::setValue
+     * @covers Link_Variable::toSelf
+     */
     public function testValue() {
         $var = new Link_Variable('test');
 
@@ -28,8 +34,16 @@ class Link_Tests_VariableTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
+     * @covers Link_Variable::__construct
+     * @covers Link_Variable::__toString
      * @covers Link_Variable::offsetGet
+     * @covers Link_Variable::getValue
+     * @covers Link_Variable::setValue
+     * @covers Link_Variable::toSelf
      * @covers Link_Variable::count
+     *
+     * @expectedException        PHPUnit_Framework_Error_Notice
+     * @expectedExceptionMessage The offset "1" is not defined for this variable
      */
     public function testOffsetGet() {
         $var = new Link_Variable(array('a'));
@@ -39,9 +53,22 @@ class Link_Tests_VariableTest extends PHPUnit_Framework_TestCase {
 
         $this->assertCount(1, $var);
         $this->assertEquals('a', (string) $var[0]);
+
+        $this->assertNull(@$var[1]);
+        $this->assertNull($var[1]);
     }
 
-    /** @covers Link_Variable::offsetSet */
+    /**
+     * @covers Link_Variable::__construct
+     * @covers Link_Variable::__toString
+     * @covers Link_Variable::offsetSet
+     * @covers Link_Variable::getValue
+     * @covers Link_Variable::setValue
+     * @covers Link_Variable::toSelf
+     *
+     * @expectedException        Link_Exception_Runtime
+     * @expectedExceptionMessage This variable is not an array, or a string with a numeric offset
+     */
     public function testOffsetSet() {
         $var = new Link_Variable(array());
 
@@ -54,9 +81,21 @@ class Link_Tests_VariableTest extends PHPUnit_Framework_TestCase {
         $this->assertCount(2, $var);
         $this->assertEquals('a', (string) $var[0]);
         $this->assertEquals('b', (string) $var[1]);
+
+        $var->setValue(new ObjectTest);
+        $var->offsetSet(0, null);
+
+        $this->fail('Should not get here');
     }
 
-    /** @covers Link_Variable::__get */
+    /**
+     * @covers Link_Variable::__construct
+     * @covers Link_Variable::__toString
+     * @covers Link_Variable::getValue
+     * @covers Link_Variable::setValue
+     * @covers Link_Variable::toSelf
+     * @covers Link_Variable::__get
+     */
     public function testPropertyGet() {
         $var = new Link_Variable(new ObjectTest);
 
@@ -75,7 +114,14 @@ class Link_Tests_VariableTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('b', $var->publicArray[1]);
     }
 
-    /** @covers Link_Variable::__set */
+    /**
+     * @covers Link_Variable::__construct
+     * @covers Link_Variable::__toString
+     * @covers Link_Variable::getValue
+     * @covers Link_Variable::setValue
+     * @covers Link_Variable::toSelf
+     * @covers Link_Variable::__set
+     */
     public function testPropertySet() {
         $var = new Link_Variable(new ObjectTest);
 
@@ -87,8 +133,15 @@ class Link_Tests_VariableTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
+     * @covers Link_Variable::__construct
+     * @covers Link_Variable::__toString
+     * @covers Link_Variable::getValue
+     * @covers Link_Variable::setValue
+     * @covers Link_Variable::toSelf
      * @covers Link_Variable::__get
-     * @expectedException Link_Exception_Runtime
+
+     * @expectedException        Link_Exception_Runtime
+     * @expectedExceptionMessage Property "ObjectTest::$noAccessor" is not defined or accessible
      */
     public function testPropertyGetter() {
         $var = new Link_Variable(new ObjectTest);
@@ -104,8 +157,15 @@ class Link_Tests_VariableTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
+     * @covers Link_Variable::__construct
+     * @covers Link_Variable::__toString
+     * @covers Link_Variable::getValue
+     * @covers Link_Variable::setValue
+     * @covers Link_Variable::toSelf
      * @covers Link_Variable::__set
-     * @expectedException Link_Exception_Runtime
+
+     * @expectedException        Link_Exception_Runtime
+     * @expectedExceptionMessage Property "ObjectTest::$noAccessor" is not accessible
      */
     public function testPropertySetter() {
         $var = new Link_Variable(new ObjectTest);
@@ -117,15 +177,20 @@ class Link_Tests_VariableTest extends PHPUnit_Framework_TestCase {
 
         $this->assertInternalType('string', $var->withAccessor->getValue());
         $this->assertNotNull($var->withAccessor->getValue());
-        $this->assertEquals('a', $var->withAccessor->getValue());
+        $this->assertEquals('a', (string) $var->withAccessor);
 
         $var->noAccessor = 'a';
         $this->fail('Should not get here !');
     }
 
     /**
+     * @covers Link_Variable::__construct
+     * @covers Link_Variable::getValue
+     * @covers Link_Variable::setValue
      * @covers Link_Variable::__call
-     * @expectedException Link_Exception_Runtime
+     *
+     * @expectedException        Link_Exception_Runtime
+     * @expectedExceptionMessage Method "ObjectTest::aPrivateMethod()" is not accessible or not defined.
      */
     public function testMethodCaller() {
         $var = new Link_Variable(new ObjectTest);
@@ -135,6 +200,57 @@ class Link_Tests_VariableTest extends PHPUnit_Framework_TestCase {
 
         $var->aPrivateMethod();
         $this->fail('Should not be here !');
+    }
+
+    /**
+     * @covers Link_Variable::__construct
+     * @covers Link_Variable::offsetExists
+     * @covers Link_Variable::setValue
+     * @covers Link_Variable::toSelf
+     */
+    public function testOffsetExists() {
+        $var = new Link_Variable(array('a' => 'b', 'c' => 'd'));
+
+        $this->assertTrue(isset($var['a']));
+        $this->assertFalse(isset($var['e']));
+    }
+
+    /**
+     * @covers Link_Variable::__construct
+     * @covers Link_Variable::offsetUnset
+     * @covers Link_Variable::setValue
+     * @covers Link_Variable::toSelf
+     */
+    public function testOffsetUnset() {
+        $var = new Link_Variable(array('a' => 'b', 'c' => 'd'));
+
+        $this->assertTrue(isset($var['a']));
+
+        unset($var['a']);
+
+        $this->assertFalse(isset($var['a']));
+    }
+
+    /**
+     * @covers Link_Variable::__construct
+     * @covers Link_Variable::getIterator
+     * @covers Link_Variable::getValue
+     * @covers Link_Variable::setValue
+     * @covers Link_Variable::toSelf
+     *
+     * @expectedException        PHPUnit_Framework_Error_Warning
+     * @expectedExceptionMessage This variable is not iterable
+     */
+    public function testIterators() {
+        $iterator = new Link_Variable(new Link_Variable(array()));
+        $array    = new Link_Variable(array());
+        $none     = new Link_Variable(null);
+
+        $this->assertInstanceOf('IteratorIterator', $iterator->getIterator());
+        $this->assertInstanceOf('ArrayIterator', $array->getIterator());
+        $this->assertInstanceOf('EmptyIterator', @$none->getIterator());
+
+        $none->getIterator();
     }
 }
 
