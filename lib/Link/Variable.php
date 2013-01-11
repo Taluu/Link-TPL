@@ -36,8 +36,8 @@ class Link_Variable implements Link_VariableInterface {
 
     /** {@inheritDoc} */
     public function offsetSet($offset = null, $value) {
-        if (!is_array($this->_value) && !$this->_value instanceof ArrayAccess && ('string' !== getType($this->_value) && 'integer' !== getType($offset))) {
-            throw new Link_Exception_Runtime('This variable is not an array, a traversable, or a string and a numeric offset');
+        if (!is_array($this->_value) && !$this->_value instanceof ArrayAccess && ('string' !== getType($this->_value) || 'integer' !== getType($offset))) {
+            throw new Link_Exception_Runtime('This variable is not an array, or a string with a numeric offset');
         }
 
         if (null !== $offset) {
@@ -103,9 +103,11 @@ class Link_Variable implements Link_VariableInterface {
 
     /** {@inheritDoc} */
     public function __get($property) {
+        // @codeCoverageIgnoreStart
         if (!is_object($this->getValue())) {
             throw new Link_Exception_Runtime(sprintf('This variable is not an object, but a(n) "%s"', getType($this->getValue())));
         }
+        // @codeCoverageIgnoreEnd
 
         // try to find a getter
         $getter     = 'get' . ucfirst($property);
@@ -124,9 +126,11 @@ class Link_Variable implements Link_VariableInterface {
 
     /** {@inheritDoc} */
     public function __set($property, $value) {
+        // @codeCoverageIgnoreStart
         if (!is_object($this->getValue())) {
             throw new Link_Exception_Runtime(sprintf('This variable is not an object, but a(n) "%s"', getType($this->getValue())));
         }
+        // @codeCoverageIgnoreEnd
 
         $setter     = 'set' . ucfirst($property);
         $reflection = new ReflectionClass($this->getValue());
@@ -146,9 +150,11 @@ class Link_Variable implements Link_VariableInterface {
 
     /** {@inheritDoc} */
     public function __call($method, array $arguments) {
+        // @codeCoverageIgnoreStart
         if (!is_object($this->getValue())) {
             throw new Link_Exception_Runtime(sprintf('This variable is not an object, but a(n) "%s"', getType($this->getValue())));
         }
+        // @codeCoverageIgnoreEnd
 
         $reflection = new ReflectionClass($this->getValue());
 
@@ -156,9 +162,11 @@ class Link_Variable implements Link_VariableInterface {
             return $reflection->getMethod($method)->invokeArgs($this->getValue(), $arguments);
         }
 
+        // @codeCoverageIgnoreStart
         if ($reflection->hasMethod('__call')) {
             return call_user_func_array(array($this->getValue(), $method), $arguments);
         }
+        // @codeCoverageIgnoreEnd
 
         throw new Link_Exception_Runtime(sprintf('Method "%1$s::%2$s()" is not accessible or not defined.', get_class($this->getValue()), $method));
     }
