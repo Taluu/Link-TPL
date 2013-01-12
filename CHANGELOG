@@ -17,9 +17,9 @@
     #CHG : Broke the Parser interface for the handling of parameters
 
     #ADD : Possibility to call methods without args on templates vars
-    #ADD : Extensions
     #ADD : Variable class to manage variables in a template
-
+    #ADD : Extensions
+    
     #OBS : Binding global variables by reference
 
 ## 1.12 ==> 1.13 (Release: 11/05/12)
