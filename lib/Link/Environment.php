@@ -74,6 +74,8 @@ class Link_Environment {
                 'variablesFactory' => null
             ),
 
+            'extensions' => array(),
+
             'force_reload' => false
         );
 
@@ -84,6 +86,13 @@ class Link_Environment {
         $this->setVariablesFactory($options['dependencies']['variablesFactory'] !== null ? $options['dependencies']['variablesFactory'] : new Link_Variable);
         $this->setCache($_cache !== null ? $_cache : new Link_Cache_None);
         $this->setLoader($_loader !== null ? $_loader : new Link_Loader_String);
+
+        // extensions
+        $this->registerExtension(new Link_Extension_Core);
+
+        foreach ($options['extensions'] as $extension) {
+            $this->registerExtension($extension);
+        }
 
         // -- Options treatment
         $this->_forceReload = (bool)$options['force_reload'];
@@ -152,14 +161,25 @@ class Link_Environment {
             throw new Link_Exception(sprintf('The extension %s is already registered', $extension->getName()));
         }
 
-        $this->set($extension->getGlobals());
+        if (!empty($extension->getGlobals())) {
+            $this->set($extension->getGlobals());
+        }
 
-        foreach ($extension->getFilters() as $name => $filter) {
-            $this->_filters[$extension->getName() . '.' . $name] = $filter;
+        if (!empty($extension->getFilters())) {
+            foreach ($extension->getFilters() as $name => $filter) {
+                if (!is_callable($filter['filter'])) {
+                    trigger_error(strtr('Uncallable filter "{{ name }}" from extension "{{ extension }}", it will not be registered.',
+                                        array('{{ name }}'      => $name
+                                              '{{ extension }}' => $extenion->getName())), E_USER_WARNING);
+                    continue;
+                }
 
-            // use a global alias only if this filter was not yet registered
-            if (!isset($this->_filters[$name])) {
-                $this->_filters[$name] = $filter;
+                $this->_filters[$extension->getName() . '.' . $name] = $filter;
+
+                // use a fast alias only if this filter was not yet registered
+                if (!isset($this->_filters[$name])) {
+                    $this->_filters[$name] = $filter;
+                }
             }
         }
 
