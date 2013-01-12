@@ -161,25 +161,25 @@ class Link_Environment {
             throw new Link_Exception(sprintf('The extension %s is already registered', $extension->getName()));
         }
 
-        if (!empty($extension->getGlobals())) {
-            $this->set($extension->getGlobals());
+        $globals = $extension->getGlobals();
+
+        if (!empty($globals)) {
+            $this->set($globals);
         }
 
-        if (!empty($extension->getFilters())) {
-            foreach ($extension->getFilters() as $name => $filter) {
-                if (!is_callable($filter['filter'])) {
-                    trigger_error(strtr('Uncallable filter "{{ name }}" from extension "{{ extension }}", it will not be registered.',
-                                        array('{{ name }}'      => $name
-                                              '{{ extension }}' => $extenion->getName())), E_USER_WARNING);
-                    continue;
-                }
+        foreach ($extension->getFilters() as $name => $filter) {
+            if (!is_callable($filter['filter'], true)) {
+                trigger_error(strtr('Uncallable filter "{{ name }}" from extension "{{ extension }}", it will not be registered.',
+                                     array('{{ name }}'      => $name,
+                                           '{{ extension }}' => $extenion->getName())), E_USER_WARNING);
+                continue;
+            }
 
-                $this->_filters[$extension->getName() . '.' . $name] = $filter;
+            $this->_filters[$extension->getName() . '.' . $name] = $filter;
 
-                // use a fast alias only if this filter was not yet registered
-                if (!isset($this->_filters[$name])) {
-                    $this->_filters[$name] = $filter;
-                }
+            // use a fast alias only if this filter was not yet registered
+            if (!isset($this->_filters[$name])) {
+                $this->_filters[$name] = $filter;
             }
         }
 
@@ -325,18 +325,21 @@ class Link_Environment {
      * @throws Link_Exception_Runtime Filter not found
      */
     public function filter($filter, $arg) {
-        $args = func_get_args(); array_shift($args); // remove $filter and $arg
-
-        // stub for the next feature : extensions handlers
-        if (!is_callable(array('Link_Filters', $filter))) {
-            throw new Link_Exception_Runtime(sprintf('The filter "%s" is not accessible', $filter));
+        if (!isset($this->_filters[$filter])) {
+            throw new Link_Exception_Runtime(strtr('Unknown filter {{ name }}', array('{{ name }}' => $filter)));
         }
 
-        if ($args[0] instanceof Link_VariableInterface) {
-            $args[0] = $args[0]->getValue();
+		$args = func_get_args(); array_shift($args); array_shift($args);
+
+        if (isset($this->_filters[$filter]['options']['needs_environment']) && true === $this->_filters[$filter]['options']['needs_environment']) {
+            array_unshift($args, $this);
         }
 
-        return $this->cloneVariablesFactory()->setValue(call_user_func_array(array('Link_Filters', $filter), $args));
+		if ($arg instanceof Link_VariableInterface) {
+            $arg = $arg->getValue();
+        }
+
+        return $this->cloneVariablesFactory()->setValue(call_user_func_array($this->_filter[$filter]['filter'], $args));
     }
 
     /**#@+ Accessors */
