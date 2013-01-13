@@ -32,6 +32,7 @@ class Link_Extension_Core implements Link_ExtensionInterface {
     /** {@inheritDoc} */
     public function getGlobals() {
         return array();
+    }
 
     /** {@inheritDoc} */
     public function getFilters() {
@@ -56,7 +57,7 @@ class Link_Extension_Core implements Link_ExtensionInterface {
                 'options' => array()
             )
         );
-    };
+    }
 }
 
 /**
@@ -88,7 +89,7 @@ class Link_Extension_Core implements Link_ExtensionInterface {
  *
  * @return string The converted string
  */
-function __link_core_escape($arg, $quote_style = ENT_COMPAT, $charset = 'ISO-8859-1', $double_encode = true) {
+function __link_core__escape($arg, $quote_style = ENT_COMPAT, $charset = 'ISO-8859-1', $double_encode = true) {
     return htmlspecialchars($arg, $quote_style, $charset, $double_encode);
 }
 
@@ -106,7 +107,7 @@ function __link_core_escape($arg, $quote_style = ENT_COMPAT, $charset = 'ISO-885
  *
  * @return string unescaped var
  */
-function __link_core_safe($arg, $quote_style = ENT_COMPAT) {
+function __link_core__safe($arg, $quote_style = ENT_COMPAT) {
     return htmlspecialchars_decode($arg, $quote_style);
 }
 
@@ -117,7 +118,7 @@ function __link_core_safe($arg, $quote_style = ENT_COMPAT) {
  *
  * @return string the variable's value
  */
-function __link_core_void($arg) {
+function __link_core__void($arg) {
     return $arg;
 }
 
@@ -129,7 +130,7 @@ function __link_core_void($arg) {
  *
  * @return mixed default value if variable is empty, variables value otherwise
  */
-function __link_core_defaults($arg, $default = '') {
+function __link_core__defaults($arg, $default = '') {
     if (!$arg) {
         return $default;
     }
