@@ -336,8 +336,8 @@ class Link_Environment {
         }
 
         if (isset($this->_filters[$filter]['options']['needs_environment']) && true === $this->_filters[$filter]['options']['needs_environment']) {
-            array_shift($args);
-            array_unshift($args, $this, $arg);
+            $arg = array_shift($args);
+            array_unshift($args, $arg, $this);
         }
 
         return $this->cloneVariablesFactory()->setValue(call_user_func_array($this->_filter[$filter]['filter'], $args));
