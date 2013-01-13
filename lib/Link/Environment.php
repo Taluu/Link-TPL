@@ -340,7 +340,7 @@ class Link_Environment {
             array_unshift($args, $arg, $this);
         }
 
-        return $this->cloneVariablesFactory()->setValue(call_user_func_array($this->_filter[$filter]['filter'], $args));
+        return $this->cloneVariablesFactory()->setValue(call_user_func_array($this->_filters[$filter]['filter'], $args));
     }
 
     /**#@+ Accessors */
