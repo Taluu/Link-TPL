@@ -27,7 +27,7 @@ if (!defined('PHP_VERSION_ID')) {
 class Link_Extension_Core implements Link_ExtensionInterface {
     /** {@inheritDoc} */
     public function getName() {
-        return 'Core';
+        return 'core';
     }
 
     /** {@inheritDoc} */
