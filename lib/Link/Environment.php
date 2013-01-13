@@ -329,20 +329,22 @@ class Link_Environment {
             throw new Link_Exception_Runtime(strtr('Unknown filter {{ name }}', array('{{ name }}' => $filter)));
         }
 
-		$args = func_get_args(); array_shift($args); array_shift($args);
+		$args = func_get_args(); array_shift($args);
+
+        if ($args[0] instanceof Link_VariableInterface) {
+            $args[0] = $args[0]->getValue();
+        }
 
         if (isset($this->_filters[$filter]['options']['needs_environment']) && true === $this->_filters[$filter]['options']['needs_environment']) {
-            array_unshift($args, $this);
+            $arg = array_shift($args);
+            array_unshift($args, $arg, $this);
         }
 
-		if ($arg instanceof Link_VariableInterface) {
-            $arg = $arg->getValue();
-        }
-
-        return $this->cloneVariablesFactory()->setValue(call_user_func_array($this->_filter[$filter]['filter'], $args));
+        return $this->cloneVariablesFactory()->setValue(call_user_func_array($this->_filters[$filter]['filter'], $args));
     }
 
     /**#@+ Accessors */
+    // @codeCoverageIgnoreStart
 
     /** @return Link_ParserInterface */
     public function getParser() {
@@ -401,11 +403,15 @@ class Link_Environment {
     public function disableForceReload() {
         $this->setForceReload(false);
     }
+
+    // @codeCoverageIgnoreEnd
     /**#@-*/
 }
 
 /*
  * Functions dependencies
+ *
+ * @codeCoverageIgnoreStart
  */
 if (!function_exists('array_replace_recursive')) {
     /**
@@ -451,5 +457,7 @@ if (!function_exists('array_replace_recursive')) {
 }
 
 /*
+ * @codeCoverageIgnoreEnd
+ *
  * EOF
  */
