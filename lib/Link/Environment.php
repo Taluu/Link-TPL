@@ -276,11 +276,15 @@ class Link_Environment {
      * @throws Link_Exception_Runtime Filter not found
      */
     public function filter($filter, $arg) {
-        $args = func_get_args(); array_shift($args);
+        $args = func_get_args(); array_shift($args); array_shift($args); // remove $filter and $arg
 
         // stub for the next feature : extensions handlers
         if (!is_callable(array('Link_Filters', $filter))) {
             throw new Link_Exception_Runtime(sprintf('The filter "%s" is not accessible', $filter));
+        }
+
+        if ($arg instanceof Link_VariableInterface) {
+            $arg = $arg->getValue();
         }
 
         return $this->cloneVariablesFactory()->setValue(call_user_func_array(array('Link_Filters', $filter), $args));
