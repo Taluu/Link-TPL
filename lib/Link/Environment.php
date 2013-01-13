@@ -28,9 +28,15 @@ class Link_Environment {
         $_references = array(),
         $_currentContext = array(),
 
+        $_extensions = array(),
+        $_filters = array(),
+
         $_autoFilters = array(),
 
         $_forceReload = false,
+
+        /** @var Link_VariableInterface */
+        $_varFactory = null,
 
         /** @var Link_LoaderInterface */
         $_loader = null,
@@ -64,8 +70,11 @@ class Link_Environment {
         // -- Options
         $defaults = array(
             'dependencies' => array(
-                'parser' => null
+                'parser'           => null,
+                'variablesFactory' => null
             ),
+
+            'extensions' => array(),
 
             'force_reload' => false
         );
@@ -74,8 +83,16 @@ class Link_Environment {
 
         // -- Dependency Injection
         $this->setParser($options['dependencies']['parser'] !== null ? $options['dependencies']['parser'] : new Link_Parser);
+        $this->setVariablesFactory($options['dependencies']['variablesFactory'] !== null ? $options['dependencies']['variablesFactory'] : new Link_Variable);
         $this->setCache($_cache !== null ? $_cache : new Link_Cache_None);
         $this->setLoader($_loader !== null ? $_loader : new Link_Loader_String);
+
+        // extensions
+        $this->registerExtension(new Link_Extension_Core);
+
+        foreach ($options['extensions'] as $extension) {
+            $this->registerExtension($extension);
+        }
 
         // -- Options treatment
         $this->_forceReload = (bool)$options['force_reload'];
@@ -90,13 +107,11 @@ class Link_Environment {
      * @since 1.3.0
      */
     public function set($vars, $value = null) {
-        if (is_array($vars)) {
-            $this->_vars = array_replace_recursive($this->_vars, $vars);
-
-            return;
+        if (!is_array($vars)) {
+            $vars = array($vars => $value);
         }
 
-        $this->_vars[$vars] = $value;
+        $this->_vars = array_replace_recursive($this->_vars, $vars);
     }
 
     /**
@@ -111,12 +126,8 @@ class Link_Environment {
      * @since 1.9.0
      */
     public function autoFilters($name) {
-        if (!$this->getParser()->hasParameter('filters')) { // filters not parsed...
+        if (Link_ParserInterface::FILTERS & ~$this->getParser()->getParse()) { // filters not parsed...
             return;
-        }
-
-        if (!method_exists($this->getParser()->getParameter('filters'), $name)) {
-            throw new Link_Exception(array('The filter %s doesn\'t exist...', $name), 404);
         }
 
         $this->_autoFilters[] = $name;
@@ -131,10 +142,48 @@ class Link_Environment {
      * @return void
      *
      * @since 1.7.0
+     *
+     * @deprecated 1.14 Will be removed in 1.15
      */
     public function bind($var, &$value) {
-        $this->_vars[$var] = &$value;
-        $this->_references[] = $var;
+        $this->set($var, $value);
+    }
+
+    /**
+     * Registers an extension (globals, filters, ...)
+     *
+     * @param Link_ExtensionInterface $extension Extension to be registered
+     *
+     * @since 1.14.0
+     */
+    public function registerExtension(Link_ExtensionInterface $extension) {
+        if (in_array($extension->getName(), $this->_extensions)) {
+            throw new Link_Exception(sprintf('The extension %s is already registered', $extension->getName()));
+        }
+
+        $globals = $extension->getGlobals();
+
+        if (!empty($globals)) {
+            $this->set($globals);
+        }
+
+        foreach ($extension->getFilters() as $name => $filter) {
+            if (!is_callable($filter['filter'], true)) {
+                trigger_error(strtr('Uncallable filter "{{ name }}" from extension "{{ extension }}", it will not be registered.',
+                                     array('{{ name }}'      => $name,
+                                           '{{ extension }}' => $extenion->getName())), E_USER_WARNING);
+                continue;
+            }
+
+            $this->_filters[$extension->getName() . '.' . $name] = $filter;
+
+            // use a fast alias only if this filter was not yet registered
+            if (!isset($this->_filters[$name])) {
+                $this->_filters[$name] = $filter;
+            }
+        }
+
+        $this->_extensions[] = $extension->getName();
     }
 
     /**
@@ -148,16 +197,19 @@ class Link_Environment {
      */
     public function parse($_tpl, array $_context = array()) {
         // -- Applying the auto filters...
-        $vars = array_diff_key($this->_vars, array_flip($this->_references));
-        $context = array_replace_recursive($vars, $_context);
+        $context = array_replace_recursive($this->_vars, $_context);
 
-        if ($this->getParser()->hasParameter('filters')) {
-            foreach ($this->_autoFilters as &$filter) {
-                array_walk_recursive($context, array($this->getParser()->getParameter('filters'), $filter));
+        foreach ($context as &$value) {
+            if (!$value instanceof Link_VariableInterface) {
+                $value = $this->cloneVariablesFactory()->setValue($value);
+            }
+
+            if ($this->getParser()->getParse() & Link_ParserInterface::FILTERS) {
+                foreach ($this->_autoFilters as $filter) {
+                    $value = $this->filter($filter, $value);
+                }
             }
         }
-
-        $context += array_diff($this->_vars, $vars);
 
         // -- Calling the cache...
         $cache = $this->getLoader()->getCacheKey($_tpl);
@@ -263,6 +315,34 @@ class Link_Environment {
         echo $data;
     }
 
+    /**
+     * Applies filter `$filter` on an argument
+     *
+     * @param string $filter Filter's name
+     * @param mixed  $arg    Argument's value
+     *
+     * @return mixed
+     * @throws Link_Exception_Runtime Filter not found
+     */
+    public function filter($filter, $arg) {
+        if (!isset($this->_filters[$filter])) {
+            throw new Link_Exception_Runtime(strtr('Unknown filter {{ name }}', array('{{ name }}' => $filter)));
+        }
+
+		$args = func_get_args(); array_shift($args);
+
+        if ($args[0] instanceof Link_VariableInterface) {
+            $args[0] = $args[0]->getValue();
+        }
+
+        if (isset($this->_filters[$filter]['options']['needs_environment']) && true === $this->_filters[$filter]['options']['needs_environment']) {
+            array_shift($args);
+            array_unshift($args, $this, $arg);
+        }
+
+        return $this->cloneVariablesFactory()->setValue(call_user_func_array($this->_filter[$filter]['filter'], $args));
+    }
+
     /**#@+ Accessors */
 
     /** @return Link_ParserInterface */
@@ -273,6 +353,16 @@ class Link_Environment {
     /** Sets the TPL parser */
     public function setParser(Link_ParserInterface $_parser) {
         $this->_parser = $_parser;
+    }
+
+    /** @return Link_VariableInterface */
+    public function cloneVariablesFactory() {
+        return clone $this->_variablesFactory;
+    }
+
+    /** Sets the TPL variables factory */
+    public function setVariablesFactory(Link_VariableInterface $_variablesFactory) {
+        $this->_variablesFactory = $_variablesFactory;
     }
 
     /** @return Link_CacheInterface */

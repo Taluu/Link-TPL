@@ -57,7 +57,7 @@ class Link_Tests_ParserTest extends PHPUnit_Framework_TestCase {
             if ($__tpl_foreach__%1$s[\'size\'] > 0) :
                 foreach ($__tpl_%2$s as $__tpl_foreach__%1$s[\'key\'] => $__tpl_foreach__%1$s[\'value\']) {
                   ++$__tpl_foreach__%1$s[\'current\']; ?>';
-    
+
         $datas = array(
             // Normal foreach
             '<foreach array="{$sth}">'                                    => sprintf($foreach, 'sth', 'vars__sth'),
@@ -89,13 +89,6 @@ class Link_Tests_ParserTest extends PHPUnit_Framework_TestCase {
         $this->_parser->disableCompact();
     }
 
-    /**
-     * @expectedException PHPUnit_Framework_Error
-     */
-    public function testUnexistantFilter() {
-        $this->assertEquals('<?php echo $__tpl_vars__abcd; ?>', $this->parse('{abcd|unexpectedFilter}'));
-    }
-
     /** @dataProvider getVarsTests */
     public function testVars($tpl, $expected) {
         $this->assertEquals($expected, $this->parse($tpl));
@@ -111,10 +104,10 @@ class Link_Tests_ParserTest extends PHPUnit_Framework_TestCase {
             array('{$abcd[\'with`\']->some[\'stuff\']}', '$__tpl_vars__abcd[\'with`\']->some[\'stuff\']'),
 
             // filters
-            array('{$abcd|protect|safe}', 'Link_Filters::safe(Link_Filters::protect($__tpl_vars__abcd))'),
-            array('{abcd|protect|safe}', '<?php echo Link_Filters::safe(Link_Filters::protect($__tpl_vars__abcd)); ?>'),
-            array('{abcd|defaults:off}', '<?php echo Link_Filters::defaults($__tpl_vars__abcd, false); ?>'),
-            array('{abcd|defaults:true}', '<?php echo Link_Filters::defaults($__tpl_vars__abcd, true); ?>'),
+            array('{$abcd|protect|safe}', '$_env->filter(\'safe\', $_env->filter(\'protect\', $__tpl_vars__abcd))'),
+            array('{abcd|protect|safe}', '<?php echo $_env->filter(\'safe\', $_env->filter(\'protect\', $__tpl_vars__abcd)); ?>'),
+            array('{abcd|defaults:off}', '<?php echo $_env->filter(\'defaults\', $__tpl_vars__abcd, false); ?>'),
+            array('{abcd|defaults:true}', '<?php echo $_env->filter(\'defaults\', $__tpl_vars__abcd, true); ?>'),
 
             // foreaches
             array('{$abcd.value}', '$__tpl_foreach__abcd[\'value\']'),
