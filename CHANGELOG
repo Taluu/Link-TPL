@@ -11,15 +11,17 @@
  */
 
 ## 1.13 ==> 1.? (Release: ??/??/??)
+    #WAR : PHP 5.2.3 is needed, btw.
+
+    #ADD : Possibility to call methods without args on templates vars
+    #ADD : Variable class to manage variables in a template
+    #ADD : Extensions
+
     #CHG : The String loader is now the one used by default
     #CHG : Moved the constants from Link_Parser to its interface
     #CHG : Now adopting PSR-1 & PSR-2 standards (minus some things)
     #CHG : Broke the Parser interface for the handling of parameters
 
-    #ADD : Possibility to call methods without args on templates vars
-    #ADD : Variable class to manage variables in a template
-    #ADD : Extensions
-    
     #OBS : Binding global variables by reference
 
 ## 1.12 ==> 1.13 (Release: 11/05/12)
