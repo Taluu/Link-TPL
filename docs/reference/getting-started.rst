@@ -6,8 +6,8 @@ It enhances the separation between the logic content and the presentationnal con
 
 Prerequisites
 -------------
-Link needs at least **PHP 5.2.1** to run. It also works perfectly fine with 
-PHP 5.3 and 5.4.
+Link needs at least **PHP 5.2.1** to run. It also works perfectly fine with
+PHP 5.3, 5.4 and 5.5.
 
 Installation
 ------------
@@ -59,17 +59,17 @@ methods) to include the ``Link_Autoloader`` and register it::
   require 'path/to/Link/lib/Autoloader.php';
   Link_Autoloader::register();
 
-Don't forget to replace the ``path/to/Link`` with the proper path you used to 
+Don't forget to replace the ``path/to/Link`` with the proper path you used to
 install Link.
 
 .. note::
 
   Link follows the `PSR-0 convention`_, which allows you to easily integrate Link
-  with other PSR-0 compatible autoloaders (like Composer, Symfony, 
+  with other PSR-0 compatible autoloaders (like Composer, Symfony,
   your-own-autoloader, ...)::
 
     $loader = new My\Fancy\Autoloader;
-    
+
     $loader->register(array(
       // ...
       'Link_' => '/path/to/Link/lib',
@@ -92,14 +92,14 @@ Link uses a loader (``Link_Loader_String``) to locate templates, a cache engine
 though I really would not recommend it -- see below) and an environnement
 (``Link_Environment``) to store all the configuration.
 
-The ``parse()`` method loads the given templates (here a string), checks if it 
+The ``parse()`` method loads the given templates (here a string), checks if it
 is more up to date than the data in the cache ; if it is fresher than the cached
-data, it refreshes it, and, with the given context (specified by the second 
+data, it refreshes it, and, with the given context (specified by the second
 argument) renders the template.
 
 .. note::
 
-  As, with a templating engine, we may expect to have our templates stored on 
+  As, with a templating engine, we may expect to have our templates stored on
   files, Link comes bundled with a filesystem loader (``Link_Loader_Filesystem``)
   and a filesystem cache (``Link_Cache_Filesystem``)::
 
