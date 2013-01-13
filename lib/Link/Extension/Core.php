@@ -39,22 +39,22 @@ class Link_Extension_Core implements Link_ExtensionInterface {
     public function getFilters() {
         return array(
             'escape' => array(
-                'filter'  => '__link_core_escape',
+                'filter'  => '__link_core__escape',
                 'options' => array()
             ),
 
             'safe' => array(
-                'filter'  => '__link_core_safe',
+                'filter'  => '__link_core__safe',
                 'options' => array()
             ),
 
             'void' => array(
-                'filter'  => '__link_core_void',
+                'filter'  => '__link_core__void',
                 'options' => array()
             ),
 
             'defaults' => array(
-                'filter'  => '__link_core_defaults',
+                'filter'  => '__link_core__defaults',
                 'options' => array()
             )
         );
@@ -92,6 +92,32 @@ class Link_Extension_Core implements Link_ExtensionInterface {
  * @return string The converted string
  */
 function __link_core__escape($arg, $quote_style = ENT_COMPAT, $charset = 'ISO-8859-1', $double_encode = true) {
+    static $styles = null;
+
+    // init styles substitution array
+    if (null === $styles) {
+        $styles = array('no quotes' => ENT_NOQUOTES,
+                        'quotes'    => ENT_QUOTES,
+                        'compat'    => ENT_COMPAT);
+
+        if (PHP_VERSION_ID > 50300) {
+            $styles['ignore'] = ENT_IGNORE;
+
+            if (PHP_VERSION_ID > 50400) {
+                $styles = array_merge($styles, array('substitute' => ENT_SUBSTITUTE,
+                                                     'disallowed' => ENT_DISALLOWED,
+                                                     'html 4.01'  => ENT_HTML401,
+                                                     'html 5'     => ENT_HTML5,
+                                                     'xml 1'      => ENT_XML1,
+                                                     'xhtml'      => ENT_XHTML));
+            }
+        }
+    }
+
+    if (isset($styles[$quote_style])) {
+        $quote_style = $styles[$quote_style];
+    }
+
     return htmlspecialchars($arg, $quote_style, $charset, $double_encode);
 }
 
