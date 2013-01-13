@@ -55,7 +55,3 @@ interface Link_CacheInterface {
      */
     public function exec($_key, Link_Environment $_env, array $_context = array());
 }
-
-/*
- * EOF
- */

@@ -18,16 +18,16 @@ if (!defined('PHP_VERSION_ID')) {
     define('PHP_VERSION_ID', $v[0] * 10000 + $v[1] * 100 + $v[2]);
 }
 
-require_once dirname(__FILE__) . '/../../../lib/Link/Extension/Core.php';
+require_once dirname(__FILE__) . '/../../../../lib/Link/Extension/Core.php';
 
 /**
- * Tests all the prebuilt filters provided in Link
+ * Tests the filters provided in Link's built-in Core Extension
  *
  * @package Link.test
  * @author  Baptiste "Talus" Clavié <clavie.b@gmail.com>
  *
  */
-class Link_Tests_FiltersTest extends PHPUnit_Framework_TestCase {
+class Link_Tests_Extension_CoreTest extends PHPUnit_Framework_TestCase {
     public function testEscape() {
         $str = 'once upon a \'time\' there was a <little> "llama" & a giant panda.';
 
