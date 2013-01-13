@@ -11,6 +11,7 @@
  * @version   $Id$
  */
 
+// @codeCoverageIgnoreStart
 if (!defined('PHP_VERSION_ID')) {
     $v = explode('.', PHP_VERSION);
 
@@ -59,6 +60,7 @@ class Link_Extension_Core implements Link_ExtensionInterface {
         );
     }
 }
+// @codeCoverageIgnoreEnd
 
 /**
  * Convert special characters to HTML entities

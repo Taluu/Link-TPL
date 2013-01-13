@@ -344,6 +344,7 @@ class Link_Environment {
     }
 
     /**#@+ Accessors */
+    // @codeCoverageIgnoreStart
 
     /** @return Link_ParserInterface */
     public function getParser() {
@@ -402,11 +403,15 @@ class Link_Environment {
     public function disableForceReload() {
         $this->setForceReload(false);
     }
+
+    // @codeCoverageIgnoreEnd
     /**#@-*/
 }
 
 /*
  * Functions dependencies
+ *
+ * @codeCoverageIgnoreStart
  */
 if (!function_exists('array_replace_recursive')) {
     /**
@@ -452,5 +457,7 @@ if (!function_exists('array_replace_recursive')) {
 }
 
 /*
+ * @codeCoverageIgnoreEnd
+ *
  * EOF
  */
