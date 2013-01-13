@@ -36,14 +36,21 @@ achieve that :
 As the third argument of ``Link_Environment`` construtor, you may pass an array
 of options to the environment. Here are a list of the built-in options provided :
 
-- *dependencies* : You may specify which dependency to use when working with
-  Link, like changing the Parser. This is the sole dependency changement
-  possible for now.
+- *dependencies :* You may specify which dependency to use when working with
+  Link, like changing the Parser or the Variable factory used to interpret
+  variables - More information on that later. These are the sole dependencies
+  changement possible for now, and they must respect their related interfaces.
 
-- *force_reload* : This is a boolean, telling the environment if you wish to use
+- *force_reload :* This is a boolean, telling the environment if you wish to use
   the cache or always recompile the template. It is deactivated by default. It
   can be useful in a dev environment, without changing the cache engine each
-  time you need to do it.
+  time you need to do it. You may change the value of this option later, through
+  Link's getter (``Link_Environment\:\:enableForceReload()``,
+  ``Link_Environment\:\:disableForceReload()``, ...)
+
+- *extensions :* An array containing which extensions to load. Each one of these
+  must implement ``Link_ExtensionInterface``. You may also register extensions
+  later, through the ``Link_Environment\:\:resgiterExtension`` method.
 
 Loaders
 -------
@@ -80,10 +87,10 @@ in this directory, will try to load it from ``$templateDir2``.
 Build your own loader
 ^^^^^^^^^^^^^^^^^^^^^
 You may also develop your own loader (example : you want to load some data from
-a database), and use it if you implement the ``Link_Interface_Loader`` interface,
+a database), and use it if you implement the ``Link_LoaderInterface`` interface,
 the interface that all the built-in loaders implements::
 
-  interface Link_Interface_Loader {
+  interface Link_LoaderInterface {
     /**
     * Checks whether the object is fresher or not than the `$_time`
     *
@@ -112,7 +119,7 @@ the interface that all the built-in loaders implements::
 
 An example with the String loader will be more explicit::
 
-  class Link_Loader_String implements Link_Interface_Loader {
+  class Link_Loader_String implements Link_LoaderInterface {
     public function getCacheKey($_name) {
       return sha1($_name);
     }
@@ -160,7 +167,7 @@ So here is the list of available options (per default) :
   ---------- ---------------------------------------------------------------
   BASICS     Basics suggested : Transforms at least the conditions
   DEFAULTS   Defaults suggested : Transforms everything. This is the default
-  ALL        Transforms everything (bitmask containing everything
+  ALL        Transforms everything (bitmask containing everything)
   ========== ===============================================================
 
 - The output given, with the ``compact`` option. If it is true, then the code
@@ -169,40 +176,12 @@ So here is the list of available options (per default) :
   using at least PHP 5.4, the ``<?php echo`` will be transformed into ``<?=``.
   If it is false, then only ``?><?php`` will be cleansed.
 
-- You may also changed the filters class you want to use via the ``filters``
-  option. This option expects a class name.
-
 Build your own parser
 ^^^^^^^^^^^^^^^^^^^^^
 You may also build your own parser ; you just need to implements the
 ``Link_Interface_Parser`` class::
 
-  interface Link_Interface_Parser {
-    /**
-     * Getter for a given parameter
-     *
-     * @param string $name Parameter's name
-     * @return mixed Parameter's value
-     */
-    public function getParameter($name);
-
-    /**
-     * Setter for a given parameter
-     *
-     * @param string $name Parameter's name
-     * @param mixed $val Parameter's value
-     * @return mixed Parameter's value
-     */
-    public function setParameter($name, $val = null);
-
-    /**
-     * Checks whether or not this class has the `$name` parameter
-     *
-     * @param string $name Parameter's name
-     * @return bool true if this parameter exists, false otherwise
-     */
-    public function hasParameter($name);
-
+  interface Link_ParserInterface extends Link_ParametersInterface {
     /**
      * Transform a TPL syntax towards an optimized PHP syntax
      *
@@ -218,7 +197,7 @@ environment ``Link_Environment``.
 Cache Managers
 --------------
 Using Link may ask for some performances when parsing templates. To avoid to
-parse somthing that is unchanged since the last time it was parsed, we may have
+parse something that is unchanged since the last time it was parsed, we may have
 to use a Cache, that is responsible to ask for a refresh of the result.
 
 Built-in cache managers
@@ -236,10 +215,10 @@ function.
 Build your own cache manager
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 You may also develop your own cache manager (example : you want to save data in
-a database), and use it if you implement the ``Link_Interface_Cache`` interface,
+a database), and use it if you implement the ``Link_CacheInterface`` interface,
 the interface that all the built-in cache managers implements::
 
-  interface Link_Interface_Cache {
+  interface Link_CacheInterface {
     /**
     * Gets the last modified time for the selected key
     *
@@ -277,7 +256,7 @@ the interface that all the built-in cache managers implements::
 
 An example with the Ghost cache should be more explicit than any explications::
 
-  class Link_Cache_None implements Link_Interface_Cache {
+  class Link_Cache_None implements Link_CacheInterface {
     protected $_datas = array();
 
     public function destroy($_key) {
@@ -443,4 +422,4 @@ Link may throw :
 
 - ``Link_Exception_Runtime`` : Thrown when an error while trying to execute a
   parsed template occurs (like when there's an error when trying to include a
-  template).
+  template, or access inaccessible part of a Variable).
