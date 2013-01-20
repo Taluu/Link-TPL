@@ -7,7 +7,7 @@ elements of the Link Template Library.
 The Environment
 ---------------
 As you saw in the :doc:`getting-started` chapter, to start, you will have to use
-a ``Link_Environment`` object to use Link Templates. Basically, here is what you 
+a ``Link_Environment`` object to use Link Templates. Basically, here is what you
 will need (if you are using a PSR-0 compatible autoloader, you may skip the part
 on the autoloader) ::
 
@@ -76,7 +76,7 @@ in this directory, will try to load it from ``$templateDir2``.
 .. warning::
   As you should expect it, if you're using several directories via an array,
   the search of a template will use the "First Come First Served" basic rule !
-    
+
 Build your own loader
 ^^^^^^^^^^^^^^^^^^^^^
 You may also develop your own loader (example : you want to load some data from
@@ -146,7 +146,7 @@ for modifying a parameter :
 
 So here is the list of available options (per default) :
 
-- First, the things to parse (``parse`` key). You may choose, with a bitmask, 
+- First, the things to parse (``parse`` key). You may choose, with a bitmask,
   what you want to effectively parse : constants, conditions, filters, ... But
   you may not deactivate the "core" features like the variables and loops.
 
@@ -174,7 +174,7 @@ So here is the list of available options (per default) :
 
 Build your own parser
 ^^^^^^^^^^^^^^^^^^^^^
-You may also build your own parser ; you just need to implements the 
+You may also build your own parser ; you just need to implements the
 ``Link_Interface_Parser`` class::
 
   interface Link_Interface_Parser {
@@ -185,7 +185,7 @@ You may also build your own parser ; you just need to implements the
      * @return mixed Parameter's value
      */
     public function getParameter($name);
-    
+
     /**
      * Setter for a given parameter
      *
@@ -223,16 +223,16 @@ to use a Cache, that is responsible to ask for a refresh of the result.
 
 Built-in cache managers
 ^^^^^^^^^^^^^^^^^^^^^^^
-You have two built-in cache managers given with a basic download of Link : the 
+You have two built-in cache managers given with a basic download of Link : the
 Ghost (which is the default) and the Filesystem::
 
   $none = new Link_Cache_None;
   $filesystem = new Link_Cache_Filesystem($cacheDir);
 
 If you give no argument to the Filesystem Cache Manager, it will try to use the
-default temp directory of your system via the ``sys_get_temp_dir()`` php 
+default temp directory of your system via the ``sys_get_temp_dir()`` php
 function.
-    
+
 Build your own cache manager
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 You may also develop your own cache manager (example : you want to save data in
@@ -321,6 +321,110 @@ An example with the Ghost cache should be more explicit than any explications::
     }
   }
 
+Extensions
+----------
+To be able to add things to Link, like filters or global variables, you will need
+to create a new extension. A new extension is created when creating a new class
+that will respect the ``Link_ExtensionInterface``::
+
+  /**
+   * Extensions to be registered for the template engine
+   *
+   * @package Link
+   * @author  Baptiste "Talus" Clavié <clavie.b@gmail.com>
+   */
+  interface Link_ExtensionInterface {
+      /**
+       * Gets the name of this extension
+       *
+       * @return string
+       */
+      public function getName();
+
+      /**
+       * Gets the globals to be registered when using this extension
+       *
+       * @return array
+       */
+      public function getGlobals();
+
+      /**
+       * Gets the filters usable by this extension
+       *
+       * @return array
+       */
+      public function getFilters();
+  }
+
+- The name is referenced by a string, a one word type (underscores and dots
+  included), that will be used in the filters management, *preferably in
+  lowercase*.
+
+- The globals is just an array returned by this function, as a set of
+  ``name => value`` elements. The name should respect the same requirements as
+  a variable's name.
+
+- The filters must return a pluridimensional array, in the form::
+
+    name => array('filter'  => 'insert callback here' // a lambda if php >= 5.3, a call to an object, ...
+                  'options' => array())
+
+  Currently, the possible options for a filter are as follow :
+
+  - **needs_environment :** Whether your filter needs to have the environment
+    (``Link_Environment``) as a parameter. If its value is ``true``, then the
+    engine will consider that your filter needs the environment as *its second
+    argument.*
+  - **automatic :** Whether your filter should be applied to every variables.
+
+Here is an example, got straight from the sole built-in extension, ``Link_Extension_Core``::
+
+  /**
+   * The core extension, registering default filters
+   *
+   * @package Link
+   * @author  Baptiste "Talus" Clavié <clavie.b@gmail.com>
+   */
+  class Link_Extension_Core implements Link_ExtensionInterface {
+      /** {@inheritDoc} */
+      public function getName() {
+          return 'core';
+      }
+
+      /** {@inheritDoc} */
+      public function getGlobals() {
+          return array();
+      }
+
+      /** {@inheritDoc} */
+      public function getFilters() {
+          return array(
+              'escape' => array(
+                  'filter'  => '__link_core__escape',
+                  'options' => array()
+              ),
+
+              'safe' => array(
+                  'filter'  => '__link_core__safe',
+                  'options' => array()
+              ),
+
+              'defaults' => array(
+                  'filter'  => '__link_core__defaults',
+                  'options' => array()
+              )
+          );
+      }
+  }
+
+.. warning::
+
+  Once you parse a file, you will not be able to add extensions anymore.
+
+Once you have built your own extension, why not propose it as a built-in
+extension via a Pull Request on `the GitHub repository`_ ?
+
+.. _the GitHub repository: http://github.com/Taluu/Link-TPL
 
 Exceptions
 ----------
@@ -331,12 +435,12 @@ Link may throw :
 
 - ``Link_Exception_Cache`` : Thrown when an error in the cache treatment occurs
 
-- ``Link_Exception_Loader`` : Thrown when an error while trying to load a 
+- ``Link_Exception_Loader`` : Thrown when an error while trying to load a
   template occurs
 
-- ``Link_Exception_Parser`` : Thrown when an error while trying to parse a 
+- ``Link_Exception_Parser`` : Thrown when an error while trying to parse a
   template occurs
 
-- ``Link_Exception_Runtime`` : Thrown when an error while trying to execute a 
+- ``Link_Exception_Runtime`` : Thrown when an error while trying to execute a
   parsed template occurs (like when there's an error when trying to include a
   template).
