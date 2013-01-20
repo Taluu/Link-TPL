@@ -165,51 +165,12 @@ Filter Name Description
 defaults    Gets a default value if it's ``empty``, ``false``, ... etc
 protect     Convert special characters to HTML entities
 safe        Unescape a var -- useful if protect is an autofilter
-void        Just do... nothing.
 =========== ====================================================================
 
-Build your own filter
-^^^^^^^^^^^^^^^^^^^^^
-You may also build your own filter (and why not propose it as a built-in filter
-via a Pull Request on `the GitHub repository <http://github.com/Taluu/Link-TPL>`_ !)
-following some rules...
+.. note::
 
-- You have to declare your filter in an extension, through a ``getFilters`` method
-- The first argument is the entity itself
-- Each entry of the array must respect the following structure::
-
-    return array('filters-name' => array('filter'  => 'callable',
-                                         'options' => array()));
-
-Let's say I want to implement a ``date`` filter in the core extension ; here's
-how to do it::
-
-  // in Link_Extension_Core.php
-  class Link_Extension_Core implements Link_ExtensionInterface {
-    // ...
-    public function getFilters() {
-      return array('date' => array('filter'  => '__link_core__date',
-                                   'options' => array()));
-    }
-
-    // ...
-  }
-
-  function __link_core__date($arg, $format = 'd/m/Y') {
-    if (!$arg instanceof DateTime) {
-      $arg = new DateTime($arg);
-    }
-
-    return $arg->format($format);
-  }
-
-You may also define some options when calling the filter. The sole available
-option set is currently wheter you'll be needing or not the environment in your
-filter. If you do (by providing a ``needs_environement`` key with a ``true``
-value in the described options), then it will be accessible in your filter as
-its second parameter.
-
-It's that simple ! :)
+  To build your own filter, you will need to see how to add a new extension, and
+  everything is explained in the :doc:`API Chapter <api>`.
 
 Control Structures
 ------------------
