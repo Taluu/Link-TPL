@@ -48,11 +48,6 @@ class Link_Extension_Core implements Link_ExtensionInterface {
                 'options' => array()
             ),
 
-            'void' => array(
-                'filter'  => '__link_core__void',
-                'options' => array()
-            ),
-
             'defaults' => array(
                 'filter'  => '__link_core__defaults',
                 'options' => array()
@@ -137,17 +132,6 @@ function __link_core__escape($arg, $quote_style = ENT_COMPAT, $charset = 'ISO-88
  */
 function __link_core__safe($arg, $quote_style = ENT_COMPAT) {
     return htmlspecialchars_decode($arg, $quote_style);
-}
-
-/**
- * Just do... Nothing.
- *
- * @param string $arg Variable
- *
- * @return string the variable's value
- */
-function __link_core__void($arg) {
-    return $arg;
 }
 
 /**

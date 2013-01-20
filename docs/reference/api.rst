@@ -348,6 +348,14 @@ that will respect the ``Link_ExtensionInterface``::
     name => array('filter'  => 'insert callback here' // a lambda if php >= 5.3, a call to an object, ...
                   'options' => array())
 
+  Currently, the possible options for a filter are as follow :
+
+  - **needs_environment :** Whether your filter needs to have the environment
+    (``Link_Environment``) as a parameter. If its value is ``true``, then the
+    engine will consider that your filter needs the environment as *its second
+    argument.*
+  - **automatic :** Whether your filter should be applied to every variables.
+
 Here is an example, got straight from the sole built-in extension, ``Link_Extension_Core``::
 
   /**
@@ -380,11 +388,6 @@ Here is an example, got straight from the sole built-in extension, ``Link_Extens
                   'options' => array()
               ),
 
-              'void' => array(
-                  'filter'  => '__link_core__void',
-                  'options' => array()
-              ),
-
               'defaults' => array(
                   'filter'  => '__link_core__defaults',
                   'options' => array()
@@ -393,31 +396,12 @@ Here is an example, got straight from the sole built-in extension, ``Link_Extens
       }
   }
 
-This is how you should do to implement your own extension (declare your global
-variables, your own filters, ...). If declaring your globals is just reduced
-to declare an array, the filters are a little bit more than that : you have
-to specify, for each filter, its name as the key of the array containing the
-information on this filter, which will have two subkeys :
-
-- **filter :** The callback called to call (as long as it is callable, it may
-  take any forms)
-- **options :** An array containing the options for this filter.
-
-Currently, the possible options for a filter are as follow :
-
-- **needs_environment :** Whether your filter needs to have the environment
-  (``Link_Environment``) as a parameter. If it is true, then the engine will
-  consider that your filter needs the environment as its second argument.
-- **automatic :** Whether your filter should be applied to every variables.
-
 .. warning::
 
   Once you parse a file, you will not be able to add extensions anymore.
 
-.. note::
-
-  You may also build your own extension (and why not propose it as a built-in
-  extension via a Pull Request on `the GitHub repository`_ !)
+Once you have built your own extension, why not propose it as a built-in
+extension via a Pull Request on `the GitHub repository`_ ?
 
 .. _the GitHub repository: http://github.com/Taluu/Link-TPL
 

@@ -59,11 +59,6 @@ class Link_Tests_Extension_CoreTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('once upon a \'time\' there was a <little> "llama" & a giant panda.', __link_core__safe($str, ENT_NOQUOTES));
     }
 
-    public function testVoid() {
-        $str = 'Yellow lemon tree';
-        $this->assertEquals($str, __link_core__void($str));
-    }
-
     public function testDefaults() {
         $str = 'Yellow lemon tree';
         $this->assertEquals($str, __link_core__defaults($str, 'no lemon tree :('));
