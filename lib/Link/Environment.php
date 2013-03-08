@@ -341,18 +341,17 @@ class Link_Environment {
             throw new Link_Exception_Runtime(strtr('Unknown filter {{ name }}', array('{{ name }}' => $filter)));
         }
 
-		$args = func_get_args(); array_shift($args);
+        $args = func_get_args(); array_shift($args);
 
         if ($args[0] instanceof Link_VariableInterface) {
             $args[0] = $args[0]->getValue();
         }
 
         if (isset($this->_filters[$filter]['options']['needs_environment']) && true === $this->_filters[$filter]['options']['needs_environment']) {
-            $arg = array_shift($args);
-            array_unshift($args, $arg, $this);
+            array_unshift($args, $this);
         }
 
-        return $this->cloneVariablesFactory()->setValue(call_user_func_array($this->_filters[$filter]['filter'], $args));
+        return call_user_func_array($this->_filters[$filter]['filter'], $args);
     }
 
     /** @return Link_ExtensionInterface */

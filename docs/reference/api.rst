@@ -352,7 +352,7 @@ that will respect the ``Link_ExtensionInterface``::
 
   - **needs_environment :** Whether your filter needs to have the environment
     (``Link_Environment``) as a parameter. If its value is ``true``, then the
-    engine will consider that your filter needs the environment as *its second
+    engine will consider that your filter needs the environment as *its first
     argument.*
   - **automatic :** Whether your filter should be applied to every variables.
 

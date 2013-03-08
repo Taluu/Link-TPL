@@ -41,12 +41,12 @@ class Link_Variable implements Link_VariableInterface {
         }
 
         if (null !== $offset) {
-            $this->_value[$offset] = $this->toSelf($value);
+            $this->_value[$offset] = $value;
 
             return;
         }
 
-        $this->_value[] = $this->toSelf($value);
+        $this->_value[] = $value;
     }
 
     /** {@inheritDoc} */
@@ -85,12 +85,6 @@ class Link_Variable implements Link_VariableInterface {
     }
 
     public function setValue($value) {
-        if (!$value instanceof self && (is_object($value) || is_array($value))) {
-            foreach ($value as &$val) {
-                $val = $this->toSelf($val);
-            }
-        }
-
         $this->_value = $value;
 
         return $this;
@@ -114,11 +108,11 @@ class Link_Variable implements Link_VariableInterface {
         $reflection = new ReflectionClass($this->getValue());
 
         if ($reflection->hasMethod($getter) && $reflection->getMethod($getter)->isPublic()) {
-            return $this->toSelf($this->getValue()->$getter());
+            return $this->getValue()->$getter();
         }
 
         if (($reflection->hasProperty($property) && $reflection->getProperty($property)->isPublic()) || $reflection->hasMethod('__get')) {
-            return $this->toSelf($this->getValue()->$property);
+            return $this->getValue()->$property;
         }
 
         throw new Link_Exception_Runtime(sprintf('Property "%1$s::$%2$s" is not defined or accessible', get_class($this->getValue()), $property));
@@ -170,19 +164,4 @@ class Link_Variable implements Link_VariableInterface {
 
         throw new Link_Exception_Runtime(sprintf('Method "%1$s::%2$s()" is not accessible or not defined.', get_class($this->getValue()), $method));
     }
-
-    /**
-     * Transforms a value to an instance of this class
-     *
-     * @param mixed $value value to transform
-     * @return Link_VariableInterface
-     */
-    private function toSelf($value) {
-        if (!$value instanceof self) {
-            $value = new self($value);
-        }
-
-        return $value;
-    }
-
 }
