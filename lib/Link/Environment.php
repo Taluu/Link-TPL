@@ -106,6 +106,7 @@ class Link_Environment {
      * @param mixed        $value Var's value if $vars is not an array
      *
      * @since 1.3.0
+     * @api
      */
     public function set($vars, $value = null) {
         if (!is_array($vars)) {
@@ -156,6 +157,7 @@ class Link_Environment {
      * @param Link_ExtensionInterface $extension Extension to be registered
      *
      * @since 1.14.0
+     * @api
      */
     public function registerExtension(Link_ExtensionInterface $extension) {
         if (true === $this->_extensionsFrozen) {
@@ -203,6 +205,8 @@ class Link_Environment {
      *
      * @throws Link_Exception_Parser
      * @return bool
+     *
+     * @api
      */
     public function parse($_tpl, array $_context = array()) {
         // freezes the extensions
