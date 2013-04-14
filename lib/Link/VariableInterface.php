@@ -37,3 +37,4 @@ interface Link_VariableInterface extends ArrayAccess, IteratorAggregate, Countab
     /** {@inheritdoc} */
     public function __set($property, $value);
 }
+

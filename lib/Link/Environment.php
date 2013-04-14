@@ -21,23 +21,24 @@ defined('E_USER_DEPRECATED') || define('E_USER_DEPRECATED', E_USER_NOTICE);
  */
 class Link_Environment {
     protected
-        $_last = array(),
+        // templates
         $_included = array(),
 
-        $_vars = array(),
-        $_references = array(),
+        // variables
+        $_vars           = array(),
         $_currentContext = array(),
 
+        // extensions
         $_extensionsFrozen = false,
-        $_extensions = array(),
-        $_filters = array(),
+        $_extensions       = array(),
 
+        // filters
+        $_filters     = array(),
         $_autoFilters = array(),
 
         $_forceReload = false,
 
-        /** @var Link_VariableInterface */
-        $_varFactory = null,
+        $_variablesClassname = 'Link_Variable',
 
         /** @var Link_LoaderInterface */
         $_loader = null,
@@ -56,47 +57,55 @@ class Link_Environment {
      * Initialisation.
      *
      * Available options :
-     *  - dependencies : Handle the dependencies (parser, ...). Each of these must
-     *                   be an object.
+     *  - parser          : Parser used to parse the templates
      *
-     *  - force_reload : Whether or not the cache should be reloaded each time it
-     *                   is called, the object being up to date or not. default to
-     *                   `false`.
+     *  - variables_class : Classname used to handle the variables
+     *
+     *  - force_reload    : Whether or not the cache should be reloaded each time it
+     *                      is called, the object being up to date or not. default to
+     *                      `false`.
+     *
+     *  - extensions      : Extensions to load with the startup of the
+     *                      environment
      *
      * @param Link_LoaderInterface $_loader  Loader to use
      * @param Link_CacheInterface  $_cache   Cache engine used
      * @param array                $_options Options for the templating engine
      */
     public function __construct(Link_LoaderInterface $_loader = null, Link_CacheInterface $_cache = null, array $_options = array()) {
+        $this->setCache($_cache !== null ? $_cache : new Link_Cache_None);
+        $this->setLoader($_loader !== null ? $_loader : new Link_Loader_String);
+
         // -- Options
         $defaults = array(
-            'dependencies' => array(
-                'parser'           => null,
-                'variablesFactory' => null
-            ),
-
-            'extensions' => array(),
-
-            'force_reload' => false
+            'parser'              => null,
+            'variables_classname' => null,
+            'force_reload'        => false,
+            'extensions'          => array(),
         );
 
         $options = array_replace_recursive($defaults, $_options);
 
-        // -- Dependency Injection
-        $this->setParser($options['dependencies']['parser'] !== null ? $options['dependencies']['parser'] : new Link_Parser);
-        $this->setVariablesFactory($options['dependencies']['variablesFactory'] !== null ? $options['dependencies']['variablesFactory'] : new Link_Variable);
-        $this->setCache($_cache !== null ? $_cache : new Link_Cache_None);
-        $this->setLoader($_loader !== null ? $_loader : new Link_Loader_String);
+        // BC Break <= 1.14 handling ; now, all the parameters are on the same level
+        if (isset($options['dependencies'])) {
+            trigger_error('You should register the dependencies on the same level '
+                        . 'of other options, not in a "dependencies" key anymore', E_USER_DEPRECATED);
 
-        // extensions
+            foreach ($options['dependencies'] as $key => $dependency) {
+                $options[$key] = $dependency;
+            }
+        }
+
+        $this->setParser($options['parser'] !== null ? $options['parser'] : new Link_Parser);
+        $this->setVariablesClassname($options['variables_classname'] !== null ? $options['variables_classname'] : 'Link_Variable');
+        $this->_forceReload = (bool) $options['force_reload'];
+
         $this->registerExtension(new Link_Extension_Core);
 
         foreach ($options['extensions'] as $extension) {
             $this->registerExtension($extension);
         }
 
-        // -- Options treatment
-        $this->_forceReload = (bool)$options['force_reload'];
     }
 
     /**
@@ -117,7 +126,7 @@ class Link_Environment {
     }
 
     /**
-     * Adds a default filter to be applied on variables (except references)
+     * Adds a default filter to be applied on variables
      * WARNING : BEWARE of the order of declaration !
      *
      * @param string $name Filters' names
@@ -217,7 +226,7 @@ class Link_Environment {
 
         foreach ($context as &$value) {
             if (!$value instanceof Link_VariableInterface) {
-                $value = $this->cloneVariablesFactory()->setValue($value);
+                $value = $this->newVariable()->setValue($value);
             }
 
             if ($this->getParser()->getParse() & Link_ParserInterface::FILTERS) {
@@ -260,15 +269,12 @@ class Link_Environment {
      * Do the exact same thing as Link_Environment::parse(), but instead of just executing
      * the template, returns the final result (already executed by PHP).
      *
-     * @param string  $tpl      Template's name.
-     * @param array   $_context Local variables to be given to the template
-     * @param integer $ttl      Time to live for the cache 2. Not implemented yet
+     * @param string $tpl      Template's name.
+     * @param array  $_context Local variables to be given to the template
      *
      * @return string
-     *
-     * @todo Cache 2 ?
      */
-    public function pparse($tpl = '', array $_context = array(), $ttl = 0) {
+    public function pparse($tpl = '', array $_context = array()) {
         ob_start();
         $this->parse($tpl, $_context);
 
@@ -382,13 +388,13 @@ class Link_Environment {
     }
 
     /** @return Link_VariableInterface */
-    public function cloneVariablesFactory() {
-        return clone $this->_variablesFactory;
+    public function newVariable() {
+        return new $this->_variablesClassname;
     }
 
     /** Sets the TPL variables factory */
-    public function setVariablesFactory(Link_VariableInterface $_variablesFactory) {
-        $this->_variablesFactory = $_variablesFactory;
+    public function setVariablesClassname($_classname) {
+        $this->_variablesClassname = $_classname;
     }
 
     /** @return Link_CacheInterface */
