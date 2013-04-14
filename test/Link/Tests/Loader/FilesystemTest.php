@@ -92,7 +92,9 @@ class Link_Tests_Loader_FilesystemTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testStatus() {
-        $this->assertEquals(sha1(dirname(__FILE__) . '/FilesystemTest.php'), $this->_loader->getCacheKey('FilesystemTest.php'));
+        $file = preg_replace('`/{2,}`', '/', strtr(dirname(__FILE__) . '/FilesystemTest.php', '\\', '/'));
+
+        $this->assertEquals(sha1($file), $this->_loader->getCacheKey('FilesystemTest.php'));
         $this->assertTrue($this->_loader->isFresh('FilesystemTest.php', 0));
     }
 

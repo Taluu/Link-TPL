@@ -12,32 +12,29 @@
  */
 
 /**
- * Interface to implement a new Parser for the templates.
+ * Interface to implement to manage the templates' variables
  *
  * @package Link
  * @author  Baptiste "Talus" Clavié <clavie.b@gmail.com>
  */
-interface Link_ParserInterface extends Link_ParametersInterface {
-    const
-        FILTERS = 1,
-        INCLUDES = 2,
-        CONDITIONS = 4,
-        CONSTANTS = 8,
-
-        BASICS = 4,
-        DEFAULTS = 15,
-        ALL = 15;
-
+interface Link_VariableInterface extends ArrayAccess, IteratorAggregate, Countable {
     /**
-     * Transform a TPL syntax towards an optimized PHP syntax
+     * Gets the variable's value
      *
-     * @param string $str TPL script to parse
-     *
-     * @return string
+     * @return mixed
      */
-    public function parse($str);
+    public function getValue();
+
+    /** {@inheritDoc} */
+    public function __toString();
+
+    /** {@inheritDoc} */
+    public function __call($method, array $arguments);
+
+    /** {@inheritDoc} */
+    public function __get($property);
+
+    /** {@inheritdoc} */
+    public function __set($property, $value);
 }
 
-/*
- * EOF
- */

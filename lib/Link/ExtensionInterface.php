@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of Link TPL.
+ * This file is part of Link TPL
  *
  * For the full copyright and license information, please view the LICENSE file
  * that was distributed with this source code.
@@ -12,32 +12,30 @@
  */
 
 /**
- * Interface to implement a new Parser for the templates.
+ * Extensions to be registered for the template engine
  *
  * @package Link
  * @author  Baptiste "Talus" Clavié <clavie.b@gmail.com>
  */
-interface Link_ParserInterface extends Link_ParametersInterface {
-    const
-        FILTERS = 1,
-        INCLUDES = 2,
-        CONDITIONS = 4,
-        CONSTANTS = 8,
-
-        BASICS = 4,
-        DEFAULTS = 15,
-        ALL = 15;
-
+interface Link_ExtensionInterface {
     /**
-     * Transform a TPL syntax towards an optimized PHP syntax
-     *
-     * @param string $str TPL script to parse
+     * Gets the name of this extension
      *
      * @return string
      */
-    public function parse($str);
-}
+    public function getName();
 
-/*
- * EOF
- */
+    /**
+     * Gets the globals to be registered when using this extension
+     *
+     * @return array
+     */
+    public function getGlobals();
+
+    /**
+     * Gets the filters usable by this extension
+     *
+     * @return array
+     */
+    public function getFilters();
+}
