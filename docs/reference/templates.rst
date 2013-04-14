@@ -7,20 +7,20 @@ for the guys in charge of building the templates.
 
 Rapid Overview
 --------------
-A template file is just a text file that could be rendered into *any text-format* 
-(be it HTML, XML, simple text file, JSON, ...). It does not have a particular 
-extension ; usually, we use the type of document it is destined to be (like 
+A template file is just a text file that could be rendered into *any text-format*
+(be it HTML, XML, simple text file, JSON, ...). It does not have a particular
+extension ; usually, we use the type of document it is destined to be (like
 ``.html`` if it is a html document, ``.json`` if it is json, ...).
 
 .. note::
   Usually, when working with templates, we suffix the template engine's name at
   the end of the final format of the file. For example, for a HTML file called
   ``template.html``, we should name it ``template.html.link`` if we're using
-  Link as the template engine to parse it. If it is destined to be a RSS file, 
+  Link as the template engine to parse it. If it is destined to be a RSS file,
   then it should be ``template.rss.link``.
 
-It is mainly constitued by **variables** and **tags**, which are xml tags 
-look-alike. Here is a sample Link template (the explications on the syntax will 
+It is mainly constitued by **variables** and **tags**, which are xml tags
+look-alike. Here is a sample Link template (the explications on the syntax will
 come afterwards) :
 
 .. code-block:: xml
@@ -68,7 +68,7 @@ filtering, ...
 
 As it was said in the :ref:`rapid-overview`, there are two types of variables,
 depending of the role you want them to be : either you will want to print them
-out, or you will just want to manipulate the variable by itself. 
+out, or you will just want to manipulate the variable by itself.
 
 To print it out, you have to use the following (for let's say a ``var``
 variable)::
@@ -82,21 +82,21 @@ And to use the variable as an entity, you will need to use the following::
 .. note::
   As in PHP, if your variable is an object, you may want to access its properties,
   or if your variable is an array its components. For that, you can use the basic
-  syntax in PHP (for the arrays or objects implementing the ``ArrayAccess`` 
+  syntax in PHP (for the arrays or objects implementing the ``ArrayAccess``
   interface) the subscript (``[]``) or the object operator (``->``)::
 
     {var['some']->thing}
     {$var['some']->thing}
 
   .. warning::
-    Keep in mind that it is not as flexible in PHP : avoid to use a "complex" 
-    variable (containing an array key or a property) as a key or as a property. 
+    Keep in mind that it is not as flexible in PHP : avoid to use a "complex"
+    variable (containing an array key or a property) as a key or as a property.
     For example, you may not do the following::
 
       {var[{$key->a['b']}]}
 
     This is due to some limitations brought by the way of parsing the templates
-    (regular expressions), as it would bring down the performances of the 
+    (regular expressions), as it would bring down the performances of the
     templating engine.
 
 Escaping a variable
@@ -117,7 +117,7 @@ the syntax is really simple::
 
 Filters
 ~~~~~~~
-When working on variables (and special variables as you will see them in 
+When working on variables (and special variables as you will see them in
 :ref:`their dedicated part <special-variables>`), you may want to apply some
 transformations on them (like escaping them, or changing the case of a string)::
 
@@ -126,18 +126,24 @@ transformations on them (like escaping them, or changing the case of a string)::
 
 You can also apply several filter on one entity::
 
-  {var|maximize|protect}
+  {var|defaults:null|protect}
 
 The filters will be applied in the reverse of their order of declaration : in the
-case mentionned above, the output should have the ``protect`` filter applied on the
-result of the ``maximize`` filter applied on ``{var}``.
+case mentionned above, the output should have the ``defaults`` filter with the
+``null`` value applied on the content if ``{$var}`` is empty, and the ``protect``
+filter will be applied on its result.
 
 You may also use arguments on filters::
 
-  {var|cut:50:...}
+  {var|defaults:null}
 
-Here, the ``cut`` filter will be applied on ``{var}`` with a limit of 50 chars
-and a finishing string ``...`` if the length of ``{var}`` exceeds 50 chars.
+Here, the ``defaults`` filter will be applied on ``{var}``, with a default value
+``4`` if the ``{$var}`` is empty.
+
+When a filter is registered through an extension, you may access it through the
+syntax ``extension-name.filter-name``. If no other filter ``filter-name`` has
+been registered before, then a fast-alias ``filter-name`` instead of its full
+qualified filter name will be available in your templates.
 
 .. warning::
   There is another limitation for strings : you may not use the symbols ``:``
@@ -147,55 +153,24 @@ and a finishing string ``...`` if the length of ``{var}`` exceeds 50 chars.
 
 List of pre-built filters
 ^^^^^^^^^^^^^^^^^^^^^^^^^
-Here is the list of all the filters currently implemented by default in Link. 
+Here is the list of all the filters currently implemented by default in Link.
 It is not exhaustive, as this is not really the role of this document ; you may
 find more exhaustive information about each filters in their dedicated chapter
-(not yet written), or directly in the api documentation of the ``Link_Filters``
-class.
+(not yet written), or directly in the api documentation of the
+``Link_Extension_Core`` class.
 
 =========== ====================================================================
 Filter Name Description
 =========== ====================================================================
-ceil        Round fractions up
-convertCase Perform case folding on a string
-cut         Cut a string longer than $max characters. Words are not interrupted.
-default     Gets a default value if it's ``empty``, ``false``, ... etc
-floor       Round fractions down
-invertCase  Perform a change of case on a string
-lcfirst     Lowercase the first letter of a string
-maximize    Make a string all UPPERCASE
-minimize    Make a string all lowercase
-nl2br       Inserts HTML line breaks before all newlines in a string
-paragraphy  Smart convertion of newlines into <p> and <br />s
+defaults    Gets a default value if it's ``empty``, ``false``, ... etc
 protect     Convert special characters to HTML entities
 safe        Unescape a var -- useful if protect is an autofilter
-slugify     Create the slug for a string, and send it back
-ucfirst     UPPERCASE the first letter of a string
-void        Just do... nothing.
 =========== ====================================================================
 
-Build your own filter
-^^^^^^^^^^^^^^^^^^^^^
-You may also build your own filter (and why not propose it as a built-in filter
-via a Pull Request on `the GitHub repository <http://github.com/Taluu/Link-TPL>`_ !)
-following some rules...
+.. note::
 
-- You have to declare your filter in the ``Link_Filters`` class
-- The first argument is the entity itself
-- The declared method have to be ``public`` and ``static``
-
-Let's say I want to implement a ``date`` filter ; here's how to do it::
-
-  // in Link_Filters
-  public static function date($arg, $format = 'd/m/Y') {
-    if (!$arg instanceof DateTime) {
-      $arg = new DateTime($arg);
-    }
-
-    return $arg->format($format);
-  }
-
-It's that simple ! :)
+  To build your own filter, you will need to see how to add a new extension, and
+  everything is explained in the :doc:`API Chapter <api>`.
 
 Control Structures
 ------------------
@@ -232,7 +207,7 @@ structure, and a maximum of one ``<else>`` tag. Here is a minimal condition :
   </if>
 
 .. note::
-  
+
   There are several shortcuts here and there, specially on the conditions : for
   example, you may use ``cond`` instead of ``condition`` as the attribute of the
   conditionnal tags, or write ``<elif>`` instead of ``<elseif>``.
@@ -240,7 +215,7 @@ structure, and a maximum of one ``<else>`` tag. Here is a minimal condition :
 Loops
 ~~~~~
 Also, the principle of a template means that when there are several datas to be
-printed, we should avoid to repeat things (you know, the 
+printed, we should avoid to repeat things (you know, the
 `DRY <http://en.wikipedia.org/wiki/DRY>`_ principle...). For that purpose, was
 created in Link the ``<foreach>`` tag : when you use it, it waits for an array
 to be iterated over and repeat a block of text as many times as there are
@@ -255,7 +230,7 @@ elements in the array.
   </foreach>
 
 Inside the ``<foreach>`` loop, you may access some other things, like a possibly
-to do an alternate action if your array is empty (and will of course not be 
+to do an alternate action if your array is empty (and will of course not be
 repeated...) :
 
 .. code-block:: xml
@@ -273,14 +248,14 @@ repeated...) :
   You may also remove the use of the delimiters ``{}`` for the variables in the
   ``array`` attribute. But be careful : it's either with these braces or without
   them !
-  
+
 And you have access to special variables... Let's see them now.
 
 .. _special-variables:
 
 Special variables
 ^^^^^^^^^^^^^^^^^
-Six variables are created each times you loop over an array. Let's take 
+Six variables are created each times you loop over an array. Let's take
 ``{$my_array}`` as an example.
 
 - ``{$my_array.value}`` contains the value of the iteration itself
@@ -290,7 +265,7 @@ Six variables are created each times you loop over an array. Let's take
 - ``{$my_array.is_first}`` checks that the current iteration is the first iteration
 - ``{$my_array.is_last}`` checks that the current iteration is the last iteration
 
-You may apply a suffix (array keys, object properties, filters, ...) on the 
+You may apply a suffix (array keys, object properties, filters, ...) on the
 value of the array (``{$my_array.value}``), print out (using ``{...}`` instead
 of ``{$...}``) everything but the verification that it is or not the first or
 the last iteration (as it does not have any senses to do otherwise).
@@ -298,7 +273,7 @@ the last iteration (as it does not have any senses to do otherwise).
 .. note::
 
   Several shortcuts also exists for the ``foreach`` loops ; for example, you may
-  use the ``ary`` attribute instead of the ``array`` attribute in the 
+  use the ``ary`` attribute instead of the ``array`` attribute in the
   ``<foreach>`` tag, use ``{$my_array.val}`` instead of ``{$my_array.value}``,
   or ``{$my_array.cur}`` instead of ``{$my_array.current}``.
 

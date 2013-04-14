@@ -4,9 +4,7 @@ php:
     - 5.2
     - 5.3
     - 5.4
+    - 5.5
 
 script:
-    - phpunit --coverage-clover "clover"
-
-after_success:
-    - curl -sL https://bit.ly/artifact-uploader | php
+    - phpunit
