@@ -10,7 +10,7 @@
  * @version $Id: c943b372181f3da5098c6407ab268d68ca7b4b87 $
  */
 
-## 1.13 ==> 1.? (Release: ??/??/13)
+## 1.13 ==> 1.14 (Release: 14/04/13)
     #WAR : PHP 5.2.3 is needed, btw.
 
     #ADD : Possibility to call methods without args on templates vars
