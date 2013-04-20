@@ -28,7 +28,11 @@ class Link_Variable implements Link_VariableInterface {
     public function offsetGet($offset) {
         if (!isset($this->_value[$offset])) {
             trigger_error('The offset "' . $offset . '" is not defined for this variable', E_USER_NOTICE);
+
+            // Will not be reached by the tests (the E_USER_NOTICE will intercept it)
+            // @codeCoverageIgnoreStart
             return null;
+            // @codeCoverageIgnoreEnd
         }
 
         return $this->_value[$offset];
@@ -71,7 +75,11 @@ class Link_Variable implements Link_VariableInterface {
 
         trigger_error('This variable is not iterable', E_USER_WARNING);
 
+
+        // Will not be reached by the tests (the E_USER_WARNING will intercept it)
+        // @codeCoverageIgnoreStart
         return new EmptyIterator;
+        // @codeCoverageIgnoreEnd
     }
 
     /** {@inheritDoc} */
