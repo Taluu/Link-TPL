@@ -394,6 +394,16 @@ class Link_Environment {
 
     /** Sets the TPL variables factory */
     public function setVariablesClassname($_classname) {
+        if (!class_exists($_classname)) {
+            throw new Link_Exception('Variable class "' . $_classname . '" not found');
+        }
+
+        $reflection = new ReflectionClass($_classname);
+
+        if (!$reflection->implementsInterface('Link_VariableInterface')) {
+            throw new Link_Exception('Variable class "' . $_classname . '" does not implement required interface "Link_VariableInterface"');
+        }
+
         $this->_variablesClassname = $_classname;
     }
 
