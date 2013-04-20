@@ -24,7 +24,6 @@ class Link_Tests_VariableTest extends PHPUnit_Framework_TestCase {
      * @covers Link_Variable::__toString
      * @covers Link_Variable::getValue
      * @covers Link_Variable::setValue
-     * @covers Link_Variable::toSelf
      */
     public function testValue() {
         $var = new Link_Variable('test');
@@ -39,7 +38,6 @@ class Link_Tests_VariableTest extends PHPUnit_Framework_TestCase {
      * @covers Link_Variable::offsetGet
      * @covers Link_Variable::getValue
      * @covers Link_Variable::setValue
-     * @covers Link_Variable::toSelf
      * @covers Link_Variable::count
      *
      * @expectedException        PHPUnit_Framework_Error_Notice
@@ -62,7 +60,6 @@ class Link_Tests_VariableTest extends PHPUnit_Framework_TestCase {
      * @covers Link_Variable::offsetSet
      * @covers Link_Variable::getValue
      * @covers Link_Variable::setValue
-     * @covers Link_Variable::toSelf
      *
      * @expectedException        Link_Exception_Runtime
      * @expectedExceptionMessage This variable is not an array, or a string with a numeric offset
@@ -88,7 +85,6 @@ class Link_Tests_VariableTest extends PHPUnit_Framework_TestCase {
      * @covers Link_Variable::__toString
      * @covers Link_Variable::getValue
      * @covers Link_Variable::setValue
-     * @covers Link_Variable::toSelf
      * @covers Link_Variable::__get
      */
     public function testPropertyGet() {
@@ -111,7 +107,6 @@ class Link_Tests_VariableTest extends PHPUnit_Framework_TestCase {
      * @covers Link_Variable::__toString
      * @covers Link_Variable::getValue
      * @covers Link_Variable::setValue
-     * @covers Link_Variable::toSelf
      * @covers Link_Variable::__set
      */
     public function testPropertySet() {
@@ -127,7 +122,6 @@ class Link_Tests_VariableTest extends PHPUnit_Framework_TestCase {
      * @covers Link_Variable::__toString
      * @covers Link_Variable::getValue
      * @covers Link_Variable::setValue
-     * @covers Link_Variable::toSelf
      * @covers Link_Variable::__get
 
      * @expectedException        Link_Exception_Runtime
@@ -150,7 +144,6 @@ class Link_Tests_VariableTest extends PHPUnit_Framework_TestCase {
      * @covers Link_Variable::__toString
      * @covers Link_Variable::getValue
      * @covers Link_Variable::setValue
-     * @covers Link_Variable::toSelf
      * @covers Link_Variable::__set
 
      * @expectedException        Link_Exception_Runtime
@@ -195,7 +188,6 @@ class Link_Tests_VariableTest extends PHPUnit_Framework_TestCase {
      * @covers Link_Variable::__construct
      * @covers Link_Variable::offsetExists
      * @covers Link_Variable::setValue
-     * @covers Link_Variable::toSelf
      */
     public function testOffsetExists() {
         $var = new Link_Variable(array('a' => 'b', 'c' => 'd'));
@@ -208,7 +200,6 @@ class Link_Tests_VariableTest extends PHPUnit_Framework_TestCase {
      * @covers Link_Variable::__construct
      * @covers Link_Variable::offsetUnset
      * @covers Link_Variable::setValue
-     * @covers Link_Variable::toSelf
      */
     public function testOffsetUnset() {
         $var = new Link_Variable(array('a' => 'b', 'c' => 'd'));
@@ -225,7 +216,6 @@ class Link_Tests_VariableTest extends PHPUnit_Framework_TestCase {
      * @covers Link_Variable::getIterator
      * @covers Link_Variable::getValue
      * @covers Link_Variable::setValue
-     * @covers Link_Variable::toSelf
      *
      * @expectedException        PHPUnit_Framework_Error_Warning
      * @expectedExceptionMessage This variable is not iterable
