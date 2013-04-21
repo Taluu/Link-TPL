@@ -44,7 +44,7 @@ class Link_Cache_Filesystem implements Link_CacheInterface {
      */
     public function setDir($_dir = null) {
         if ($_dir === null) {
-            $this->_dir = rtrim(strtr(sys_get_temp_dir(), '\\', '/'), '/');
+            $this->_dir = strtr(sys_get_temp_dir(), '\\', '/');
 
             return;
         }
@@ -52,7 +52,7 @@ class Link_Cache_Filesystem implements Link_CacheInterface {
         $dir = rtrim(strtr($_dir, '\\', '/'), '/');
 
         if (!is_dir($dir)) {
-            throw new Link_Exception_Cache(array('The directory <strong>"%s"</strong> doesn\'t exist.', $_dir));
+            throw new Link_Exception_Cache(array('The directory "%s" doesn\'t exist.', $_dir));
         }
 
         $this->_dir = $dir;
@@ -86,8 +86,10 @@ class Link_Cache_Filesystem implements Link_CacheInterface {
         chmod($file, 0664);
 
         // -- Removing the LOCK
+        // @codeCoverageIgnoreStart
         unlink($lockFile);
     }
+    // @codeCoverageIgnoreEnd
 
     /** {@inheritDoc} */
     public function destroy($_key) {
@@ -104,7 +106,11 @@ class Link_Cache_Filesystem implements Link_CacheInterface {
 
         if (extract($_context, EXTR_PREFIX_ALL | EXTR_REFS, '__tpl_vars_') < count($_context)) {
             trigger_error('Some variables couldn\'t be extracted...', E_USER_NOTICE);
+
+        // Bug with PHPUnit coverage... yeay
+        // @codeCoverageIgnoreStart
         }
+        // @codeCoverageIgnoreEnd
 
         include $file;
 
