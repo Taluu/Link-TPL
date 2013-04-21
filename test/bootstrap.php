@@ -11,7 +11,7 @@
  * @version   $Id$
  */
 
-// If php >= 5.3, use composer instead of homemade autoloader
+// If php >= 5.3, use composer instead of a homemade autoloader
 if (PHP_VERSION_ID > 50300) {
     set_include_path(get_include_path() . ';' . __DIR__ . '/../vendor/pear-pear.bovigo.org/vfsStream');
     require __DIR__ . '/../vendor/autoload.php';
